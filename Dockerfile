@@ -6,12 +6,6 @@ WORKDIR $GOPATH/src/github.com/crisaltmann/fundament-stock-api
 
 COPY . .
 
-#FROM alpine:latest
-#RUN apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
-
-##RUN go get -d -v ./...
-##RUN go install -v ./...
-
 RUN go mod download
 RUN go install -v ./...
 
