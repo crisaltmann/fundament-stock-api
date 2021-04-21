@@ -1,0 +1,8 @@
+application:
+  address: :8080
+database:
+  scheme: youasholding
+  user: youasholding
+  password: Test123%
+  hostname: youasholding.database.windows.net
+  port: 1433
