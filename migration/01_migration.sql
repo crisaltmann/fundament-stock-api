@@ -4,6 +4,11 @@ CREATE TABLE IF NOT EXISTS ATIVO (
     nome 		varchar(60) 	NOT NULL
 )
 
+<<<<<<< HEAD
+=======
+CREATE UNIQUE INDEX ATIVO_codigo_IDX ON ATIVO (codigo)
+
+>>>>>>> Adicionando indice por codigo.
 INSERT INTO ATIVO
     (codigo, nome)
 VALUES('WEGE3', 'WEGE');
