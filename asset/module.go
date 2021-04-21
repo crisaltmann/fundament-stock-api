@@ -5,13 +5,12 @@ import (
 	"github.com/crisaltmann/fundament-stock-api/asset/repository"
 	"github.com/crisaltmann/fundament-stock-api/asset/service"
 	"github.com/crisaltmann/fundament-stock-api/config"
-	"github.com/crisaltmann/fundament-stock-api/server"
 	"go.uber.org/fx"
 )
 
 var Module = fx.Options(
 	factories,
-	fx.Invoke(MapRouter),
+	fx.Invoke(api.MapRouter),
 )
 
 var factories = fx.Provide(
@@ -32,6 +31,6 @@ func NewHandler(service *service.Service) *api.Handler {
  	return &api.Handler{Service: service}
 }
 
-func MapRouter(server *server.Server, handler *api.Handler) {
-	server.Server.GET(api.Path + "s", handler.GetAllAssets)
-}
+//func MapRouter(server *server.Server, handler *api.Handler) {
+//	server.Server.GET(api.Path + "s", handler.GetAllAssets)
+//}
