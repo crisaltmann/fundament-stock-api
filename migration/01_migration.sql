@@ -37,3 +37,12 @@ CREATE TABLE IF NOT EXISTS USERS (
 -- INSERT INTO USERS (username, password) VALUES ('teste', 'teste')
 --
 -- INSERT INTO PORTFOLIO (user_id, nome) VALUES ((SELECT id FROM USERS WHERE username = 'teste') ,'PADRÃO');
+--
+-- CREATE TABLE QUARTER (
+--                          id bigint IDENTITY(0,1) primary key,
+--                          codigo varchar(20) not null,
+--                          ano int not null,
+--                          quarter int not null
+-- )
+--
+--     INSERT INTO QUARTER (codigo, ano, quarter) VALUES ('2020_01', 2020, 1), ('2020_02', 2020, 2), ('2020_03', 2020, 3), ('2020_04', 2020, 4)
