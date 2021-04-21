@@ -1,25 +1,29 @@
 package repository
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/crisaltmann/fundament-stock-api/asset/domain"
-	"github.com/crisaltmann/fundament-stock-api/config"
-	"github.com/crisaltmann/fundament-stock-api/infrastructure"
 )
 
 type Repository struct {
-	Config *config.Config
+	DB *sql.DB
 }
 
 func (r Repository) UpdateAsset(asset domain.Asset) (domain.Asset, error) {
+<<<<<<< HEAD
 	db := infrastructure.CreateConnection(r.Config)
 	defer db.Close()
 
 	prepare, err := db.Prepare("UPDATE ATIVO SET CODIGO = $2, NOME = $3 WHERE ID = $3")
+=======
+	prepare, err := r.DB.Prepare("UPDATE ATIVO SET CODIGO = @p2, NOME = @p3 WHERE ID = @p1")
+>>>>>>> Alterando para conection como Dependency Injection.
 	if err != nil {
 		err = fmt.Errorf("Erro ao executar update de ativos", err)
 		return domain.Asset{}, err
 	}
+	defer prepare.Close()
 
 	_, err = prepare.Exec(asset.Id, asset.Codigo, asset.Nome)
 	if err != nil {
@@ -30,10 +34,13 @@ func (r Repository) UpdateAsset(asset domain.Asset) (domain.Asset, error) {
 }
 
 func (r Repository) InsertAsset(asset domain.Asset) (bool, error) {
-	db := infrastructure.CreateConnection(r.Config)
-	defer db.Close()
+	prepare, err := r.DB.Prepare("INSERT INTO ATIVO (CODIGO, NOME) VALUES (@p1, @p2)")
+	defer prepare.Close()
 
+<<<<<<< HEAD
 	prepare, err := db.Prepare("INSERT INTO ATIVO (CODIGO, NOME) VALUES ($1, $2)")
+=======
+>>>>>>> Alterando para conection como Dependency Injection.
 	if err != nil {
 		err = fmt.Errorf("Erro ao executar insert de ativos", err)
 		return false, err
@@ -48,10 +55,13 @@ func (r Repository) InsertAsset(asset domain.Asset) (bool, error) {
 }
 
 func (r Repository) GetAllAsset() ([]domain.Asset, error) {
-	db := infrastructure.CreateConnection(r.Config)
-	defer db.Close()
+	rows, err := r.DB.Query("select id, codigo, nome FROM ATIVO")
+	defer rows.Close()
 
+<<<<<<< HEAD
 	rows, err := db.Query("SELECT id, codigo, nome FROM ATIVO")
+=======
+>>>>>>> Alterando para conection como Dependency Injection.
 	if err != nil {
 		err = fmt.Errorf("Erro ao executar busca de ativos", err)
 		return nil, err
@@ -72,10 +82,13 @@ func (r Repository) GetAllAsset() ([]domain.Asset, error) {
 }
 
 func (r Repository) GetById(id int64) (domain.Asset, error) {
-	db := infrastructure.CreateConnection(r.Config)
-	defer db.Close()
+	rows, err := r.DB.Query("SELECT id, codigo, nome FROM ATIVO WHERE id = @p1", id)
+	defer rows.Close()
 
+<<<<<<< HEAD
 	rows, err := db.Query("SELECT id, codigo, nome FROM ATIVO WHERE id = $1", id)
+=======
+>>>>>>> Alterando para conection como Dependency Injection.
 	if err != nil {
 		err = fmt.Errorf("Erro ao executar busca de ativos por id", err)
 		return domain.Asset{}, err
