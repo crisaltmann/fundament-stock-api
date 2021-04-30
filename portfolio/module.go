@@ -27,6 +27,6 @@ func NewOrderService(repository *orderrepository.Repository) *orderservice.Servi
 	return &orderservice.Service{Repository: repository}
 }
 
-func NewOrderHandler() *orderapi.Handler {
-	return &orderapi.Handler{}
+func NewOrderHandler(service *orderservice.Service) *orderapi.Handler {
+	return &orderapi.Handler{Service: service}
 }

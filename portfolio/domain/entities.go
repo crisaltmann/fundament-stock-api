@@ -1,10 +1,4 @@
-package domain
-
-type Portfolio struct {
-	Id int64
-	UserId int64
-	Nome string
-}
+package orderdomain
 
 type Quarter struct {
 	Id int64
@@ -13,7 +7,7 @@ type Quarter struct {
 
 type PortfolioItem struct {
 	Id int64
-	IdPortfolio int64
+	IdUser int64
 	IdAtivo int64
 	Qtde int32
 }
@@ -21,17 +15,18 @@ type PortfolioItem struct {
 type PortfolioQuarterItem struct {
 	Id int64
 	IdQuater int64
-	IdPortfolio int64
+	IdUser int64
 	IdAtivo int64
 	Qtde int64
 }
 
-type Ordem struct {
+type Order struct {
 	Id int64
 	IdPorfolio int64
+	Data int64
 	IdAtivo int64
 	Quantidade int64
-	ValorCompra int64
+	Valor int64
 }
 
 

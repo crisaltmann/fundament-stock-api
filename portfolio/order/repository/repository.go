@@ -2,6 +2,9 @@ package orderrepository
 
 import (
 	"database/sql"
+	"fmt"
+	"github.com/crisaltmann/fundament-stock-api/asset/domain"
+	orderdomain "github.com/crisaltmann/fundament-stock-api/portfolio/domain"
 )
 
 type Repository struct {
@@ -24,22 +27,22 @@ type Repository struct {
 //	return asset, nil
 //}
 //
-//func (r Repository) InsertAsset(asset domain.Asset) (bool, error) {
-//	prepare, err := r.DB.Prepare("INSERT INTO ATIVO (CODIGO, NOME) VALUES (@p1, @p2)")
-//	defer prepare.Close()
-//
-//	if err != nil {
-//		err = fmt.Errorf("Erro ao executar insert de ativos", err)
-//		return false, err
-//	}
-//
-//	_, err = prepare.Exec(asset.Codigo, asset.Nome)
-//	if err != nil {
-//		err = fmt.Errorf("Erro ao executar insert de ativos", err)
-//		return false, err
-//	}
-//	return true, nil
-//}
+func (r Repository) InsertOrder(order orderdomain.Order) (bool, error) {
+	prepare, err := r.DB.Prepare("INSERT INTO ORDE (CODIGO, NOME) VALUES (@p1, @p2)")
+	defer prepare.Close()
+
+	if err != nil {
+		err = fmt.Errorf("Erro ao executar insert de ordem", err)
+		return false, err
+	}
+
+	_, err = prepare.Exec(asset.Codigo, asset.Nome)
+	if err != nil {
+		err = fmt.Errorf("Erro ao executar insert de ordem", err)
+		return false, err
+	}
+	return true, nil
+}
 //
 //func (r Repository) GetAllAsset() ([]domain.Asset, error) {
 //	rows, err := r.DB.Query("select id, codigo, nome FROM ATIVO")

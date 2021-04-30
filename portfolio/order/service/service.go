@@ -1,6 +1,8 @@
 package orderservice
 
 import (
+	"github.com/crisaltmann/fundament-stock-api/asset/domain"
+	orderdomain "github.com/crisaltmann/fundament-stock-api/portfolio/domain"
 	orderrepository "github.com/crisaltmann/fundament-stock-api/portfolio/order/repository"
 )
 
@@ -16,9 +18,9 @@ type Service struct {
 //	return s.Repository.GetById(id)
 //}
 //
-//func (s Service) InsertAsset(asset domain.Asset) (bool, error) {
-//	return s.Repository.InsertAsset(asset)
-//}
+func (s Service) InsertOrder(order orderdomain.Order) (bool, error) {
+	return s.Repository.InsertOrder(order)
+}
 //
 //func (s Service) UpdateAsset(asset domain.Asset) (domain.Asset, error) {
 //	return s.Repository.UpdateAsset(asset)

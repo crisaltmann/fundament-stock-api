@@ -12,9 +12,10 @@ type Handler struct {
 }
 
 func (h Handler) InsertOrder(c *gin.Context) {
-	//asset := AssetPostRequest{}
-	//c.BindJSON(&asset)
-	//_, err := h.Service.InsertAsset(convertPostRequestToDomain(asset))
+	order := OrderPostRequest{}
+	c.BindJSON(&order)
+
+	_, err := h.Service.InsertOrder(convertPostRequestToDomain(order))
 	//if err != nil {
 	//	c.AbortWithError(http.StatusInternalServerError, err)
 	//}
