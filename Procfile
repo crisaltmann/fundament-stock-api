@@ -1,1 +1,0 @@
-web: bin/fundament-stock-api
