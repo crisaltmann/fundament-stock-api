@@ -2,25 +2,19 @@ package infrastructure
 
 import (
 	"database/sql"
-	"fmt"
 	"github.com/crisaltmann/fundament-stock-api/config"
-	"go.uber.org/fx"
+	"log"
 	"os"
 )
 
-var Module = fx.Options(
-	factories,
-)
-
-var factories = fx.Provide(
-)
-
 func CreateConnection(config *config.Config) *sql.DB {
-	fmt.Println("conectando base ...")
+	log.Println("conectando base ...")
 	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
 
 	if err != nil {
-		fmt.Errorf("Erro ao contectar no banco #{err}")
+		log.Fatal("Erro ao contectar no banco #{err}")
+		panic(err)
 	}
+	log.Println("Connected")
 	return db
 }

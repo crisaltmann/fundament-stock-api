@@ -1,18 +1,19 @@
 package main
 
 import (
-	"fmt"
 	"github.com/crisaltmann/fundament-stock-api/asset"
 	"github.com/crisaltmann/fundament-stock-api/config"
+	"github.com/crisaltmann/fundament-stock-api/infrastructure"
 	"github.com/crisaltmann/fundament-stock-api/server"
-	_ "github.com/denisenkom/go-mssqldb"
 	"go.uber.org/fx"
+	"log"
 )
 
 func main() {
-	fmt.Println("Iniciando...")
+	log.Println("Iniciando...")
 
 	app := fx.New(
+		infrastructure.Module,
 		config.Module,
 		server.Module,
 		asset.Module,
