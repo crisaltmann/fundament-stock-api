@@ -1,9 +1,8 @@
-CREATE TABLE IF NOT EXISTS ATIVO (
-id 			bigint 			PRIMARY KEY,
-codigo 		varchar(10) 	UNIQUE NOT NULL,
-nome 		varchar(60) 	NOT NULL
+CREATE TABLE ATIVO (
+    id bigint IDENTITY(1,1) PRIMARY KEY,
+    codigo varchar(10) not null,
+    nome varchar(60) not null,
 )
-
 INSERT INTO youasholding.dbo.ATIVO
     (codigo, nome)
 VALUES('WEGE3', 'WEGE');

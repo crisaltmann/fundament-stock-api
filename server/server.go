@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/crisaltmann/fundament-stock-api/config"
 	"github.com/gin-gonic/gin"
+	"log"
 	"os"
 )
 
@@ -12,7 +13,10 @@ type Server struct {
 }
 
 func InitServer(s *Server) {
-	port := s.config.ApplicationConfig.Address
-	port = os.Getenv("PORT")
+	port := os.Getenv("PORT")
+	if port == "" {
+		log.Println("PORTA NAO ENCONTRADA, USANDO VALOR DEFAULT.")
+		port = "8080"
+	}
 	s.Server.Run(":" + port)
 }
