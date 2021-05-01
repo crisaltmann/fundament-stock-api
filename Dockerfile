@@ -2,13 +2,15 @@ ARG GO_VERSION=1.14
 
 FROM golang:${GO_VERSION}-alpine AS builder
 
-WORKDIR $GOPATH/src/github.com/crisaltmann/fundament-stock-api
+WORKDIR /app
+
+COPY go.mod go.sum ./
+
+RUN go mod download
 
 COPY . .
 
-RUN go mod download
-RUN go install -v ./...
+RUN go build -o .
 
 EXPOSE 80
-
-ENTRYPOINT ["fundament-stock-api"]
+CMD ["./fundament-stock-api"]

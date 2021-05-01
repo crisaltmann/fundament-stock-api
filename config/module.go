@@ -4,6 +4,7 @@ import (
 	"go.uber.org/fx"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"log"
 )
 
 var Module = fx.Options(
@@ -18,6 +19,7 @@ func LoadConfig() *Config {
 	conf := &Config{}
 	data, err := ioutil.ReadFile("config/config.yaml")
 	if err != nil {
+		log.Println("erro ao ler arquivo", err)
 		panic("Erro ao ler arquivo configuração")
 	}
 
