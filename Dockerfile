@@ -9,6 +9,6 @@ COPY . .
 RUN go mod download
 RUN go install -v ./...
 
-EXPOSE 8080
+EXPOSE 80
 
 ENTRYPOINT ["fundament-stock-api"]
