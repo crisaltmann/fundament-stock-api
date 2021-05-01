@@ -14,5 +14,5 @@ type Server struct {
 func InitServer(s *Server) {
 	port := s.config.ApplicationConfig.Address
 	port = os.Getenv("PORT")
-	s.Server.Run(port)
+	s.Server.Run(":" + port)
 }
