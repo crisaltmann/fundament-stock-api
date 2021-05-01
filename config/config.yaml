@@ -1,5 +1,5 @@
 application:
-  address: :80
+  #address: :80
 database:
   scheme: youasholding
   user: youasholding

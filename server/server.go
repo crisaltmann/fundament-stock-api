@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/crisaltmann/fundament-stock-api/config"
 	"github.com/gin-gonic/gin"
+	"os"
 )
 
 type Server struct {
@@ -11,5 +12,7 @@ type Server struct {
 }
 
 func InitServer(s *Server) {
-	s.Server.Run(s.config.ApplicationConfig.Address)
+	port := s.config.ApplicationConfig.Address
+	port = os.Getenv("PORT")
+	s.Server.Run(port)
 }
