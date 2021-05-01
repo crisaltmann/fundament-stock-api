@@ -1,4 +1,4 @@
-**Fundament Stock API**
+** Fundament Stock API **
 
 Este projeto possui os serviços responsáveis por manipular os dados de ativos.
 
