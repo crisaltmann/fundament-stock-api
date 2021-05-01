@@ -8,6 +8,7 @@ import (
 
 var Module = fx.Options(
 	factories,
+	fx.Invoke(MapRouter),
 )
 
 var factories = fx.Provide(
