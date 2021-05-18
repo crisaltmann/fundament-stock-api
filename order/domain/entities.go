@@ -31,3 +31,14 @@ func ConvertType(orderType string) (OrderType, error) {
 		return "", fmt.Errorf("")
 	}
 }
+
+func ConvertTypeToString(orderType OrderType) (string, error) {
+	switch orderType {
+	case BuyOrder:
+		return "B", nil
+	case SellOrder:
+		return "S", nil
+	default:
+		return "", fmt.Errorf("")
+	}
+}

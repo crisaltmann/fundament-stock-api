@@ -12,6 +12,21 @@ type Service struct {
 	AssetService *asset_service.Service
 }
 
+func (s Service) GetAllOrders() ([]order_domain.Order, error) {
+	orders, err := s.Repository.GetAllOrders()
+	if err != nil {
+		return orders, err
+	}
+	for idx, order := range orders {
+		if order.Quantidade >= 0 {
+			orders[idx].Tipo = order_domain.BuyOrder
+		} else {
+			orders[idx].Tipo = order_domain.SellOrder
+		}
+	}
+	return orders, nil
+}
+
 func (s Service) InsertOrder(order order_domain.Order) (bool, error) {
 	ativoExist, err := s.AssetService.ExistById(order.Ativo)
 	if err != nil && !ativoExist {

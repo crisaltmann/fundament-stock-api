@@ -17,6 +17,7 @@ func (h Handler) GetAllAssets(c *gin.Context) {
 	assets, err := h.Service.GetAllAssets()
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
 	c.JSON(http.StatusOK, convertToDtos(assets))
 }

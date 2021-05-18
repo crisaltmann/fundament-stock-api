@@ -26,3 +26,25 @@ func (r Repository) InsertOrder(order order_domain.Order) (bool, error) {
 	}
 	return true, nil
 }
+
+func (r Repository) GetAllOrders() ([]order_domain.Order, error) {
+	rows, err := r.DB.Query("select id, id_ativo, quantidade, valor, data FROM MOVIMENTACAO")
+	defer rows.Close()
+
+	if err != nil {
+		err = fmt.Errorf("Erro ao executar busca de movimentacoes", err)
+		return nil, err
+	}
+	defer rows.Close()
+	orders := []order_domain.Order{}
+	for rows.Next() {
+		order := order_domain.Order{}
+		err := rows.Scan(&order.Id, &order.Ativo, &order.Quantidade, &order.Valor, &order.Data)
+		if err != nil {
+			err = fmt.Errorf("Erro ao executar busca de movimentacoes", err)
+			return nil, err
+		}
+		orders = append(orders, order)
+	}
+	return orders, nil
+}
