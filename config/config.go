@@ -2,7 +2,7 @@ package config
 
 type Config struct {
 	ApplicationConfig `yaml:"application"`
-	DatabaseConfig `yaml:"database"`
+	DatabaseConfig    `yaml:"database"`
 }
 
 type ApplicationConfig struct {
@@ -11,9 +11,10 @@ type ApplicationConfig struct {
 
 type DatabaseConfig struct {
 	Database string `yaml:"database"`
-	Scheme string `yaml:"scheme"`
-	User string `yaml:"user"`
+	Scheme   string `yaml:"scheme"`
+	User     string `yaml:"user"`
 	Password string `yaml:"password"`
 	Hostname string `yaml:"hostname"`
-	Port int `yaml:"port"`
+	Port     int    `yaml:"port"`
+	Url      string `yaml:url`
 }

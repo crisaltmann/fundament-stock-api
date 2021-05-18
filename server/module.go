@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/crisaltmann/fundament-stock-api/config"
+	"github.com/crisaltmann/fundament-stock-api/server/middlewares"
 	"github.com/gin-contrib/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
@@ -30,6 +31,7 @@ func ConfigureServer(conf *config.Config) *Server {
 
 func configureLog(r *gin.Engine) {
 	r.Use(logger.SetLogger())
+	r.Use(middlewares.ErrorHandler)
 
 	// Custom logger
 	subLog := zerolog.New(os.Stdout).With().
@@ -43,5 +45,3 @@ func configureLog(r *gin.Engine) {
 		SkipPathRegexp: rxURL,
 	}))
 }
-
-

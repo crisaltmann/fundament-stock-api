@@ -7,6 +7,7 @@ require (
 	github.com/gin-gonic/gin v1.6.3
 	github.com/lib/pq v1.10.1
 	github.com/rs/zerolog v1.18.0
+	github.com/streadway/amqp v1.0.0
 	go.uber.org/fx v1.13.1
 	gopkg.in/yaml.v2 v2.2.8
 )

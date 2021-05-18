@@ -8,8 +8,8 @@ import (
 )
 
 var Module = fx.Options(
-		factories,
-	)
+	factories,
+)
 
 var factories = fx.Provide(
 	LoadConfig,

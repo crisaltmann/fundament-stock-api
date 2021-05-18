@@ -2,15 +2,16 @@ package asset
 
 import (
 	"database/sql"
-	"github.com/crisaltmann/fundament-stock-api/asset/api"
-	"github.com/crisaltmann/fundament-stock-api/asset/repository"
-	"github.com/crisaltmann/fundament-stock-api/asset/service"
+	asset_service "github.com/crisaltmann/fundament-stock-api/asset/service"
+
+	asset_api "github.com/crisaltmann/fundament-stock-api/asset/api"
+	asset_repository "github.com/crisaltmann/fundament-stock-api/asset/repository"
 	"go.uber.org/fx"
 )
 
 var Module = fx.Options(
 	factories,
-	fx.Invoke(api.MapRouter),
+	fx.Invoke(asset_api.MapRouter),
 )
 
 var factories = fx.Provide(
@@ -19,14 +20,14 @@ var factories = fx.Provide(
 	NewHandler,
 )
 
-func NewRepository(db *sql.DB) *repository.Repository {
-	return &repository.Repository{DB: db}
+func NewRepository(db *sql.DB) *asset_repository.Repository {
+	return &asset_repository.Repository{DB: db}
 }
 
-func NewService(repository *repository.Repository) *service.Service {
-	return &service.Service{Repository: repository}
+func NewService(repository *asset_repository.Repository) *asset_service.Service {
+	return &asset_service.Service{Repository: repository}
 }
 
-func NewHandler(service *service.Service) *api.Handler {
- 	return &api.Handler{Service: service}
+func NewHandler(service *asset_service.Service) *asset_api.Handler {
+	return &asset_api.Handler{Service: service}
 }
