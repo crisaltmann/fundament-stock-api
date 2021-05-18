@@ -15,9 +15,13 @@ type Handler struct {
 func (h Handler) InsertOrder(c *gin.Context) {
 	order := OrderPostRequest{}
 	c.BindJSON(&order)
-	_, err := h.Service.InsertOrder(convertPostRequestToDomain(order))
+	orderDomain, err := convertPostRequestToDomain(order)
+	if err == nil {
+		_, err = h.Service.InsertOrder(orderDomain)
+	}
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
 	c.JSON(http.StatusCreated, nil)
 }
