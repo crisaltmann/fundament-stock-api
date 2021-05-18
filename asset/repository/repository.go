@@ -45,7 +45,7 @@ func (r Repository) InsertAsset(asset domain.Asset) (bool, error) {
 }
 
 func (r Repository) GetAllAsset() ([]domain.Asset, error) {
-	rows, err := r.DB.Query("select id, codigo, nome FROM ATIVO")
+	rows, err := r.DB.Query("select id, codigo, nome, logo FROM ATIVO")
 	defer rows.Close()
 
 	if err != nil {
@@ -57,7 +57,7 @@ func (r Repository) GetAllAsset() ([]domain.Asset, error) {
 	for rows.Next() {
 		asset := domain.Asset{}
 		err := rows.Scan(&asset.Id,
-			&asset.Nome, &asset.Codigo)
+			&asset.Nome, &asset.Codigo, &asset.Logo)
 		if err != nil {
 			err = fmt.Errorf("Erro ao executar busca de ativos", err)
 			return nil, err
