@@ -10,5 +10,6 @@ func convertPostRequestToDomain(request OrderPostRequest) (order_domain.Order, e
 	if err != nil {
 		return order_domain.Order{}, fmt.Errorf("Erro ao converter tipo de order.")
 	}
-	return order_domain.Order{Ativo: request.Ativo, Quantidade: request.Quantidade, Valor: request.Valor, Tipo: orderType}, nil
+	return order_domain.Order{Ativo: request.Ativo, Quantidade: request.Quantidade,
+		Valor: request.Valor, Tipo: orderType, Data: request.Data}, nil
 }

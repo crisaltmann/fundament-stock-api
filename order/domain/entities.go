@@ -1,6 +1,9 @@
 package order_domain
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 type OrderType string
 
@@ -15,6 +18,7 @@ type Order struct {
 	Quantidade int
 	Valor      float32
 	Tipo       OrderType
+	Data	   time.Time
 }
 
 func ConvertType(orderType string) (OrderType, error) {

@@ -12,14 +12,14 @@ type Repository struct {
 
 func (r Repository) InsertOrder(order order_domain.Order) (bool, error) {
 
-	prepare, err := r.DB.Prepare("INSERT INTO MOVIMENTACAO (ID_ATIVO, QUANTIDADE, VALOR) VALUES ($1, $2, $3)")
+	prepare, err := r.DB.Prepare("INSERT INTO MOVIMENTACAO (ID_ATIVO, QUANTIDADE, VALOR, DATA) VALUES ($1, $2, $3, $4)")
 
 	if err != nil {
-		err = fmt.Errorf("Erro ao executar insert de ativos", err)
+		err = fmt.Errorf("Erro ao executar insert de movimentacao", err)
 		return false, err
 	}
 
-	_, err = prepare.Exec(order.Ativo, order.Quantidade, order.Valor)
+	_, err = prepare.Exec(order.Ativo, order.Quantidade, order.Valor, order.Data)
 	if err != nil {
 		err = fmt.Errorf("Erro ao executar insert de movimentacao", err)
 		return false, err

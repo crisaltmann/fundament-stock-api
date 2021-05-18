@@ -24,7 +24,8 @@ CREATE TABLE IF NOT EXISTS MOVIMENTACAO (
     id          serial          PRIMARY KEY,
     id_ativo    bigint          NOT NULL,
     quantidade  int             NOT NULL,
-    valor       decimal(10,2)   NOT NULL
+    valor       decimal(10,2)   NOT NULL,
+    data        date            NOT NULL
 )
 
 CREATE TABLE TRIMESTRE (
