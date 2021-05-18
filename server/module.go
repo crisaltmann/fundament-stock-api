@@ -43,5 +43,3 @@ func configureLog(r *gin.Engine) {
 		SkipPathRegexp: rxURL,
 	}))
 }
-
-

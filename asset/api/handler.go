@@ -1,7 +1,7 @@
-package api
+package asset_api
 
 import (
-	"github.com/crisaltmann/fundament-stock-api/asset/service"
+	asset_service "github.com/crisaltmann/fundament-stock-api/asset/service"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -10,7 +10,7 @@ import (
 const Path = "/assets"
 
 type Handler struct {
-	Service *service.Service
+	Service *asset_service.Service
 }
 
 func (h Handler) GetAllAssets(c *gin.Context) {
