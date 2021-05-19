@@ -29,6 +29,34 @@ definitions:
       nome:
         type: string
     type: object
+  order_api.OrderGetResponse:
+    properties:
+      data:
+        type: string
+      id:
+        type: integer
+      id_ativo:
+        type: integer
+      quantidade:
+        type: integer
+      tipo:
+        type: string
+      valor:
+        type: number
+    type: object
+  order_api.OrderPostRequest:
+    properties:
+      data:
+        type: string
+      id_ativo:
+        type: integer
+      quantidade:
+        type: integer
+      tipo:
+        type: string
+      valor:
+        type: number
+    type: object
 info:
   contact:
     email: crisaltmann@gmail.com
@@ -100,4 +128,28 @@ paths:
         "200":
           description: ""
       summary: Atualiza Ativo
+  /orders:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/order_api.OrderGetResponse'
+      summary: Retorna a lista de ordens
+    post:
+      parameters:
+      - description: User-Data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/order_api.OrderPostRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: ""
+      summary: Insere Ordem
 swagger: "2.0"

@@ -123,6 +123,44 @@ var doc = `{
                     }
                 }
             }
+        },
+        "/orders": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Retorna a lista de ordens",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/order_api.OrderGetResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Insere Ordem",
+                "parameters": [
+                    {
+                        "description": "User-Data",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/order_api.OrderPostRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": ""
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -168,6 +206,49 @@ var doc = `{
                 },
                 "nome": {
                     "type": "string"
+                }
+            }
+        },
+        "order_api.OrderGetResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "id_ativo": {
+                    "type": "integer"
+                },
+                "quantidade": {
+                    "type": "integer"
+                },
+                "tipo": {
+                    "type": "string"
+                },
+                "valor": {
+                    "type": "number"
+                }
+            }
+        },
+        "order_api.OrderPostRequest": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "string"
+                },
+                "id_ativo": {
+                    "type": "integer"
+                },
+                "quantidade": {
+                    "type": "integer"
+                },
+                "tipo": {
+                    "type": "string"
+                },
+                "valor": {
+                    "type": "number"
                 }
             }
         }
