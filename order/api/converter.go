@@ -11,7 +11,7 @@ func convertPostRequestToDomain(request OrderPostRequest) (order_domain.Order, e
 		return order_domain.Order{}, fmt.Errorf("Erro ao converter tipo de order.")
 	}
 	return order_domain.Order{Ativo: request.Ativo, Quantidade: request.Quantidade,
-		Valor: request.Valor, Tipo: orderType, Data: request.Data}, nil
+		Valor: request.Valor, Tipo: orderType, Data: request.Data, Usuario: request.IdUsuario}, nil
 }
 
 func convertDomainsToDtos(orders []order_domain.Order) ([]OrderGetResponse, error) {
@@ -32,5 +32,5 @@ func convertDomainToDto(order order_domain.Order) (OrderGetResponse, error) {
 		return OrderGetResponse{}, fmt.Errorf("Erro ao converter tipo de order.")
 	}
 	return OrderGetResponse{Id: order.Id, Ativo: order.Ativo, Quantidade: order.Quantidade, Valor: order.Valor,
-		Tipo: orderType, Data: order.Data}, nil
+		Tipo: orderType, Data: order.Data, IdUsuario: order.Usuario}, nil
 }

@@ -37,6 +37,8 @@ definitions:
         type: integer
       id_ativo:
         type: integer
+      id_usuario:
+        type: integer
       quantidade:
         type: integer
       tipo:
@@ -49,6 +51,8 @@ definitions:
       data:
         type: string
       id_ativo:
+        type: integer
+      id_usuario:
         type: integer
       quantidade:
         type: integer

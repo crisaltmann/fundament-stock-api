@@ -10,6 +10,7 @@ type OrderPostRequest struct {
 	Valor      float32		`json:"valor"`
 	Tipo       string		`json:"tipo"`
 	Data       time.Time 	`json:"data"`
+	IdUsuario  int64		`json:"id_usuario"`
 }
 
 type OrderGetResponse struct {
@@ -19,4 +20,5 @@ type OrderGetResponse struct {
 	Valor      float32		`json:"valor"`
 	Tipo       string		`json:"tipo"`
 	Data       time.Time 	`json:"data"`
+	IdUsuario  int64		`json:"id_usuario"`
 }

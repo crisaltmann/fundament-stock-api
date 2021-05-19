@@ -221,6 +221,9 @@ var doc = `{
                 "id_ativo": {
                     "type": "integer"
                 },
+                "id_usuario": {
+                    "type": "integer"
+                },
                 "quantidade": {
                     "type": "integer"
                 },
@@ -239,6 +242,9 @@ var doc = `{
                     "type": "string"
                 },
                 "id_ativo": {
+                    "type": "integer"
+                },
+                "id_usuario": {
                     "type": "integer"
                 },
                 "quantidade": {

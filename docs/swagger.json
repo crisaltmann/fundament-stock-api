@@ -205,6 +205,9 @@
                 "id_ativo": {
                     "type": "integer"
                 },
+                "id_usuario": {
+                    "type": "integer"
+                },
                 "quantidade": {
                     "type": "integer"
                 },
@@ -223,6 +226,9 @@
                     "type": "string"
                 },
                 "id_ativo": {
+                    "type": "integer"
+                },
+                "id_usuario": {
                     "type": "integer"
                 },
                 "quantidade": {
