@@ -1,0 +1,155 @@
+basePath: /
+definitions:
+  asset_api.AssetPostRequest:
+    properties:
+      codigo:
+        type: string
+      logo:
+        type: string
+      nome:
+        type: string
+    type: object
+  asset_api.AssetPutRequest:
+    properties:
+      codigo:
+        type: string
+      logo:
+        type: string
+      nome:
+        type: string
+    type: object
+  asset_api.AssetResponse:
+    properties:
+      codigo:
+        type: string
+      id:
+        type: integer
+      logo:
+        type: string
+      nome:
+        type: string
+    type: object
+  order_api.OrderGetResponse:
+    properties:
+      data:
+        type: string
+      id:
+        type: integer
+      id_ativo:
+        type: integer
+      quantidade:
+        type: integer
+      tipo:
+        type: string
+      valor:
+        type: number
+    type: object
+  order_api.OrderPostRequest:
+    properties:
+      data:
+        type: string
+      id_ativo:
+        type: integer
+      quantidade:
+        type: integer
+      tipo:
+        type: string
+      valor:
+        type: number
+    type: object
+info:
+  contact:
+    email: crisaltmann@gmail.com
+    name: Cristiano Altmann
+  description: Swagger API for Fundament Stock Api.
+  license:
+    name: MIT
+    url: https://github.com/crisaltmann/fundament-stock-api
+  termsOfService: http://swagger.io/terms/
+  title: Fundament Stock Api Swagger API
+  version: "1.0"
+paths:
+  /assets:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/asset_api.AssetResponse'
+      summary: Retorna a lista de ativos
+    post:
+      parameters:
+      - description: User-Data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/asset_api.AssetPostRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: ""
+      summary: Insere Ativo
+  /assets/{id}:
+    get:
+      parameters:
+      - description: Asset ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/asset_api.AssetResponse'
+      summary: Retorna a ativo
+    put:
+      parameters:
+      - description: User-Data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/asset_api.AssetPutRequest'
+      - description: Asset ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+      summary: Atualiza Ativo
+  /orders:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/order_api.OrderGetResponse'
+      summary: Retorna a lista de ordens
+    post:
+      parameters:
+      - description: User-Data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/order_api.OrderPostRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: ""
+      summary: Insere Ordem
+swagger: "2.0"

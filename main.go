@@ -9,10 +9,26 @@ import (
 	"github.com/streadway/amqp"
 	"go.uber.org/fx"
 	"log"
+	//swaggerFiles "github.com/swaggo/files"
+	//"github.com/swaggo/gin-swagger"
+	//_ "github.com/MartinHeinz/go-project-blueprint/cmd/blueprint/docs"
 )
 
+// @title Fundament Stock Api Swagger API
+// @version 1.0
+// @description Swagger API for Fundament Stock Api.
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name Cristiano Altmann
+// @contact.email crisaltmann@gmail.com
+
+// @license.name MIT
+// @license.url https://github.com/crisaltmann/fundament-stock-api
+
+// @BasePath /
 func main() {
 	log.Println("Iniciando...")
+
 
 	//teste()
 

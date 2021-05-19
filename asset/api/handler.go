@@ -13,6 +13,11 @@ type Handler struct {
 	Service *asset_service.Service
 }
 
+// GetAssets godoc
+// @Summary Retorna a lista de ativos
+// @Produce json
+// @Success 200 {object} asset_api.AssetResponse
+// @Router /assets [get]
 func (h Handler) GetAllAssets(c *gin.Context) {
 	assets, err := h.Service.GetAllAssets()
 	if err != nil {
@@ -22,6 +27,12 @@ func (h Handler) GetAllAssets(c *gin.Context) {
 	c.JSON(http.StatusOK, convertToDtos(assets))
 }
 
+// InsertAssets godoc
+// @Summary Insere Ativo
+// @Produce json
+// @Param user body asset_api.AssetPostRequest true "User-Data"
+// @Success 201
+// @Router /assets [post]
 func (h Handler) InsertAsset(c *gin.Context) {
 	asset := AssetPostRequest{}
 	c.BindJSON(&asset)
@@ -33,6 +44,13 @@ func (h Handler) InsertAsset(c *gin.Context) {
 	c.JSON(http.StatusCreated, nil)
 }
 
+// UpdateAssets godoc
+// @Summary Atualiza Ativo
+// @Produce json
+// @Param user body asset_api.AssetPutRequest true "User-Data"
+// @Param id path int true "Asset ID"
+// @Success 200
+// @Router /assets/{id} [put]
 func (h Handler) UpdateAsset(c *gin.Context) {
 	asset := AssetPutRequest{}
 	c.BindJSON(&asset)
@@ -49,6 +67,12 @@ func (h Handler) UpdateAsset(c *gin.Context) {
 	c.JSON(http.StatusOK, rasset)
 }
 
+// GetAssets godoc
+// @Summary Retorna a ativo
+// @Produce json
+// @Param id path int true "Asset ID"
+// @Success 200 {object} asset_api.AssetResponse
+// @Router /assets/{id} [get]
 func (h Handler) GetById(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.ParseInt(idParam, 10, 64)

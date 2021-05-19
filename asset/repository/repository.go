@@ -11,7 +11,7 @@ type Repository struct {
 }
 
 func (r Repository) UpdateAsset(asset asset_domain.Asset) (asset_domain.Asset, error) {
-	prepare, err := r.DB.Prepare("UPDATE ATIVO SET CODIGO = $2, NOME = $3 WHERE ID = $1")
+	prepare, err := r.DB.Prepare("UPDATE ATIVO SET CODIGO = $2, NOME = $3, LOGO = $4 WHERE ID = $1")
 
 	if err != nil {
 		err = fmt.Errorf("Erro ao executar update de ativos", err)
@@ -19,7 +19,7 @@ func (r Repository) UpdateAsset(asset asset_domain.Asset) (asset_domain.Asset, e
 	}
 	defer prepare.Close()
 
-	_, err = prepare.Exec(asset.Id, asset.Codigo, asset.Nome)
+	_, err = prepare.Exec(asset.Id, asset.Codigo, asset.Nome, asset.Logo)
 	if err != nil {
 		err = fmt.Errorf("Erro ao executar update de ativos", err)
 		return asset_domain.Asset{}, err
@@ -29,14 +29,14 @@ func (r Repository) UpdateAsset(asset asset_domain.Asset) (asset_domain.Asset, e
 
 func (r Repository) InsertAsset(asset asset_domain.Asset) (bool, error) {
 
-	prepare, err := r.DB.Prepare("INSERT INTO ATIVO (CODIGO, NOME) VALUES ($1, $2)")
+	prepare, err := r.DB.Prepare("INSERT INTO ATIVO (CODIGO, NOME, LOGO) VALUES ($1, $2, $3)")
 
 	if err != nil {
 		err = fmt.Errorf("Erro ao executar insert de ativos", err)
 		return false, err
 	}
 
-	_, err = prepare.Exec(asset.Codigo, asset.Nome)
+	_, err = prepare.Exec(asset.Codigo, asset.Nome, asset.Logo)
 	if err != nil {
 		err = fmt.Errorf("Erro ao executar insert de ativos", err)
 		return false, err
@@ -68,7 +68,7 @@ func (r Repository) GetAllAsset() ([]asset_domain.Asset, error) {
 }
 
 func (r Repository) GetById(id int64) (asset_domain.Asset, error) {
-	rows, err := r.DB.Query("SELECT id, codigo, nome FROM ATIVO WHERE id = $1", id)
+	rows, err := r.DB.Query("SELECT id, codigo, nome, logo FROM ATIVO WHERE id = $1", id)
 	defer rows.Close()
 
 	if err != nil {
@@ -79,7 +79,7 @@ func (r Repository) GetById(id int64) (asset_domain.Asset, error) {
 	asset := asset_domain.Asset{}
 	for rows.Next() {
 		err := rows.Scan(&asset.Id,
-			&asset.Nome, &asset.Codigo)
+			&asset.Nome, &asset.Codigo, &asset.Logo)
 		if err != nil {
 			err = fmt.Errorf("Erro ao executar busca de ativos por id", err)
 			return asset_domain.Asset{}, err

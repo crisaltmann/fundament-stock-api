@@ -12,6 +12,11 @@ type Handler struct {
 	Service *order_service.Service
 }
 
+// GetOrders godoc
+// @Summary Retorna a lista de ordens
+// @Produce json
+// @Success 200 {object} order_api.OrderGetResponse
+// @Router /orders [get]
 func (h Handler) GetAllOrders(c *gin.Context) {
 	orders, err := h.Service.GetAllOrders()
 	if err != nil {
@@ -26,6 +31,12 @@ func (h Handler) GetAllOrders(c *gin.Context) {
 	c.JSON(http.StatusOK, ordersResponse)
 }
 
+// InsertOrders godoc
+// @Summary Insere Ordem
+// @Produce json
+// @Param user body order_api.OrderPostRequest true "User-Data"
+// @Success 201
+// @Router /orders [post]
 func (h Handler) InsertOrder(c *gin.Context) {
 	order := OrderPostRequest{}
 	c.BindJSON(&order)
