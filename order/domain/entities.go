@@ -19,6 +19,7 @@ type Order struct {
 	Valor      float32
 	Tipo       OrderType
 	Data	   time.Time
+	Usuario	   int64
 }
 
 func ConvertType(orderType string) (OrderType, error) {

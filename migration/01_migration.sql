@@ -25,7 +25,8 @@ CREATE TABLE IF NOT EXISTS MOVIMENTACAO (
     id_ativo    bigint          NOT NULL,
     quantidade  int             NOT NULL,
     valor       decimal(10,2)   NOT NULL,
-    data        date            NOT NULL
+    data        date            NOT NULL,
+    id_usuario  bigint          NOT NULL
 )
 
 CREATE TABLE TRIMESTRE (
