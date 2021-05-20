@@ -161,6 +161,31 @@ var doc = `{
                     }
                 }
             }
+        },
+        "/portfolio": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Retorna portfolio do usuario",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user id",
+                        "name": "usuario",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/portfolio_api.PortfolioGetResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -252,6 +277,37 @@ var doc = `{
                 },
                 "tipo": {
                     "type": "string"
+                },
+                "valor": {
+                    "type": "number"
+                }
+            }
+        },
+        "portfolio_api.Ativo": {
+            "type": "object",
+            "properties": {
+                "codigo": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "logo": {
+                    "type": "string"
+                }
+            }
+        },
+        "portfolio_api.PortfolioGetResponse": {
+            "type": "object",
+            "properties": {
+                "ativo": {
+                    "$ref": "#/definitions/portfolio_api.Ativo"
+                },
+                "id_usuario": {
+                    "type": "integer"
+                },
+                "quantidade": {
+                    "type": "integer"
                 },
                 "valor": {
                     "type": "number"
