@@ -1,7 +1,7 @@
 package asset_api
 
 import (
-	asset_service2 "github.com/crisaltmann/fundament-stock-api/pkg/asset/service"
+	"github.com/crisaltmann/fundament-stock-api/pkg/asset/domain"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -10,7 +10,20 @@ import (
 const Path = "/assets"
 
 type Handler struct {
-	Service *asset_service2.Service
+	Service Service
+}
+
+type Service interface {
+	GetAllAssets() ([]asset_domain.Asset, error)
+	ExistById(id int64) (bool, error)
+	GetById(id int64) (asset_domain.Asset, error)
+	InsertAsset(asset asset_domain.Asset) (bool, error)
+	UpdateAsset(asset asset_domain.Asset) (asset_domain.Asset, error)
+	UpdateAssetPrice(id int64, price float32) (bool, error)
+}
+
+func NewHandler(service Service) Handler {
+	return Handler{Service: service}
 }
 
 // GetAssets godoc

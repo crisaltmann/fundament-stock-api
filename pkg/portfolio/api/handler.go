@@ -2,7 +2,7 @@ package portfolio_api
 
 import (
 	"fmt"
-	portfolio_service2 "github.com/crisaltmann/fundament-stock-api/pkg/portfolio/service"
+	"github.com/crisaltmann/fundament-stock-api/pkg/portfolio/domain"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
@@ -11,7 +11,15 @@ import (
 const Path = "/portfolio"
 
 type Handler struct {
-	Service *portfolio_service2.Service
+	Service Service
+}
+
+type Service interface {
+	GetPortfolio(usuario string) ([]portfolio_domain.Portfolio, error)
+}
+
+func NewHandler(service Service) Handler {
+	return Handler{Service: service}
 }
 
 // GetPortfolio godoc

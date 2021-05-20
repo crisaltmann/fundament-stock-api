@@ -1,7 +1,7 @@
 package order_api
 
 import (
-	order_service2 "github.com/crisaltmann/fundament-stock-api/pkg/order/service"
+	"github.com/crisaltmann/fundament-stock-api/pkg/order/domain"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -9,7 +9,16 @@ import (
 const Path = "/orders"
 
 type Handler struct {
-	Service *order_service2.Service
+	Service Service
+}
+
+type Service interface {
+	GetAllOrders() ([]order_domain.Order, error)
+	InsertOrder(order order_domain.Order) (bool, error)
+}
+
+func NewHandler(service Service) Handler {
+	return Handler{Service: service}
 }
 
 // GetOrders godoc

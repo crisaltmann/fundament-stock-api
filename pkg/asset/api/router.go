@@ -16,7 +16,7 @@ import "github.com/crisaltmann/fundament-stock-api/server"
 
 // @host another.swagger.io
 // @BasePath /v2
-func MapRouter(server *server.Server, handler *Handler) {
+func MapRouter(server *server.Server, handler Handler) {
 	server.Server.GET(Path, handler.GetAllAssets)
 	server.Server.POST(Path, handler.InsertAsset)
 	server.Server.PUT(Path+"/:id", handler.UpdateAsset)

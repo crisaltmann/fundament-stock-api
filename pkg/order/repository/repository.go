@@ -3,14 +3,18 @@ package order_repository
 import (
 	"database/sql"
 	"fmt"
-	order_domain2 "github.com/crisaltmann/fundament-stock-api/pkg/order/domain"
+	"github.com/crisaltmann/fundament-stock-api/pkg/order/domain"
 )
 
 type Repository struct {
 	DB *sql.DB
 }
 
-func (r Repository) InsertOrder(order order_domain2.Order) (bool, error) {
+func NewRepository(db *sql.DB) Repository {
+	return Repository{DB: db}
+}
+
+func (r Repository) InsertOrder(order order_domain.Order) (bool, error) {
 
 	prepare, err := r.DB.Prepare("INSERT INTO MOVIMENTACAO (ID_ATIVO, QUANTIDADE, VALOR, DATA, ID_USUARIO) VALUES ($1, $2, $3, $4, $5)")
 
@@ -27,7 +31,7 @@ func (r Repository) InsertOrder(order order_domain2.Order) (bool, error) {
 	return true, nil
 }
 
-func (r Repository) GetAllOrders() ([]order_domain2.Order, error) {
+func (r Repository) GetAllOrders() ([]order_domain.Order, error) {
 	rows, err := r.DB.Query("select id, id_ativo, quantidade, valor, data, id_usuario FROM MOVIMENTACAO")
 	defer rows.Close()
 
@@ -36,9 +40,9 @@ func (r Repository) GetAllOrders() ([]order_domain2.Order, error) {
 		return nil, err
 	}
 	defer rows.Close()
-	orders := []order_domain2.Order{}
+	orders := []order_domain.Order{}
 	for rows.Next() {
-		order := order_domain2.Order{}
+		order := order_domain.Order{}
 		err := rows.Scan(&order.Id, &order.Ativo, &order.Quantidade, &order.Valor, &order.Data, &order.Usuario)
 		if err != nil {
 			err = fmt.Errorf("Erro ao executar busca de movimentacoes", err)

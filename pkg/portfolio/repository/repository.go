@@ -3,14 +3,18 @@ package portfolio_repository
 import (
 	"database/sql"
 	"fmt"
-	portfolio_domain2 "github.com/crisaltmann/fundament-stock-api/pkg/portfolio/domain"
+	"github.com/crisaltmann/fundament-stock-api/pkg/portfolio/domain"
 )
 
 type Repository struct {
 	DB *sql.DB
 }
 
-func (r Repository) GetPortfolio(usuario string) ([]portfolio_domain2.Portfolio, error) {
+func NewRepository(db *sql.DB) Repository {
+	return Repository{DB: db}
+}
+
+func (r Repository) GetPortfolio(usuario string) ([]portfolio_domain.Portfolio, error) {
 	rows, err := r.DB.Query("select a.id, a.codigo, a.logo, a.cotacao, sum(m.quantidade), m.id_usuario from movimentacao m " +
 		"inner join ativo a on m.id_ativo = a.id  " +
 		"where m.id_usuario = $1" +
@@ -22,9 +26,9 @@ func (r Repository) GetPortfolio(usuario string) ([]portfolio_domain2.Portfolio,
 		return nil, err
 	}
 	defer rows.Close()
-	portfolio := []portfolio_domain2.Portfolio{}
+	portfolio := []portfolio_domain.Portfolio{}
 	for rows.Next() {
-		item := portfolio_domain2.Portfolio{}
+		item := portfolio_domain.Portfolio{}
 		err := rows.Scan(&item.Ativo.Id, &item.Ativo.Codigo, &item.Ativo.Logo, &item.Ativo.Cotacao, &item.Quantidade, &item.Usuario)
 		if err != nil {
 			err = fmt.Errorf("Erro ao executar busca do portfolio", err)

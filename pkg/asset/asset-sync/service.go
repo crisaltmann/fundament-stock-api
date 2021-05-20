@@ -2,15 +2,15 @@ package asset_sync
 
 import (
 	"fmt"
-	"github.com/crisaltmann/fundament-stock-api/asset-sync/alphavantage"
-	asset_service "github.com/crisaltmann/fundament-stock-api/pkg/asset/service"
+	"github.com/crisaltmann/fundament-stock-api/pkg/asset/asset-sync/alphavantage"
+	"github.com/crisaltmann/fundament-stock-api/pkg/asset/service"
 	"github.com/rs/zerolog/log"
 	"strconv"
 )
 
 type Service struct {
-	AssetService *asset_service.Service
-	Client 		 *alphavantage.Client
+	AssetService asset_service.Service
+	Client 		 alphavantage.Client
 }
 
 func (s Service) updateAssetPrice() {

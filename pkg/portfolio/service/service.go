@@ -2,16 +2,23 @@ package portfolio_service
 
 import (
 	"fmt"
-	portfolio_domain2 "github.com/crisaltmann/fundament-stock-api/pkg/portfolio/domain"
-	portfolio_repository2 "github.com/crisaltmann/fundament-stock-api/pkg/portfolio/repository"
+	"github.com/crisaltmann/fundament-stock-api/pkg/portfolio/domain"
 	"strconv"
 )
 
 type Service struct {
-	Repository *portfolio_repository2.Repository
+	Repository Repository
 }
 
-func (s Service) GetPortfolio(usuario string) ([]portfolio_domain2.Portfolio, error) {
+type Repository interface {
+	GetPortfolio(usuario string) ([]portfolio_domain.Portfolio, error)
+}
+
+func NewService(repository Repository) Service {
+	return Service{Repository: repository}
+}
+
+func (s Service) GetPortfolio(usuario string) ([]portfolio_domain.Portfolio, error) {
 	portfolio, err := s.Repository.GetPortfolio(usuario)
 	if err != nil {
 		return portfolio, err
