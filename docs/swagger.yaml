@@ -61,25 +61,20 @@ definitions:
       valor:
         type: number
     type: object
-  portfolio_api.Ativo:
+  quarter_api.TrimestreGetResponse:
     properties:
+      ano:
+        type: integer
       codigo:
+        type: string
+      data_fim:
+        type: string
+      data_inicio:
         type: string
       id:
         type: integer
-      logo:
-        type: string
-    type: object
-  portfolio_api.PortfolioGetResponse:
-    properties:
-      ativo:
-        $ref: '#/definitions/portfolio_api.Ativo'
-      id_usuario:
+      trimestre:
         type: integer
-      quantidade:
-        type: integer
-      valor:
-        type: number
     type: object
 info:
   contact:
@@ -176,20 +171,32 @@ paths:
         "201":
           description: ""
       summary: Insere Ordem
-  /portfolio:
+  /quarters:
     get:
-      parameters:
-      - description: user id
-        in: query
-        name: usuario
-        required: true
-        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/portfolio_api.PortfolioGetResponse'
-      summary: Retorna portfolio do usuario
+            items:
+              $ref: '#/definitions/quarter_api.TrimestreGetResponse'
+            type: array
+      summary: Retorna trimestres
+  /quarters/{id}:
+    get:
+      parameters:
+      - description: quarter id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/quarter_api.TrimestreGetResponse'
+      summary: Retorna o trimestre
 swagger: "2.0"

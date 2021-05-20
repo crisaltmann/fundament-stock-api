@@ -1,25 +1,24 @@
-package portfolio_api
+package quarter_api
 
 import (
-	portfolio_domain2 "github.com/crisaltmann/fundament-stock-api/pkg/portfolio/domain"
+	"github.com/crisaltmann/fundament-stock-api/pkg/quarter/domain"
 )
 
-func convertDomainsToDtos(itens []portfolio_domain2.Portfolio) ([]PortfolioGetResponse, error) {
-	portfolioDtos := make([]PortfolioGetResponse, 0)
-	for _, item := range itens {
-		dto, err := convertDomainToDto(item)
-		if err != nil {
-			return portfolioDtos, err
-		}
-		portfolioDtos = append(portfolioDtos, dto)
+func convertToDtos(quarters []quarter_domain.Trimestre) []TrimestreGetResponse {
+	quartersDtos := make([]TrimestreGetResponse, 0)
+	for _, quarter := range quarters {
+		quartersDtos = append(quartersDtos, convertDomainToDto(quarter))
 	}
-	return portfolioDtos, nil
+	return quartersDtos
 }
 
-func convertDomainToDto(portfolio portfolio_domain2.Portfolio) (PortfolioGetResponse, error) {
-	return PortfolioGetResponse{Ativo: Ativo{
-		Id:     portfolio.Ativo.Id,
-		Codigo: portfolio.Ativo.Codigo,
-		Logo:   portfolio.Ativo.Logo,
-	}, Quantidade: portfolio.Quantidade, Usuario: portfolio.Usuario}, nil
+func convertDomainToDto(quarter quarter_domain.Trimestre) TrimestreGetResponse {
+	return TrimestreGetResponse{
+		Id:         quarter.Id,
+		Codigo:     quarter.Codigo,
+		Ano:        quarter.Ano,
+		Trimestre:  quarter.Trimestre,
+		DataInicio: quarter.DataInicio,
+		DataFim:    quarter.DataFim,
+	}
 }

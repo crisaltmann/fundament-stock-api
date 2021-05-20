@@ -162,18 +162,37 @@ var doc = `{
                 }
             }
         },
-        "/portfolio": {
+        "/quarters": {
             "get": {
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Retorna portfolio do usuario",
+                "summary": "Retorna trimestres",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/quarter_api.TrimestreGetResponse"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/quarters/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Retorna o trimestre",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "user id",
-                        "name": "usuario",
-                        "in": "query",
+                        "type": "integer",
+                        "description": "quarter id",
+                        "name": "id",
+                        "in": "path",
                         "required": true
                     }
                 ],
@@ -181,7 +200,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/portfolio_api.PortfolioGetResponse"
+                            "$ref": "#/definitions/quarter_api.TrimestreGetResponse"
                         }
                     }
                 }
@@ -283,34 +302,26 @@ var doc = `{
                 }
             }
         },
-        "portfolio_api.Ativo": {
+        "quarter_api.TrimestreGetResponse": {
             "type": "object",
             "properties": {
+                "ano": {
+                    "type": "integer"
+                },
                 "codigo": {
+                    "type": "string"
+                },
+                "data_fim": {
+                    "type": "string"
+                },
+                "data_inicio": {
                     "type": "string"
                 },
                 "id": {
                     "type": "integer"
                 },
-                "logo": {
-                    "type": "string"
-                }
-            }
-        },
-        "portfolio_api.PortfolioGetResponse": {
-            "type": "object",
-            "properties": {
-                "ativo": {
-                    "$ref": "#/definitions/portfolio_api.Ativo"
-                },
-                "id_usuario": {
+                "trimestre": {
                     "type": "integer"
-                },
-                "quantidade": {
-                    "type": "integer"
-                },
-                "valor": {
-                    "type": "number"
                 }
             }
         }

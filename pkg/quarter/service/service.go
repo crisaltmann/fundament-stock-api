@@ -1,18 +1,26 @@
-package portfolio_service
+package quarter_service
 
 import (
-	portfolio_domain2 "github.com/crisaltmann/fundament-stock-api/pkg/portfolio/domain"
-	portfolio_repository2 "github.com/crisaltmann/fundament-stock-api/pkg/portfolio/repository"
+	"github.com/crisaltmann/fundament-stock-api/pkg/quarter/domain"
+	"github.com/crisaltmann/fundament-stock-api/pkg/quarter/repository"
 )
 
 type Service struct {
-	Repository *portfolio_repository2.Repository
+	Repository *quarter_repository.Repository
 }
 
-func (s Service) GetPortfolio(usuario string) ([]portfolio_domain2.Portfolio, error) {
-	portfolio, err := s.Repository.GetPortfolio(usuario)
+func (s Service) GetQuarter(id int64) (quarter_domain.Trimestre, error) {
+	trimestre, err := s.Repository.GetQuarter(id)
 	if err != nil {
-		return portfolio, err
+		return quarter_domain.Trimestre{}, err
 	}
-	return portfolio, nil
+	return trimestre, nil
+}
+
+func (s Service) GetQuarters() ([]quarter_domain.Trimestre, error) {
+	trimestres, err := s.Repository.GetQuarters()
+	if err != nil {
+		return nil, err
+	}
+	return trimestres, nil
 }

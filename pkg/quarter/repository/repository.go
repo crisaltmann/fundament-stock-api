@@ -1,36 +1,53 @@
-package portfolio_repository
+package quarter_repository
 
 import (
 	"database/sql"
 	"fmt"
-	portfolio_domain2 "github.com/crisaltmann/fundament-stock-api/pkg/portfolio/domain"
+	"github.com/crisaltmann/fundament-stock-api/pkg/quarter/domain"
 )
 
 type Repository struct {
 	DB *sql.DB
 }
 
-func (r Repository) GetPortfolio(usuario string) ([]portfolio_domain2.Portfolio, error) {
-	rows, err := r.DB.Query("select a.id, a.codigo, a.logo, sum(m.quantidade), m.id_usuario from movimentacao m " +
-		"inner join ativo a on m.id_ativo = a.id  " +
-		"where m.id_usuario = $1" +
-		"group by a.id, a.codigo, a.logo, m.id_usuario ", usuario)
+func (r Repository) GetQuarter(id int64) (quarter_domain.Trimestre, error) {
+	rows, err := r.DB.Query("SELECT id, codigo, ano, trimestre, data_inicio, data_fim FROM trimestre WHERE id = $1", id)
 	defer rows.Close()
 
 	if err != nil {
-		err = fmt.Errorf("Erro ao executar busca do portfolio", err)
+		err = fmt.Errorf("Erro ao executar busca de trimestre", err)
+		return quarter_domain.Trimestre{}, err
+	}
+	defer rows.Close()
+	trimestre := quarter_domain.Trimestre{}
+	for rows.Next() {
+		err := rows.Scan(&trimestre.Id, &trimestre.Codigo, &trimestre.Ano, &trimestre.Trimestre, &trimestre.DataInicio, &trimestre.DataFim)
+		if err != nil {
+			err = fmt.Errorf("Erro ao executar busca do trimestre", err)
+			return quarter_domain.Trimestre{}, err
+		}
+	}
+	return trimestre, nil
+}
+
+func (r Repository) GetQuarters() ([]quarter_domain.Trimestre, error) {
+	rows, err := r.DB.Query("SELECT id, codigo, ano, trimestre, data_inicio, data_fim FROM trimestre")
+	defer rows.Close()
+
+	if err != nil {
+		err = fmt.Errorf("Erro ao executar busca de trimestres", err)
 		return nil, err
 	}
 	defer rows.Close()
-	portfolio := []portfolio_domain2.Portfolio{}
+	trimestres := []quarter_domain.Trimestre{}
 	for rows.Next() {
-		item := portfolio_domain2.Portfolio{}
-		err := rows.Scan(&item.Ativo.Id, &item.Ativo.Codigo, &item.Ativo.Logo, &item.Quantidade, &item.Usuario)
+		trimestre := quarter_domain.Trimestre{}
+		err := rows.Scan(&trimestre.Id, &trimestre.Codigo, &trimestre.Ano, &trimestre.Trimestre, &trimestre.DataInicio, &trimestre.DataFim)
 		if err != nil {
-			err = fmt.Errorf("Erro ao executar busca do portfolio", err)
+			err = fmt.Errorf("Erro ao executar busca do trimestres", err)
 			return nil, err
 		}
-		portfolio = append(portfolio, item)
+		trimestres = append(trimestres, trimestre)
 	}
-	return portfolio, nil
+	return trimestres, nil
 }

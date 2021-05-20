@@ -1,41 +1,59 @@
-package portfolio_api
+package quarter_api
 
 import (
-	"fmt"
-	portfolio_service2 "github.com/crisaltmann/fundament-stock-api/pkg/portfolio/service"
+	"github.com/crisaltmann/fundament-stock-api/pkg/quarter/service"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"strings"
+	"strconv"
 )
 
-const Path = "/portfolio"
+const Path = "/quarters"
 
 type Handler struct {
-	Service *portfolio_service2.Service
+	Service *quarter_service.Service
 }
 
-// GetPortfolio godoc
-// @Summary Retorna portfolio do usuario
+// GetQuarters godoc
+// @Summary Retorna trimestres
 // @Produce json
-// @Success 200 {object} portfolio_api.PortfolioGetResponse
-// @Param usuario query string true "user id"
-// @Router /portfolio [get]
-func (h Handler) GetPortfolio(c *gin.Context) {
-	usuario := c.Query("usuario")
-	if strings.EqualFold(usuario, "") {
-		err := fmt.Errorf("id do usuário é informação obrigatória.")
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
-	}
-	portfolio, err := h.Service.GetPortfolio(usuario)
+// @Success 200 {object} []quarter_api.TrimestreGetResponse
+// @Router /quarters [get]
+func (h Handler) GetQuarters(c *gin.Context) {
+	quarters, err := h.Service.GetQuarters()
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-	portfolioResponse, err := convertDomainsToDtos(portfolio)
+	portfolioResponse := convertToDtos(quarters)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 	c.JSON(http.StatusOK, portfolioResponse)
+}
+
+// GetQuarter godoc
+// @Summary Retorna o trimestre
+// @Produce json
+// @Success 200 {object} quarter_api.TrimestreGetResponse
+// @Param id path int true "quarter id"
+// @Router /quarters/{id} [get]
+func (h Handler) GetQuarter(c *gin.Context) {
+	idParam := c.Param("id")
+	id, err := strconv.ParseInt(idParam, 10, 64)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+	quarter, err := h.Service.GetQuarter(id)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+	quarterResponse := convertDomainToDto(quarter)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+	c.JSON(http.StatusOK, quarterResponse)
 }

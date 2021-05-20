@@ -5,7 +5,7 @@ import (
 	"github.com/crisaltmann/fundament-stock-api/infrastructure"
 	asset2 "github.com/crisaltmann/fundament-stock-api/pkg/asset"
 	order2 "github.com/crisaltmann/fundament-stock-api/pkg/order"
-	portfolio2 "github.com/crisaltmann/fundament-stock-api/pkg/portfolio"
+	"github.com/crisaltmann/fundament-stock-api/pkg/quarter"
 	"github.com/crisaltmann/fundament-stock-api/server"
 	"github.com/streadway/amqp"
 	"go.uber.org/fx"
@@ -36,7 +36,7 @@ func main() {
 		server.Module,
 		asset2.Module,
 		order2.Module,
-		portfolio2.Module,
+		quarter.Module,
 		fx.Invoke(
 			server.InitServer,
 		),

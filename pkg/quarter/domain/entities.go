@@ -1,14 +1,12 @@
-package portfolio_domain
+package quarter_domain
 
-type Portfolio struct {
-	Ativo      Ativo
-	Quantidade int
-	Valor      float32
-	Usuario    int64
-}
+import "time"
 
-type Ativo struct {
+type Trimestre struct {
 	Id			int64
 	Codigo		string
-	Logo		string
+	Ano			int
+	Trimestre   int
+	DataInicio	time.Time
+	DataFim		time.Time
 }

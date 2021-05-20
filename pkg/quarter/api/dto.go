@@ -1,14 +1,12 @@
-package portfolio_api
+package quarter_api
 
-type PortfolioGetResponse struct {
-	Ativo      Ativo   `json:"ativo"`
-	Quantidade int     `json:"quantidade"`
-	Valor      float32 `json:"valor"`
-	Usuario    int64   `json:"id_usuario"`
-}
+import "time"
 
-type Ativo struct {
-	Id			int64		`json:"id"`
-	Codigo		string		`json:"codigo"`
-	Logo		string		`json:"logo"`
+type TrimestreGetResponse struct {
+	Id			int64			`json:"id"`
+	Codigo		string			`json:"codigo"`
+	Ano			int				`json:"ano"`
+	Trimestre   int				`json:"trimestre"`
+	DataInicio	time.Time		`json:"data_inicio"`
+	DataFim		time.Time		`json:"data_fim"`
 }
