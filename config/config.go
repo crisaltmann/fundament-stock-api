@@ -3,6 +3,7 @@ package config
 type Config struct {
 	ApplicationConfig `yaml:"application"`
 	DatabaseConfig    `yaml:"database"`
+	Job				  `yaml:"job"`
 }
 
 type ApplicationConfig struct {
@@ -16,5 +17,13 @@ type DatabaseConfig struct {
 	Password string `yaml:"password"`
 	Hostname string `yaml:"hostname"`
 	Port     int    `yaml:"port"`
-	Url      string `yaml:url`
+	Url      string `yaml:"url"`
+}
+
+type Job struct {
+	AssetSync `yaml:"asset-sync"`
+}
+
+type AssetSync struct {
+	Cron	string `yaml:"cron"`
 }

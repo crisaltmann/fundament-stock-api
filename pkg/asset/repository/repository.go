@@ -11,7 +11,7 @@ type Repository struct {
 }
 
 func (r Repository) UpdateAsset(asset asset_domain2.Asset) (asset_domain2.Asset, error) {
-	prepare, err := r.DB.Prepare("UPDATE ATIVO SET CODIGO = $2, NOME = $3, LOGO = $4 WHERE ID = $1")
+	prepare, err := r.DB.Prepare("UPDATE ATIVO SET CODIGO = $2, NOME = $3, LOGO = $4, COTACAO = $5 WHERE ID = $1")
 
 	if err != nil {
 		err = fmt.Errorf("Erro ao executar update de ativos", err)
@@ -19,7 +19,7 @@ func (r Repository) UpdateAsset(asset asset_domain2.Asset) (asset_domain2.Asset,
 	}
 	defer prepare.Close()
 
-	_, err = prepare.Exec(asset.Id, asset.Codigo, asset.Nome, asset.Logo)
+	_, err = prepare.Exec(asset.Id, asset.Codigo, asset.Nome, asset.Logo, asset.Cotacao)
 	if err != nil {
 		err = fmt.Errorf("Erro ao executar update de ativos", err)
 		return asset_domain2.Asset{}, err
@@ -57,7 +57,7 @@ func (r Repository) GetAllAsset() ([]asset_domain2.Asset, error) {
 	for rows.Next() {
 		asset := asset_domain2.Asset{}
 		err := rows.Scan(&asset.Id,
-			&asset.Nome, &asset.Codigo, &asset.Logo)
+			&asset.Codigo, &asset.Nome, &asset.Logo)
 		if err != nil {
 			err = fmt.Errorf("Erro ao executar busca de ativos", err)
 			return nil, err
@@ -106,4 +106,21 @@ func (r Repository) ExistById(id int64) (bool, error) {
 		}
 	}
 	return count > 0, nil
+}
+
+func (r Repository) UpdateAssetPrice(id int64, price float32) (bool, error) {
+	prepare, err := r.DB.Prepare("UPDATE ATIVO SET cotacao = $2 WHERE ID = $1")
+
+	if err != nil {
+		err = fmt.Errorf("Erro ao executar update de cotacao de ativo", err)
+		return false, err
+	}
+	defer prepare.Close()
+
+	_, err = prepare.Exec(id, price)
+	if err != nil {
+		err = fmt.Errorf("Erro ao executar update de cotacao de ativo", err)
+		return false, err
+	}
+	return true, nil
 }

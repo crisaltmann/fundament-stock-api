@@ -1,6 +1,7 @@
 package main
 
 import (
+	asset_sync "github.com/crisaltmann/fundament-stock-api/asset-sync"
 	"github.com/crisaltmann/fundament-stock-api/config"
 	"github.com/crisaltmann/fundament-stock-api/infrastructure"
 	asset2 "github.com/crisaltmann/fundament-stock-api/pkg/asset"
@@ -37,6 +38,7 @@ func main() {
 		asset2.Module,
 		order2.Module,
 		quarter.Module,
+		asset_sync.Module,
 		fx.Invoke(
 			server.InitServer,
 		),

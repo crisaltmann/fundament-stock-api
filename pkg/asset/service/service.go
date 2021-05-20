@@ -28,3 +28,7 @@ func (s Service) InsertAsset(asset asset_domain2.Asset) (bool, error) {
 func (s Service) UpdateAsset(asset asset_domain2.Asset) (asset_domain2.Asset, error) {
 	return s.Repository.UpdateAsset(asset)
 }
+
+func (s Service) UpdateAssetPrice(id int64, price float32) (bool, error) {
+	return s.Repository.UpdateAssetPrice(id, price)
+}
