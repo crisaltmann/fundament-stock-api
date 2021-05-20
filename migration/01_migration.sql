@@ -29,31 +29,19 @@ CREATE TABLE IF NOT EXISTS MOVIMENTACAO (
     id_usuario  bigint          NOT NULL
 )
 
-CREATE TABLE TRIMESTRE (
-    id          serial          PRIMARY KEY,
-    codigo      varchar(20)     UNIQUE NOT NULL,
-    ano         int             NOT NULL,
-    quarter     int             NOT NULL
+CREATE TABLE IF NOT EXISTS TRIMESTRE (
+    id              serial          PRIMARY KEY,
+    codigo          varchar(20)     UNIQUE NOT NULL,
+    ano             int             NOT NULL,
+    trimestre       int             NOT NULL,
+    data_inicio     date            NOT NULL,
+    data_fim        date            NOT NULL
 );
 
-INSERT INTO TRIMESTRE (codigo, ano, quarter) VALUES
-    ('2020_01', 2020, 1), ('2020_02', 2020, 2), ('2020_03', 2020, 3), ('2020_04', 2020, 4), ('2021_01', 2021, 1), ('2021_02', 2021, 2);
-
--- CREATE TABLE IF NOT EXISTS USERS (
---     id          bigint          PRIMARY KEY,
---     username    varchar(10)     NOT NULL,
---     password    varchar(60)     NOT NULL
--- )
-
--- CREATE TABLE IF NOT EXISTS PORTFOLIO (
---     id          bigint          PRIMARY KEY,
---     user_id     bigint          NOT NULL,
---     nome        varchar(100) NOT NULL,
---     CONSTRAINT PORTFOLIO_FK FOREIGN KEY (id) REFERENCES youasholding.dbo.USERS(id)
--- )
---
--- INSERT INTO USERS (username, password) VALUES ('teste', 'teste')
---
--- INSERT INTO PORTFOLIO (user_id, nome) VALUES ((SELECT id FROM USERS WHERE username = 'teste') ,'PADRÃO');
---
-
+INSERT INTO TRIMESTRE (codigo, ano, trimestre, data_inicio, data_fim) VALUES
+    ('2020_01', 2020, 1, '2020-01-01', '2020-03-31'),
+    ('2020_02', 2020, 2, '2020-04-01', '2020-06-30'),
+    ('2020_03', 2020, 3, '2020-07-01', '2020-09-30'),
+    ('2020_04', 2020, 4, '2020-10-01', '2020-12-31'),
+    ('2021_01', 2021, 1, '2021-01-01', '2020-03-31'),
+    ('2021_02', 2021, 2, '2021-04-01', '2020-06-30');

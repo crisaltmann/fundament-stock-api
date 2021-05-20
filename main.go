@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/crisaltmann/fundament-stock-api/asset"
 	"github.com/crisaltmann/fundament-stock-api/config"
 	"github.com/crisaltmann/fundament-stock-api/infrastructure"
-	"github.com/crisaltmann/fundament-stock-api/order"
-	"github.com/crisaltmann/fundament-stock-api/portfolio"
+	asset2 "github.com/crisaltmann/fundament-stock-api/pkg/asset"
+	order2 "github.com/crisaltmann/fundament-stock-api/pkg/order"
+	"github.com/crisaltmann/fundament-stock-api/pkg/quarter"
 	"github.com/crisaltmann/fundament-stock-api/server"
 	"github.com/streadway/amqp"
 	"go.uber.org/fx"
@@ -34,9 +34,9 @@ func main() {
 		infrastructure.Module,
 		config.Module,
 		server.Module,
-		asset.Module,
-		order.Module,
-		portfolio.Module,
+		asset2.Module,
+		order2.Module,
+		quarter.Module,
 		fx.Invoke(
 			server.InitServer,
 		),
