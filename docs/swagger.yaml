@@ -61,6 +61,26 @@ definitions:
       valor:
         type: number
     type: object
+  portfolio_api.Ativo:
+    properties:
+      codigo:
+        type: string
+      id:
+        type: integer
+      logo:
+        type: string
+    type: object
+  portfolio_api.PortfolioGetResponse:
+    properties:
+      ativo:
+        $ref: '#/definitions/portfolio_api.Ativo'
+      id_usuario:
+        type: integer
+      quantidade:
+        type: integer
+      valor:
+        type: number
+    type: object
 info:
   contact:
     email: crisaltmann@gmail.com
@@ -156,4 +176,20 @@ paths:
         "201":
           description: ""
       summary: Insere Ordem
+  /portfolio:
+    get:
+      parameters:
+      - description: user id
+        in: query
+        name: usuario
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/portfolio_api.PortfolioGetResponse'
+      summary: Retorna portfolio do usuario
 swagger: "2.0"

@@ -5,13 +5,11 @@ import (
 	"github.com/crisaltmann/fundament-stock-api/config"
 	"github.com/crisaltmann/fundament-stock-api/infrastructure"
 	"github.com/crisaltmann/fundament-stock-api/order"
+	"github.com/crisaltmann/fundament-stock-api/portfolio"
 	"github.com/crisaltmann/fundament-stock-api/server"
 	"github.com/streadway/amqp"
 	"go.uber.org/fx"
 	"log"
-	//swaggerFiles "github.com/swaggo/files"
-	//"github.com/swaggo/gin-swagger"
-	//_ "github.com/MartinHeinz/go-project-blueprint/cmd/blueprint/docs"
 )
 
 // @title Fundament Stock Api Swagger API
@@ -38,6 +36,7 @@ func main() {
 		server.Module,
 		asset.Module,
 		order.Module,
+		portfolio.Module,
 		fx.Invoke(
 			server.InitServer,
 		),
