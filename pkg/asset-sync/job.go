@@ -7,10 +7,16 @@ import (
 )
 
 type AssetSync struct {
-	Service Service
+	Service JobService
 }
 
-func configureJob(config *config.Config, sync AssetSync) {
+func NewAssetSync(service JobService) AssetSync {
+	return AssetSync{
+		Service: service,
+	}
+}
+
+func ConfigureJob(config *config.Config, sync AssetSync) {
 	c := cron.New()
 	//c.AddFunc(config.Job.AssetSync.Cron, sync.executeJob)
 	c.AddFunc("0 0 2 * * *", sync.executeJob)

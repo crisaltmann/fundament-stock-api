@@ -2,9 +2,9 @@ package main
 
 import (
 	"github.com/crisaltmann/fundament-stock-api/cmd/api"
+	"github.com/crisaltmann/fundament-stock-api/cmd/job"
 	"github.com/crisaltmann/fundament-stock-api/config"
 	"github.com/crisaltmann/fundament-stock-api/infrastructure"
-	asset_sync2 "github.com/crisaltmann/fundament-stock-api/pkg/asset/asset-sync"
 	"github.com/crisaltmann/fundament-stock-api/server"
 	"github.com/streadway/amqp"
 	"go.uber.org/fx"
@@ -37,7 +37,7 @@ func main() {
 		api.Order,
 		api.Portfolio,
 		api.Quarter,
-		asset_sync2.Module,
+		job.AssetSync,
 		fx.Invoke(
 			server.InitServer,
 		),
