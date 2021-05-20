@@ -15,7 +15,7 @@ func convertToDtos(assets []asset_domain.Asset) []AssetResponse {
 }
 
 func convertDomainToDto(asset asset_domain.Asset) AssetResponse {
-	return AssetResponse{asset.Id, asset.Codigo, asset.Nome, asset.Logo}
+	return AssetResponse{asset.Id, asset.Codigo, asset.Nome, asset.Logo, asset.Cotacao}
 }
 
 func convertPostRequestToDomain(request AssetPostRequest) asset_domain.Asset {
@@ -27,5 +27,5 @@ func convertPutRequestToDomain(request AssetPutRequest, id string) (asset_domain
 	if err != nil {
 		return asset_domain.Asset{}, fmt.Errorf("Id informado é inválido.")
 	}
-	return asset_domain.Asset{Id: idInt, Codigo: request.Codigo, Nome: request.Nome, Logo: request.Logo}, nil
+	return asset_domain.Asset{Id: idInt, Codigo: request.Codigo, Nome: request.Nome, Logo: request.Logo, Cotacao: request.Cotacao}, nil
 }

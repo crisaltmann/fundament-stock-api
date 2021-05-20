@@ -2,7 +2,8 @@ CREATE TABLE IF NOT EXISTS ATIVO (
     id 			serial 			PRIMARY KEY,
     codigo 		varchar(10) 	UNIQUE NOT NULL,
     nome 		varchar(60) 	NOT NULL,
-    logo        text            NULL
+    logo        text            NULL,
+    cotacao     decimal(10,2)   NULL
 );
 
 INSERT INTO ATIVO
