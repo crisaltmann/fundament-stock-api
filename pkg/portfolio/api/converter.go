@@ -21,5 +21,6 @@ func convertDomainToDto(portfolio portfolio_domain2.Portfolio) (PortfolioGetResp
 		Id:     portfolio.Ativo.Id,
 		Codigo: portfolio.Ativo.Codigo,
 		Logo:   portfolio.Ativo.Logo,
-	}, Quantidade: portfolio.Quantidade, Usuario: portfolio.Usuario}, nil
+		Cotacao: portfolio.Ativo.Cotacao,
+	}, Quantidade: portfolio.Quantidade, Usuario: portfolio.Usuario, Valor: portfolio.Valor}, nil
 }

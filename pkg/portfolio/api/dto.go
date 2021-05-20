@@ -11,4 +11,5 @@ type Ativo struct {
 	Id			int64		`json:"id"`
 	Codigo		string		`json:"codigo"`
 	Logo		string		`json:"logo"`
+	Cotacao     float32     `json:"cotacao"`
 }
