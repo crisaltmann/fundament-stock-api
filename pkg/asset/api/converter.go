@@ -2,11 +2,11 @@ package asset_api
 
 import (
 	"fmt"
-	asset_domain2 "github.com/crisaltmann/fundament-stock-api/pkg/asset/domain"
+	"github.com/crisaltmann/fundament-stock-api/pkg/asset/domain"
 	"strconv"
 )
 
-func convertToDtos(assets []asset_domain2.Asset) []AssetResponse {
+func convertToDtos(assets []asset_domain.Asset) []AssetResponse {
 	assetDtos := make([]AssetResponse, 0)
 	for _, asset := range assets {
 		assetDtos = append(assetDtos, convertDomainToDto(asset))
@@ -14,18 +14,18 @@ func convertToDtos(assets []asset_domain2.Asset) []AssetResponse {
 	return assetDtos
 }
 
-func convertDomainToDto(asset asset_domain2.Asset) AssetResponse {
+func convertDomainToDto(asset asset_domain.Asset) AssetResponse {
 	return AssetResponse{asset.Id, asset.Codigo, asset.Nome, asset.Logo}
 }
 
-func convertPostRequestToDomain(request AssetPostRequest) asset_domain2.Asset {
-	return asset_domain2.Asset{Codigo: request.Codigo, Nome: request.Nome, Logo: request.Logo}
+func convertPostRequestToDomain(request AssetPostRequest) asset_domain.Asset {
+	return asset_domain.Asset{Codigo: request.Codigo, Nome: request.Nome, Logo: request.Logo}
 }
 
-func convertPutRequestToDomain(request AssetPutRequest, id string) (asset_domain2.Asset, error) {
+func convertPutRequestToDomain(request AssetPutRequest, id string) (asset_domain.Asset, error) {
 	idInt, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
-		return asset_domain2.Asset{}, fmt.Errorf("Id informado é inválido.")
+		return asset_domain.Asset{}, fmt.Errorf("Id informado é inválido.")
 	}
-	return asset_domain2.Asset{Id: idInt, Codigo: request.Codigo, Nome: request.Nome, Logo: request.Logo}, nil
+	return asset_domain.Asset{Id: idInt, Codigo: request.Codigo, Nome: request.Nome, Logo: request.Logo}, nil
 }
