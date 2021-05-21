@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"github.com/crisaltmann/fundament-stock-api/pkg/asset/domain"
 	"github.com/rs/zerolog/log"
+	"time"
 )
 
 type JobService struct {
 	AssetFinder  AssetFinder
 	AssetUpdater AssetUpdater
-	StockFinder  StockPriceFinder
+	StockPriceFinder  StockPriceFinder
 }
 
 type AssetFinder interface {
@@ -17,18 +18,18 @@ type AssetFinder interface {
 }
 
 type AssetUpdater interface {
-	UpdateAssetPrice(id int64, price float32) (bool, error)
+	UpdateAssetPrice(id int64, price float32, data time.Time) (bool, error)
 }
 
 type StockPriceFinder interface {
-	GetStockPrice(code string) (float32, error)
+	GetStockPrice(code string) (float32, time.Time, error)
 }
 
 func NewService(finder AssetFinder, assetUpdater AssetUpdater, stockFinder StockPriceFinder) JobService {
 	return JobService{
 		AssetFinder:  finder,
 		AssetUpdater: assetUpdater,
-		StockFinder:  stockFinder,
+		StockPriceFinder:  stockFinder,
 	}
 }
 
@@ -40,13 +41,14 @@ func (s JobService) updateAssetPrice() {
 		return
 	}
 	for _, asset := range assets {
-		price, err := s.StockFinder.GetStockPrice(asset.Codigo)
+		price, data, err := s.StockPriceFinder.GetStockPrice(asset.Codigo)
 		if err != nil {
 			err = fmt.Errorf("Ocorreu um erro ao buscar a cotação do ativo: " + asset.Codigo, err)
 			log.Err(err)
+			continue
 		}
 
-		ok, err := s.AssetUpdater.UpdateAssetPrice(asset.Id, price)
+		ok, err := s.AssetUpdater.UpdateAssetPrice(asset.Id, price, data)
 		if !ok || err != nil {
 			err = fmt.Errorf("Ocorreu um erro na atualizacao da cotação do ativo: " + asset.Codigo, err)
 			log.Err(err)

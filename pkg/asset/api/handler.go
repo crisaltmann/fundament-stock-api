@@ -19,7 +19,7 @@ type Service interface {
 	GetById(id int64) (asset_domain.Asset, error)
 	InsertAsset(asset asset_domain.Asset) (bool, error)
 	UpdateAsset(asset asset_domain.Asset) (asset_domain.Asset, error)
-	UpdateAssetPrice(id int64, price float32) (bool, error)
+	//UpdateAssetPrice(id int64, data time.Time, price float32) (bool, error)
 }
 
 func NewHandler(service Service) Handler {

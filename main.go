@@ -26,9 +26,6 @@ import (
 func main() {
 	log.Println("Iniciando...")
 
-
-	//teste()
-
 	app := fx.New(
 		infrastructure.Module,
 		config.Module,
