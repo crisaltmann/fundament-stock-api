@@ -2,33 +2,44 @@ package order_service
 
 import (
 	"fmt"
-	asset_service2 "github.com/crisaltmann/fundament-stock-api/pkg/asset/service"
-	order_domain2 "github.com/crisaltmann/fundament-stock-api/pkg/order/domain"
-	order_repository2 "github.com/crisaltmann/fundament-stock-api/pkg/order/repository"
+	"github.com/crisaltmann/fundament-stock-api/pkg/order/domain"
 )
 
 type Service struct {
-	Repository *order_repository2.Repository
-	AssetService *asset_service2.Service
+	Repository Repository
+	AssetFinder AssetFinder
 }
 
-func (s Service) GetAllOrders() ([]order_domain2.Order, error) {
+type Repository interface {
+	InsertOrder(order order_domain.Order) (bool, error)
+	GetAllOrders() ([]order_domain.Order, error)
+}
+
+type AssetFinder interface {
+	ExistById(id int64) (bool, error)
+}
+
+func NewService(repository Repository, assetFinder AssetFinder) Service {
+	return Service{Repository: repository, AssetFinder: assetFinder}
+}
+
+func (s Service) GetAllOrders() ([]order_domain.Order, error) {
 	orders, err := s.Repository.GetAllOrders()
 	if err != nil {
 		return orders, err
 	}
 	for idx, order := range orders {
 		if order.Quantidade >= 0 {
-			orders[idx].Tipo = order_domain2.BuyOrder
+			orders[idx].Tipo = order_domain.BuyOrder
 		} else {
-			orders[idx].Tipo = order_domain2.SellOrder
+			orders[idx].Tipo = order_domain.SellOrder
 		}
 	}
 	return orders, nil
 }
 
-func (s Service) InsertOrder(order order_domain2.Order) (bool, error) {
-	ativoExist, err := s.AssetService.ExistById(order.Ativo)
+func (s Service) InsertOrder(order order_domain.Order) (bool, error) {
+	ativoExist, err := s.AssetFinder.ExistById(order.Ativo)
 	if err != nil && !ativoExist {
 		err = fmt.Errorf("Ativo informado invalido ou não cadastrado")
 	}
@@ -36,8 +47,8 @@ func (s Service) InsertOrder(order order_domain2.Order) (bool, error) {
 	return s.Repository.InsertOrder(order)
 }
 
-func adjustQtde(order order_domain2.Order) int {
-	if order.Tipo == order_domain2.SellOrder {
+func adjustQtde(order order_domain.Order) int {
+	if order.Tipo == order_domain.SellOrder {
 		return -1 * order.Quantidade
 	}
 	return order.Quantidade

@@ -10,6 +10,10 @@ type Repository struct {
 	DB *sql.DB
 }
 
+func NewRepository(db *sql.DB) Repository {
+	return Repository{DB: db}
+}
+
 func (r Repository) GetQuarter(id int64) (quarter_domain.Trimestre, error) {
 	rows, err := r.DB.Query("SELECT id, codigo, ano, trimestre, data_inicio, data_fim FROM trimestre WHERE id = $1", id)
 	defer rows.Close()

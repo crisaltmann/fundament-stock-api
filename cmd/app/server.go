@@ -1,7 +1,8 @@
-package server
+package app
 
 import (
 	"github.com/crisaltmann/fundament-stock-api/config"
+	"github.com/crisaltmann/fundament-stock-api/server"
 	"github.com/crisaltmann/fundament-stock-api/server/middlewares"
 	"github.com/gin-contrib/logger"
 	"github.com/gin-gonic/gin"
@@ -11,21 +12,24 @@ import (
 	"regexp"
 )
 
-var Module = fx.Options(
-	factories,
-	fx.Invoke(MapRouter),
+var Server = fx.Options(
+	serverfactories,
+	fx.Invoke(server.MapRouter),
 )
 
-var factories = fx.Provide(
-	ConfigureServer,
+var serverfactories = fx.Provide(
+	configureServer,
 )
 
 var rxURL = regexp.MustCompile(`^/regexp\d*`)
 
-func ConfigureServer(conf *config.Config) *Server {
+func configureServer(conf *config.Config) *server.Server {
 	r := gin.New()
 	configureLog(r)
-	server := &Server{conf, r}
+	server := &server.Server{
+		Config: conf,
+		Server: r,
+	}
 	return server
 }
 

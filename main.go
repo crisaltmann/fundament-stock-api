@@ -1,13 +1,9 @@
 package main
 
 import (
-	asset_sync "github.com/crisaltmann/fundament-stock-api/asset-sync"
-	"github.com/crisaltmann/fundament-stock-api/config"
-	"github.com/crisaltmann/fundament-stock-api/infrastructure"
-	asset2 "github.com/crisaltmann/fundament-stock-api/pkg/asset"
-	order2 "github.com/crisaltmann/fundament-stock-api/pkg/order"
-	portfolio2 "github.com/crisaltmann/fundament-stock-api/pkg/portfolio"
-	"github.com/crisaltmann/fundament-stock-api/pkg/quarter"
+	"github.com/crisaltmann/fundament-stock-api/cmd/api"
+	"github.com/crisaltmann/fundament-stock-api/cmd/app"
+	"github.com/crisaltmann/fundament-stock-api/cmd/job"
 	"github.com/crisaltmann/fundament-stock-api/server"
 	"github.com/streadway/amqp"
 	"go.uber.org/fx"
@@ -29,18 +25,15 @@ import (
 func main() {
 	log.Println("Iniciando...")
 
-
-	//teste()
-
 	app := fx.New(
-		infrastructure.Module,
-		config.Module,
-		server.Module,
-		asset2.Module,
-		order2.Module,
-		quarter.Module,
-		portfolio2.Module,
-		asset_sync.Module,
+		app.Config,
+		app.Database,
+		app.Server,
+		api.Asset,
+		api.Order,
+		api.Portfolio,
+		api.Quarter,
+		job.AssetSync,
 		fx.Invoke(
 			server.InitServer,
 		),

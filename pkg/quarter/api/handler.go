@@ -1,7 +1,7 @@
 package quarter_api
 
 import (
-	"github.com/crisaltmann/fundament-stock-api/pkg/quarter/service"
+	"github.com/crisaltmann/fundament-stock-api/pkg/quarter/domain"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -10,7 +10,16 @@ import (
 const Path = "/quarters"
 
 type Handler struct {
-	Service *quarter_service.Service
+	QuarterService QuarterService
+}
+
+type QuarterService interface {
+	GetQuarter(id int64) (quarter_domain.Trimestre, error)
+	GetQuarters() ([]quarter_domain.Trimestre, error)
+}
+
+func NewHandler(service QuarterService) Handler {
+	return Handler{QuarterService: service}
 }
 
 // GetQuarters godoc
@@ -19,7 +28,7 @@ type Handler struct {
 // @Success 200 {object} []quarter_api.TrimestreGetResponse
 // @Router /quarters [get]
 func (h Handler) GetQuarters(c *gin.Context) {
-	quarters, err := h.Service.GetQuarters()
+	quarters, err := h.QuarterService.GetQuarters()
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -45,7 +54,7 @@ func (h Handler) GetQuarter(c *gin.Context) {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	quarter, err := h.Service.GetQuarter(id)
+	quarter, err := h.QuarterService.GetQuarter(id)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return

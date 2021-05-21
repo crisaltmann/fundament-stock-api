@@ -46,3 +46,10 @@ INSERT INTO TRIMESTRE (codigo, ano, trimestre, data_inicio, data_fim) VALUES
     ('2020_04', 2020, 4, '2020-10-01', '2020-12-31'),
     ('2021_01', 2021, 1, '2021-01-01', '2020-03-31'),
     ('2021_02', 2021, 2, '2021-04-01', '2020-06-30');
+
+CREATE TABLE IF NOT EXISTS COTACAO_ATIVO (
+    id              serial          PRIMARY KEY,
+    id_ativo        bigint          UNIQUE NOT NULL,
+    data            date            NOT NULL,
+    cotacao         decimal(10,2)   NOT NULL
+);

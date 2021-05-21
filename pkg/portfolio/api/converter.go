@@ -1,10 +1,10 @@
 package portfolio_api
 
 import (
-	portfolio_domain2 "github.com/crisaltmann/fundament-stock-api/pkg/portfolio/domain"
+	"github.com/crisaltmann/fundament-stock-api/pkg/portfolio/domain"
 )
 
-func convertDomainsToDtos(itens []portfolio_domain2.Portfolio) ([]PortfolioGetResponse, error) {
+func convertDomainsToDtos(itens []portfolio_domain.Portfolio) ([]PortfolioGetResponse, error) {
 	portfolioDtos := make([]PortfolioGetResponse, 0)
 	for _, item := range itens {
 		dto, err := convertDomainToDto(item)
@@ -16,7 +16,7 @@ func convertDomainsToDtos(itens []portfolio_domain2.Portfolio) ([]PortfolioGetRe
 	return portfolioDtos, nil
 }
 
-func convertDomainToDto(portfolio portfolio_domain2.Portfolio) (PortfolioGetResponse, error) {
+func convertDomainToDto(portfolio portfolio_domain.Portfolio) (PortfolioGetResponse, error) {
 	return PortfolioGetResponse{Ativo: Ativo{
 		Id:     portfolio.Ativo.Id,
 		Codigo: portfolio.Ativo.Codigo,

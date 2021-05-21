@@ -2,11 +2,19 @@ package quarter_service
 
 import (
 	"github.com/crisaltmann/fundament-stock-api/pkg/quarter/domain"
-	"github.com/crisaltmann/fundament-stock-api/pkg/quarter/repository"
 )
 
 type Service struct {
-	Repository *quarter_repository.Repository
+	Repository Repository
+}
+
+type Repository interface {
+	GetQuarter(id int64) (quarter_domain.Trimestre, error)
+	GetQuarters() ([]quarter_domain.Trimestre, error)
+}
+
+func NewService(repository Repository) Service {
+	return Service{Repository: repository}
 }
 
 func (s Service) GetQuarter(id int64) (quarter_domain.Trimestre, error) {
