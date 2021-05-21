@@ -53,3 +53,25 @@ CREATE TABLE IF NOT EXISTS COTACAO_ATIVO (
     data            date            NOT NULL,
     cotacao         decimal(10,2)   NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS RESULTADO_TRIMESTRE (
+       id              serial          PRIMARY KEY,
+       id_trimestre    bigint          NOT NULL,
+       id_ativo        bigint          NOT NULL,
+       receita         bigint          NULL,
+       ebitda          bigint          NULL,
+       lucro           bigint          NULL,
+       divida_liquida  bigint          NULL,
+)
+
+CREATE TABLE IF NOT EXISTS PORTFOLIO_TRIMESTRE (
+    id              serial          PRIMARY KEY,
+    id_trimestre    bigint          NOT NULL,
+    id_usuario      bigint          NOT NULL,
+    id_ativo        bigint          NOT NULL,
+    quantidade      int             NOT NULL,
+    receita         bigint          NULL,
+    ebitda          bigint          NULL,
+    lucro           bigint          NULL,
+    divida_liquida  bigint          NULL,
+)
