@@ -2,9 +2,8 @@ package main
 
 import (
 	"github.com/crisaltmann/fundament-stock-api/cmd/api"
+	"github.com/crisaltmann/fundament-stock-api/cmd/app"
 	"github.com/crisaltmann/fundament-stock-api/cmd/job"
-	"github.com/crisaltmann/fundament-stock-api/config"
-	"github.com/crisaltmann/fundament-stock-api/infrastructure"
 	"github.com/crisaltmann/fundament-stock-api/server"
 	"github.com/streadway/amqp"
 	"go.uber.org/fx"
@@ -27,9 +26,9 @@ func main() {
 	log.Println("Iniciando...")
 
 	app := fx.New(
-		infrastructure.Module,
-		config.Module,
-		server.Module,
+		app.Config,
+		app.Database,
+		app.Server,
 		api.Asset,
 		api.Order,
 		api.Portfolio,

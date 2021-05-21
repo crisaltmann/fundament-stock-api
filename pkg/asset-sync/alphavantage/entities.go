@@ -17,24 +17,15 @@ type GlobalQuoteData struct {
 	Codigo           string 	`json:"01. symbol"`
 	Price	         string		`json:"05. price"`
 	LastTradeDay     JSONTime 	`json:"07. latest trading day"`
-	//2021-05-20"
 }
 
 const DefaultFormat = time.RFC3339
 
 var layouts = []string{
 	DefaultFormat,
-	//"2006-01-02T15:04Z",        // ISO 8601 UTC
-	//"2006-01-02T15:04:05Z",     // ISO 8601 UTC
-	//"2006-01-02T15:04:05.000Z", // ISO 8601 UTC
-	//"2006-01-02T15:04:05",      // ISO 8601 UTC
-	//"2006-01-02 15:04",         // Custom UTC
-	//"2006-01-02 15:04:05",      // Custom UTC
-	//"2006-01-02 15:04:05.000",  // Custom UTC
 	"2006-01-02",
 }
 
-// JSONTime
 func (jt *JSONTime) String() string {
 	t := time.Time(*jt)
 	return t.Format(DefaultFormat)

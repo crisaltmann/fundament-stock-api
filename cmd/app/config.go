@@ -1,22 +1,23 @@
-package config
+package app
 
 import (
+	"github.com/crisaltmann/fundament-stock-api/config"
 	"go.uber.org/fx"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
 )
 
-var Module = fx.Options(
-	factories,
+var Config = fx.Options(
+	configfactories,
 )
 
-var factories = fx.Provide(
-	LoadConfig,
+var configfactories = fx.Provide(
+	loadConfig,
 )
 
-func LoadConfig() *Config {
-	conf := &Config{}
+func loadConfig() *config.Config {
+	conf := &config.Config{}
 	data, err := ioutil.ReadFile("config/config.yaml")
 	if err != nil {
 		log.Println("erro ao ler arquivo", err)

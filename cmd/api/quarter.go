@@ -1,9 +1,9 @@
 package api
 
 import (
-	quarter_api "github.com/crisaltmann/fundament-stock-api/pkg/quarter/api"
+	"github.com/crisaltmann/fundament-stock-api/pkg/quarter/api"
 	"github.com/crisaltmann/fundament-stock-api/pkg/quarter/repository"
-	quarter_service "github.com/crisaltmann/fundament-stock-api/pkg/quarter/service"
+	"github.com/crisaltmann/fundament-stock-api/pkg/quarter/service"
 	"go.uber.org/fx"
 )
 

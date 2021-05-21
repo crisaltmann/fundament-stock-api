@@ -14,7 +14,7 @@ import (
 )
 
 type Server struct {
-	config *config.Config
+	Config *config.Config
 	Server *gin.Engine
 }
 

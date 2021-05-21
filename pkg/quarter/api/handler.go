@@ -1,7 +1,7 @@
 package quarter_api
 
 import (
-	quarter_domain "github.com/crisaltmann/fundament-stock-api/pkg/quarter/domain"
+	"github.com/crisaltmann/fundament-stock-api/pkg/quarter/domain"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
