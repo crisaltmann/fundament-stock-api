@@ -21,8 +21,10 @@ func ConfigureJob(sync AssetSync) {
 
 	cron := os.Getenv("STOCK_PRICE_UPDATE_CRON")
 	if cron == "" {
+		log.Print("Configurando cron com valor default.")
 		c.AddFunc("0 0 2 * * *", sync.executeJob)
 	} else {
+		log.Print("Configurando cron com valor de variavel: " + cron)
 		c.AddFunc(cron, sync.executeJob)
 	}
 
