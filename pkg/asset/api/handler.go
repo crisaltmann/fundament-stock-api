@@ -19,7 +19,7 @@ type Service interface {
 	GetById(id int64) (asset_domain.Asset, error)
 	InsertAsset(asset asset_domain.Asset) (bool, error)
 	UpdateAsset(asset asset_domain.Asset) (asset_domain.Asset, error)
-	//UpdateAssetPrice(id int64, data time.Time, price float32) (bool, error)
+	InsertAssetQuarterlyResult(aqResult asset_domain.AssetQuarterlyResult) (bool, error)
 }
 
 func NewHandler(service Service) Handler {
@@ -99,4 +99,23 @@ func (h Handler) GetById(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, asset)
+}
+
+
+// Insert Asset Quartely Result godoc
+// @Summary Insere Resultado Trimestral Ativo
+// @Produce json
+// @Param user body asset_api.QuaterlyResultPostRequest true "User-Data"
+// @Param asset-id path int true "Asset ID"
+// @Success 201
+// @Router /assets/:asset-id/quarterly-results [post]
+func (h Handler) InsertQuartelyResultAsset(c *gin.Context) {
+	qrAsset := QuarterlyResultPostRequest{}
+	c.BindJSON(&qrAsset)
+	_, err := h.Service.InsertAssetQuarterlyResult(convertPostQuarterlyRequestToDomain(qrAsset))
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+	c.JSON(http.StatusCreated, nil)
 }

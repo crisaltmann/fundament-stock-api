@@ -29,3 +29,14 @@ func convertPutRequestToDomain(request AssetPutRequest, id string) (asset_domain
 	}
 	return asset_domain.Asset{Id: idInt, Codigo: request.Codigo, Nome: request.Nome, Logo: request.Logo, Cotacao: request.Cotacao}, nil
 }
+
+func convertPostQuarterlyRequestToDomain(request QuarterlyResultPostRequest) asset_domain.AssetQuarterlyResult {
+	return asset_domain.AssetQuarterlyResult{
+		Trimestre:      request.Trimestre,
+		Ativo:          request.Ativo,
+		ReceitaLiquida: request.ReceitaLiquida,
+		Ebitda:         request.Ebitda,
+		LucroLiquido:   request.LucroLiquido,
+		DividaLiquida:  request.DividaLiquida,
+	}
+}

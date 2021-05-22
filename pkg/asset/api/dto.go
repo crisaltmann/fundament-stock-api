@@ -20,3 +20,22 @@ type AssetPutRequest struct {
 	Logo    string `json:"logo"`
 	Cotacao float32 `json:"cotacao"`
 }
+
+type QuarterlyResultPostRequest struct {
+	Trimestre    		int64	`json:"id_trimestre"`
+	Ativo	     		int64	`json:"id_ativo"`
+	ReceitaLiquida	    int64	`json:"receita_liquida"`
+	Ebitda	     		int64	`json:"ebitda"`
+	LucroLiquido	    int64	`json:"lucro_liquido"`
+	DividaLiquida	    int64	`json:"divida_liquida"`
+}
+
+type QuarterlyResultPostResponse struct {
+	Id              	int64  `json:"id"`
+	Trimestre    		int64	`json:"id_trimestre"`
+	Ativo	     		int64	`json:"id_ativo"`
+	ReceitaLiquida	    int64	`json:"receita_liquida"`
+	Ebitda	     		int64	`json:"ebitda"`
+	LucroLiquido	    int64	`json:"lucro_liquido"`
+	DividaLiquida	    int64	`json:"divida_liquida"`
+}

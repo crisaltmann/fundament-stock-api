@@ -16,3 +16,13 @@ type AssetPrice struct {
 	Cotacao float32
 	Data    time.Time
 }
+
+type AssetQuarterlyResult struct {
+	Id              	int64
+	Trimestre    		int64
+	Ativo	     		int64
+	ReceitaLiquida	    int64
+	Ebitda	     		int64
+	LucroLiquido	    int64
+	DividaLiquida	    int64
+}

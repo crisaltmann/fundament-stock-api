@@ -21,4 +21,7 @@ func MapRouter(server *server.Server, handler Handler) {
 	server.Server.POST(Path, handler.InsertAsset)
 	server.Server.PUT(Path+"/:id", handler.UpdateAsset)
 	server.Server.GET(Path+"/:id", handler.GetById)
+
+	server.Server.POST(Path+"/:asset-id/quarterly-results", handler.InsertQuartelyResultAsset)
+	//server.Server.GET(Path+"/:asset-id/quarterly-results/:id")
 }

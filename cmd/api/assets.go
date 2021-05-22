@@ -20,6 +20,9 @@ var assetfactories = fx.Provide(
 	asset_repository.NewStockPriceRepository,
 	func(stockPriceRepository asset_repository.StockPriceRepository) asset_service.StockPriceRepository { return stockPriceRepository },
 
+	asset_repository.NewAssetQuarterlyResultRepository,
+	func(quarterlyResultRepository asset_repository.AssetQuarterlyResultRepository) asset_service.AssetQuarterlyResultRepository { return quarterlyResultRepository },
+
 	asset_service.NewService,
 	func(service asset_service.Service) asset_api.Service { return service },
 

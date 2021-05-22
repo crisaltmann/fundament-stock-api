@@ -55,23 +55,23 @@ CREATE TABLE IF NOT EXISTS COTACAO_ATIVO (
 );
 
 CREATE TABLE IF NOT EXISTS RESULTADO_TRIMESTRE (
-       id              serial          PRIMARY KEY,
-       id_trimestre    bigint          NOT NULL,
-       id_ativo        bigint          NOT NULL,
-       receita         bigint          NULL,
-       ebitda          bigint          NULL,
-       lucro           bigint          NULL,
-       divida_liquida  bigint          NULL,
-)
+       id                  serial          PRIMARY KEY,
+       id_trimestre        bigint          NOT NULL,
+       id_ativo            bigint          NOT NULL,
+       receita_liquida     bigint          NOT NULL,
+       ebitda              bigint          NOT NULL,
+       lucro_liquido       bigint          NOT NULL,
+       divida_liquida      bigint          NOT NULL
+);
 
 CREATE TABLE IF NOT EXISTS PORTFOLIO_TRIMESTRE (
-    id              serial          PRIMARY KEY,
-    id_trimestre    bigint          NOT NULL,
-    id_usuario      bigint          NOT NULL,
-    id_ativo        bigint          NOT NULL,
-    quantidade      int             NOT NULL,
-    receita         bigint          NULL,
-    ebitda          bigint          NULL,
-    lucro           bigint          NULL,
-    divida_liquida  bigint          NULL,
-)
+    id                  serial          PRIMARY KEY,
+    id_trimestre        bigint          NOT NULL,
+    id_usuario          bigint          NOT NULL,
+    id_ativo            bigint          NOT NULL,
+    quantidade          int             NOT NULL,
+    receita_liquida     bigint          NOT NULL,
+    ebitda              bigint          NOT NULL,
+    lucro_liquido       bigint          NOT NULL,
+    divida_liquida      bigint          NOT NULL
+);
