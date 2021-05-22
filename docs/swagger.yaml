@@ -13,6 +13,8 @@ definitions:
     properties:
       codigo:
         type: string
+      cotacao:
+        type: number
       logo:
         type: string
       nome:
@@ -22,12 +24,46 @@ definitions:
     properties:
       codigo:
         type: string
+      cotacao:
+        type: number
       id:
         type: integer
       logo:
         type: string
       nome:
         type: string
+    type: object
+  asset_api.QuarterlyResultPostRequest:
+    properties:
+      divida_liquida:
+        type: integer
+      ebitda:
+        type: integer
+      id_ativo:
+        type: integer
+      id_trimestre:
+        type: integer
+      lucro_liquido:
+        type: integer
+      receita_liquida:
+        type: integer
+    type: object
+  asset_api.QuarterlyResultResponse:
+    properties:
+      divida_liquida:
+        type: integer
+      ebitda:
+        type: integer
+      id:
+        type: integer
+      id_ativo:
+        type: integer
+      id_trimestre:
+        type: integer
+      lucro_liquido:
+        type: integer
+      receita_liquida:
+        type: integer
     type: object
   order_api.OrderGetResponse:
     properties:
@@ -58,6 +94,28 @@ definitions:
         type: integer
       tipo:
         type: string
+      valor:
+        type: number
+    type: object
+  portfolio_api.Ativo:
+    properties:
+      codigo:
+        type: string
+      cotacao:
+        type: number
+      id:
+        type: integer
+      logo:
+        type: string
+    type: object
+  portfolio_api.PortfolioGetResponse:
+    properties:
+      ativo:
+        $ref: '#/definitions/portfolio_api.Ativo'
+      id_usuario:
+        type: integer
+      quantidade:
+        type: integer
       valor:
         type: number
     type: object
@@ -112,6 +170,37 @@ paths:
         "201":
           description: ""
       summary: Insere Ativo
+  /assets/:asset-id/quarterly-results:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/asset_api.QuarterlyResultResponse'
+            type: array
+      summary: Retorna a lista de resultados de ativos ativos
+    post:
+      parameters:
+      - description: User-Data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/asset_api.QuarterlyResultPostRequest'
+      - description: Asset ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: ""
+      summary: Insere Resultado Trimestral Ativo
   /assets/{id}:
     get:
       parameters:
@@ -171,6 +260,22 @@ paths:
         "201":
           description: ""
       summary: Insere Ordem
+  /portfolio:
+    get:
+      parameters:
+      - description: user id
+        in: query
+        name: usuario
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/portfolio_api.PortfolioGetResponse'
+      summary: Retorna portfolio do usuario
   /quarters:
     get:
       produces:

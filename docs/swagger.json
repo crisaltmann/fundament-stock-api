@@ -54,6 +54,54 @@
                 }
             }
         },
+        "/assets/:asset-id/quarterly-results": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Retorna a lista de resultados de ativos ativos",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/asset_api.QuarterlyResultResponse"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Insere Resultado Trimestral Ativo",
+                "parameters": [
+                    {
+                        "description": "User-Data",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/asset_api.QuarterlyResultPostRequest"
+                        }
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Asset ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/assets/{id}": {
             "get": {
                 "produces": [
@@ -146,6 +194,31 @@
                 }
             }
         },
+        "/portfolio": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Retorna portfolio do usuario",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user id",
+                        "name": "usuario",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/portfolio_api.PortfolioGetResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/quarters": {
             "get": {
                 "produces": [
@@ -212,6 +285,9 @@
                 "codigo": {
                     "type": "string"
                 },
+                "cotacao": {
+                    "type": "number"
+                },
                 "logo": {
                     "type": "string"
                 },
@@ -226,6 +302,9 @@
                 "codigo": {
                     "type": "string"
                 },
+                "cotacao": {
+                    "type": "number"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -234,6 +313,55 @@
                 },
                 "nome": {
                     "type": "string"
+                }
+            }
+        },
+        "asset_api.QuarterlyResultPostRequest": {
+            "type": "object",
+            "properties": {
+                "divida_liquida": {
+                    "type": "integer"
+                },
+                "ebitda": {
+                    "type": "integer"
+                },
+                "id_ativo": {
+                    "type": "integer"
+                },
+                "id_trimestre": {
+                    "type": "integer"
+                },
+                "lucro_liquido": {
+                    "type": "integer"
+                },
+                "receita_liquida": {
+                    "type": "integer"
+                }
+            }
+        },
+        "asset_api.QuarterlyResultResponse": {
+            "type": "object",
+            "properties": {
+                "divida_liquida": {
+                    "type": "integer"
+                },
+                "ebitda": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "id_ativo": {
+                    "type": "integer"
+                },
+                "id_trimestre": {
+                    "type": "integer"
+                },
+                "lucro_liquido": {
+                    "type": "integer"
+                },
+                "receita_liquida": {
+                    "type": "integer"
                 }
             }
         },
@@ -280,6 +408,40 @@
                 },
                 "tipo": {
                     "type": "string"
+                },
+                "valor": {
+                    "type": "number"
+                }
+            }
+        },
+        "portfolio_api.Ativo": {
+            "type": "object",
+            "properties": {
+                "codigo": {
+                    "type": "string"
+                },
+                "cotacao": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "logo": {
+                    "type": "string"
+                }
+            }
+        },
+        "portfolio_api.PortfolioGetResponse": {
+            "type": "object",
+            "properties": {
+                "ativo": {
+                    "$ref": "#/definitions/portfolio_api.Ativo"
+                },
+                "id_usuario": {
+                    "type": "integer"
+                },
+                "quantidade": {
+                    "type": "integer"
                 },
                 "valor": {
                     "type": "number"

@@ -1,9 +1,8 @@
 package portfolio_service
 
 import (
-	"fmt"
+	"github.com/crisaltmann/fundament-stock-api/internal"
 	"github.com/crisaltmann/fundament-stock-api/pkg/portfolio/domain"
-	"strconv"
 )
 
 type Service struct {
@@ -25,14 +24,8 @@ func (s Service) GetPortfolio(usuario string) ([]portfolio_domain.Portfolio, err
 	}
 	for idx, item := range portfolio {
 		if item.Ativo.Cotacao > 0 {
-			portfolio[idx].Valor = roundFloat(float32(item.Quantidade) * item.Ativo.Cotacao, 2)
+			portfolio[idx].Valor = internal.RoundFloat(float32(item.Quantidade) * item.Ativo.Cotacao)
 		}
 	}
 	return portfolio, nil
-}
-
-func roundFloat(x float32, prec int) float32 {
-	i := fmt.Sprintf("%.2f", x)
-	f, _ := strconv.ParseFloat(i, 2)
-	return float32(f)
 }

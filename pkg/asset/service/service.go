@@ -1,13 +1,16 @@
 package asset_service
 
 import (
+	"github.com/crisaltmann/fundament-stock-api/internal"
 	"github.com/crisaltmann/fundament-stock-api/pkg/asset/domain"
+	"log"
 	"time"
 )
 
 type Service struct {
 	Repository Repository
 	StockPriceRepository StockPriceRepository
+	AssetQuarterlyResultRepository AssetQuarterlyResultRepository
 }
 
 type Repository interface {
@@ -24,10 +27,17 @@ type StockPriceRepository interface {
 	GetByAtivoEData(idAtivo int64, data time.Time) (asset_domain.AssetPrice, error)
 }
 
-func NewService(repository Repository, stockPriceRepository StockPriceRepository) Service {
+type AssetQuarterlyResultRepository interface {
+	InsertAssetQuarterlyResult(aqResult asset_domain.AssetQuarterlyResult) (bool, error)
+	ExistAssetQuarterlyResult(idAtivo int64, idTrimestre int64) (bool, error)
+	GetAssetQuarterlyResults(idAtivo int64) ([]asset_domain.AssetQuarterlyResult, error)
+}
+
+func NewService(repository Repository, stockPriceRepository StockPriceRepository, assetQResultRepository AssetQuarterlyResultRepository) Service {
 	return Service{
 		Repository: repository,
 		StockPriceRepository: stockPriceRepository,
+		AssetQuarterlyResultRepository: assetQResultRepository,
 	}
 }
 
@@ -74,4 +84,35 @@ func (s Service) InsertAssetPrice(id int64, price float32, data time.Time) (bool
 		Data:    data,
 	}
 	return s.StockPriceRepository.InsertAssetPrice(updateAssetPrice)
+}
+
+func (s Service) InsertAssetQuarterlyResult(aqResult asset_domain.AssetQuarterlyResult) (bool, error) {
+	exist, err := s.AssetQuarterlyResultRepository.ExistAssetQuarterlyResult(aqResult.Ativo, aqResult.Trimestre)
+	if exist {
+		log.Println("Já existe um resultado cadastro para este trimestre.")
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
+	return s.AssetQuarterlyResultRepository.InsertAssetQuarterlyResult(aqResult)
+}
+
+func (s Service) GetAssetQuarterlyResults(assetId int64) ([]asset_domain.AssetQuarterlyResult, error) {
+	quarterlyResults, err := s.AssetQuarterlyResultRepository.GetAssetQuarterlyResults(assetId)
+	if err != nil {
+		return nil, err
+	}
+	for i := 0; i < len(quarterlyResults); i++ {
+		calcularMargens(&quarterlyResults[i])
+	}
+	return quarterlyResults, nil
+}
+
+func calcularMargens(result *asset_domain.AssetQuarterlyResult) {
+	result.MargemEbitda = internal.RoundFloat(float32(result.Ebitda) / float32(result.ReceitaLiquida))
+	result.MargemLiquida = internal.RoundFloat(float32(result.LucroLiquido) / float32(result.ReceitaLiquida))
+	if result.DividaLiquida > 0 {
+		result.DivEbitda = internal.RoundFloat(float32(result.DividaLiquida) / float32(result.Ebitda))
+	}
 }

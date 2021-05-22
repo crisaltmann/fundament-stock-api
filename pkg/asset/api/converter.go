@@ -29,3 +29,37 @@ func convertPutRequestToDomain(request AssetPutRequest, id string) (asset_domain
 	}
 	return asset_domain.Asset{Id: idInt, Codigo: request.Codigo, Nome: request.Nome, Logo: request.Logo, Cotacao: request.Cotacao}, nil
 }
+
+func convertPostQuarterlyRequestToDomain(request QuarterlyResultPostRequest) asset_domain.AssetQuarterlyResult {
+	return asset_domain.AssetQuarterlyResult{
+		Trimestre:      request.Trimestre,
+		Ativo:          request.Ativo,
+		ReceitaLiquida: request.ReceitaLiquida,
+		Ebitda:         request.Ebitda,
+		LucroLiquido:   request.LucroLiquido,
+		DividaLiquida:  request.DividaLiquida,
+	}
+}
+
+func convertQuarterlyResultToDtos(quarterResult asset_domain.AssetQuarterlyResult) QuarterlyResultResponse {
+	return QuarterlyResultResponse{
+		Id:             quarterResult.Id,
+		Trimestre:      quarterResult.Trimestre,
+		Ativo:          quarterResult.Ativo,
+		ReceitaLiquida: quarterResult.ReceitaLiquida,
+		Ebitda:         quarterResult.Ebitda,
+		LucroLiquido:   quarterResult.LucroLiquido,
+		DividaLiquida:  quarterResult.DividaLiquida,
+		MargemEbitda:   quarterResult.MargemEbitda,
+		MargemLiquida:  quarterResult.MargemLiquida,
+		DivEbitda:      quarterResult.DivEbitda,
+	}
+}
+
+func convertQuarterlyResultsToDtos(quarterResults []asset_domain.AssetQuarterlyResult) []QuarterlyResultResponse {
+	quarterlyDtos := make([]QuarterlyResultResponse, 0)
+	for _, qra := range quarterResults {
+		quarterlyDtos = append(quarterlyDtos, convertQuarterlyResultToDtos(qra))
+	}
+	return quarterlyDtos
+}
