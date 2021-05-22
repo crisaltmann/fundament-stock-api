@@ -23,6 +23,9 @@ type AssetQuarterlyResult struct {
 	Ativo	     		int64
 	ReceitaLiquida	    int64
 	Ebitda	     		int64
+	MargemEbitda		float32
 	LucroLiquido	    int64
+	MargemLiquida		float32
 	DividaLiquida	    int64
+	DivEbitda			float32
 }

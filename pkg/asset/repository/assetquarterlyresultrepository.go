@@ -50,3 +50,27 @@ func (r AssetQuarterlyResultRepository) InsertAssetQuarterlyResult(aqResult asse
 	}
 	return true, nil
 }
+
+func (r AssetQuarterlyResultRepository) GetAssetQuarterlyResults(idAtivo int64) ([]asset_domain.AssetQuarterlyResult, error) {
+	rows, err := r.DB.Query("SELECT id, id_trimestre, id_ativo, receita_liquida, ebitda, lucro_liquido, divida_liquida" +
+		" FROM resultado_trimestre WHERE id_ativo = $1", idAtivo)
+	defer rows.Close()
+
+	if err != nil {
+		err = fmt.Errorf("Erro ao executar busca de resultados de empresas", err)
+		return nil, err
+	}
+	defer rows.Close()
+	quarterlyResults := []asset_domain.AssetQuarterlyResult{}
+	for rows.Next() {
+		quarter := asset_domain.AssetQuarterlyResult{}
+		err := rows.Scan(&quarter.Id, &quarter.Trimestre, &quarter.Ativo, &quarter.ReceitaLiquida, &quarter.Ebitda,
+			&quarter.LucroLiquido, &quarter.DividaLiquida)
+		if err != nil {
+			err = fmt.Errorf("Erro ao executar busca de resultados de empresas", err)
+			return nil, err
+		}
+		quarterlyResults = append(quarterlyResults, quarter)
+	}
+	return quarterlyResults, nil
+}

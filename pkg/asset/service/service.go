@@ -1,6 +1,7 @@
 package asset_service
 
 import (
+	"github.com/crisaltmann/fundament-stock-api/internal"
 	"github.com/crisaltmann/fundament-stock-api/pkg/asset/domain"
 	"log"
 	"time"
@@ -29,6 +30,7 @@ type StockPriceRepository interface {
 type AssetQuarterlyResultRepository interface {
 	InsertAssetQuarterlyResult(aqResult asset_domain.AssetQuarterlyResult) (bool, error)
 	ExistAssetQuarterlyResult(idAtivo int64, idTrimestre int64) (bool, error)
+	GetAssetQuarterlyResults(idAtivo int64) ([]asset_domain.AssetQuarterlyResult, error)
 }
 
 func NewService(repository Repository, stockPriceRepository StockPriceRepository, assetQResultRepository AssetQuarterlyResultRepository) Service {
@@ -94,4 +96,23 @@ func (s Service) InsertAssetQuarterlyResult(aqResult asset_domain.AssetQuarterly
 		return false, err
 	}
 	return s.AssetQuarterlyResultRepository.InsertAssetQuarterlyResult(aqResult)
+}
+
+func (s Service) GetAssetQuarterlyResults(assetId int64) ([]asset_domain.AssetQuarterlyResult, error) {
+	quarterlyResults, err := s.AssetQuarterlyResultRepository.GetAssetQuarterlyResults(assetId)
+	if err != nil {
+		return nil, err
+	}
+	for i := 0; i < len(quarterlyResults); i++ {
+		calcularMargens(&quarterlyResults[i])
+	}
+	return quarterlyResults, nil
+}
+
+func calcularMargens(result *asset_domain.AssetQuarterlyResult) {
+	result.MargemEbitda = internal.RoundFloat(float32(result.Ebitda) / float32(result.ReceitaLiquida))
+	result.MargemLiquida = internal.RoundFloat(float32(result.LucroLiquido) / float32(result.ReceitaLiquida))
+	if result.DividaLiquida > 0 {
+		result.DivEbitda = internal.RoundFloat(float32(result.DividaLiquida) / float32(result.Ebitda))
+	}
 }

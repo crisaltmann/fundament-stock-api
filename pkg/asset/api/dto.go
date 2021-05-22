@@ -38,4 +38,7 @@ type QuarterlyResultResponse struct {
 	Ebitda	     		int64	`json:"ebitda"`
 	LucroLiquido	    int64	`json:"lucro_liquido"`
 	DividaLiquida	    int64	`json:"divida_liquida"`
+	MargemEbitda		float32 `json:"margem_ebitda"`
+	MargemLiquida		float32 `json:"margem_liquida"`
+	DivEbitda			float32 `json:"divida_ebitda"`
 }

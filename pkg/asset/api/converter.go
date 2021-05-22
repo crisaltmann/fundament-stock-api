@@ -50,6 +50,9 @@ func convertQuarterlyResultToDtos(quarterResult asset_domain.AssetQuarterlyResul
 		Ebitda:         quarterResult.Ebitda,
 		LucroLiquido:   quarterResult.LucroLiquido,
 		DividaLiquida:  quarterResult.DividaLiquida,
+		MargemEbitda:   quarterResult.MargemEbitda,
+		MargemLiquida:  quarterResult.MargemLiquida,
+		DivEbitda:      quarterResult.DivEbitda,
 	}
 }
 

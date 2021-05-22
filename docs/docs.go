@@ -106,7 +106,7 @@ var doc = `{
                     {
                         "type": "integer",
                         "description": "Asset ID",
-                        "name": "asset-id",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     }

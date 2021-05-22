@@ -192,7 +192,7 @@ paths:
           $ref: '#/definitions/asset_api.QuarterlyResultPostRequest'
       - description: Asset ID
         in: path
-        name: asset-id
+        name: id
         required: true
         type: integer
       produces:
