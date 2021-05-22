@@ -1,9 +1,9 @@
 package asset_sync
 
 import (
-	"github.com/crisaltmann/fundament-stock-api/config"
 	"github.com/robfig/cron"
 	"log"
+	"os"
 )
 
 type AssetSync struct {
@@ -16,11 +16,15 @@ func NewAssetSync(service JobService) AssetSync {
 	}
 }
 
-func ConfigureJob(config *config.Config, sync AssetSync) {
+func ConfigureJob(sync AssetSync) {
 	c := cron.New()
-	//c.AddFunc(config.Job.AssetSync.Cron, sync.executeJob)
-	c.AddFunc("0 0 2 * * *", sync.executeJob)
-	//c.AddFunc("0 0/2 * * * *", sync.executeJob)
+
+	cron := os.Getenv("STOCK_PRICE_UPDATE_CRON")
+	if cron == "" {
+		c.AddFunc("0 0 2 * * *", sync.executeJob)
+	} else {
+		c.AddFunc(cron, sync.executeJob)
+	}
 
 	c.Start()
 }
