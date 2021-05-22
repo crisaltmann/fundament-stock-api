@@ -40,3 +40,23 @@ func convertPostQuarterlyRequestToDomain(request QuarterlyResultPostRequest) ass
 		DividaLiquida:  request.DividaLiquida,
 	}
 }
+
+func convertQuarterlyResultToDtos(quarterResult asset_domain.AssetQuarterlyResult) QuarterlyResultResponse {
+	return QuarterlyResultResponse{
+		Id:             quarterResult.Id,
+		Trimestre:      quarterResult.Trimestre,
+		Ativo:          quarterResult.Ativo,
+		ReceitaLiquida: quarterResult.ReceitaLiquida,
+		Ebitda:         quarterResult.Ebitda,
+		LucroLiquido:   quarterResult.LucroLiquido,
+		DividaLiquida:  quarterResult.DividaLiquida,
+	}
+}
+
+func convertQuarterlyResultsToDtos(quarterResults []asset_domain.AssetQuarterlyResult) []QuarterlyResultResponse {
+	quarterlyDtos := make([]QuarterlyResultResponse, 0)
+	for _, qra := range quarterResults {
+		quarterlyDtos = append(quarterlyDtos, convertQuarterlyResultToDtos(qra))
+	}
+	return quarterlyDtos
+}

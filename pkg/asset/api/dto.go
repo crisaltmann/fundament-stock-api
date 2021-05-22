@@ -30,8 +30,8 @@ type QuarterlyResultPostRequest struct {
 	DividaLiquida	    int64	`json:"divida_liquida"`
 }
 
-type QuarterlyResultPostResponse struct {
-	Id              	int64  `json:"id"`
+type QuarterlyResultResponse struct {
+	Id              	int64   `json:"id"`
 	Trimestre    		int64	`json:"id_trimestre"`
 	Ativo	     		int64	`json:"id_ativo"`
 	ReceitaLiquida	    int64	`json:"receita_liquida"`
