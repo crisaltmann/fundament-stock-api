@@ -16,7 +16,7 @@ func CreateConnection(config *config.Config) *sql.DB {
 		url = config.Url
 	}
 	db, err := sql.Open("postgres", url)
-
+	defer db.Close()
 	if err != nil {
 		log.Fatal("Erro ao contectar no banco", err)
 		panic(err)
