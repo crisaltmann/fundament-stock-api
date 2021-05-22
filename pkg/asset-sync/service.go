@@ -41,6 +41,7 @@ func (s JobService) updateAssetPrice() {
 		return
 	}
 	for _, asset := range assets {
+		log.Print("Iniciando atualização de cotação do ativo: " + asset.Codigo)
 		price, data, err := s.StockPriceFinder.GetStockPrice(asset.Codigo)
 		if err != nil {
 			err = fmt.Errorf("Ocorreu um erro ao buscar a cotação do ativo: " + asset.Codigo, err)
