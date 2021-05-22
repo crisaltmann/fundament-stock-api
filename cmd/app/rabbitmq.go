@@ -11,7 +11,7 @@ var RabbitMQ = fx.Options(
 )
 
 var rabbitfactories = fx.Provide(
-	infrastructure.CreateConnection,
+	infrastructure.CreateRabbitMQCon,
 	infrastructure.CreateRabbitMQChannel,
 )
 
