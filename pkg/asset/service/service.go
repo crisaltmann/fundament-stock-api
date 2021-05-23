@@ -3,16 +3,16 @@ package asset_service
 import (
 	"github.com/crisaltmann/fundament-stock-api/internal"
 	"github.com/crisaltmann/fundament-stock-api/pkg/asset/domain"
-	asset_repository "github.com/crisaltmann/fundament-stock-api/pkg/asset/repository"
+	"github.com/crisaltmann/fundament-stock-api/pkg/asset/event"
 	"log"
 	"time"
 )
 
 type Service struct {
-	Repository Repository
-	StockPriceRepository StockPriceRepository
+	Repository                     Repository
+	StockPriceRepository           StockPriceRepository
 	AssetQuarterlyResultRepository AssetQuarterlyResultRepository
-	QuarterlyProducer asset_repository.QuarterlyResultProducer
+	QuarterlyProducer              event.QuarterlyResultProducer
 }
 
 type Repository interface {
@@ -36,7 +36,7 @@ type AssetQuarterlyResultRepository interface {
 }
 
 func NewService(repository Repository, stockPriceRepository StockPriceRepository, assetQResultRepository AssetQuarterlyResultRepository,
-	quarterlyProducer asset_repository.QuarterlyResultProducer) Service {
+	quarterlyProducer event.QuarterlyResultProducer) Service {
 	return Service{
 		Repository: repository,
 		StockPriceRepository: stockPriceRepository,

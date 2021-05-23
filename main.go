@@ -26,6 +26,7 @@ func main() {
 
 	app := fx.New(
 		app.Config,
+		app.CronModule,
 		app.Database,
 		app.RabbitMQ,
 		app.Server,

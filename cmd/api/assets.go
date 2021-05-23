@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/crisaltmann/fundament-stock-api/pkg/asset/api"
+	"github.com/crisaltmann/fundament-stock-api/pkg/asset/event"
 	"github.com/crisaltmann/fundament-stock-api/pkg/asset/repository"
 	"github.com/crisaltmann/fundament-stock-api/pkg/asset/service"
 
@@ -11,6 +12,7 @@ import (
 var Asset = fx.Options(
 	assetfactories,
 	fx.Invoke(asset_api.MapRouter),
+	fx.Invoke(event.InitializeConsume),
 )
 
 var assetfactories = fx.Provide(
@@ -23,7 +25,8 @@ var assetfactories = fx.Provide(
 	asset_repository.NewAssetQuarterlyResultRepository,
 	func(quarterlyResultRepository asset_repository.AssetQuarterlyResultRepository) asset_service.AssetQuarterlyResultRepository { return quarterlyResultRepository },
 
-	asset_repository.NewQuarterlyResultProducer,
+	event.NewQuarterlyResultProducer,
+	event.NewQuarterlyResultConsumer,
 
 	asset_service.NewService,
 	func(service asset_service.Service) asset_api.Service { return service },

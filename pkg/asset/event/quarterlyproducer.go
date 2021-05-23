@@ -1,14 +1,13 @@
-package asset_repository
+package event
 
 import (
 	"encoding/json"
 	"fmt"
-	asset_domain "github.com/crisaltmann/fundament-stock-api/pkg/asset/domain"
+	"github.com/crisaltmann/fundament-stock-api/infrastructure"
+	"github.com/crisaltmann/fundament-stock-api/pkg/asset/domain"
 	"github.com/streadway/amqp"
 	"log"
 )
-
-const ResultQueueName = "fs-quarterly-result"
 
 type QuarterlyResultProducer struct {
 	ch		*amqp.Channel
@@ -26,10 +25,10 @@ func (q QuarterlyResultProducer) PublishQuarterlyResultEvent(result asset_domain
 		return fmt.Errorf("Erro ao publicar mensagem na fila.", err)
 	}
 	err = q.ch.Publish(
-		"",     // exchange
-		ResultQueueName, // routing key
-		false,  // mandatory
-		false,  // immediate
+		"",                             // exchange
+		infrastructure.ResultQueueName, // routing key
+		false,                          // mandatory
+		false,                          // immediate
 		amqp.Publishing{
 			ContentType: "application/json",
 			Body:        []byte(body),

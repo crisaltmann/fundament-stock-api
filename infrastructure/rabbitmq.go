@@ -1,18 +1,18 @@
 package infrastructure
 
 import (
-	asset_repository "github.com/crisaltmann/fundament-stock-api/pkg/asset/repository"
 	"github.com/streadway/amqp"
 	"log"
 	"os"
 )
 
 func CreateRabbitMQCon() *amqp.Connection {
-	amqUrl := os.Getenv("amqps://nstsjpmi:dN9SFZIn2R-MBDXeMaF63KKJbzB_0x6K@baboon.rmq.cloudamqp.com/nstsjpmi")
+	amqUrl := os.Getenv("CLOUDAMQP_URL")
 	if amqUrl == "" {
-		panic("URL RabbitMQ nao encontrada.")
+		log.Printf("URL RabbitMQ nao encontrada. Usando valor default")
+		amqUrl = "amqps://nstsjpmi:dN9SFZIn2R-MBDXeMaF63KKJbzB_0x6K@baboon.rmq.cloudamqp.com/nstsjpmi"
 	}
-	conn, err := amqp.Dial("amqps://xruxgkhh:7z2_613ze4F7qjbjfbkE43-hHuQ8_YaT@baboon.rmq.cloudamqp.com/xruxgkhh")
+	conn, err := amqp.Dial(amqUrl)
 	failOnError(err, "Failed to connect to RabbitMQ")
 	//defer conn.Close()
 
@@ -32,12 +32,12 @@ func ConfigureQueue(ch *amqp.Channel) {
 
 func configureQuarterlyResultQueue(ch *amqp.Channel) {
 	_, err := ch.QueueDeclare(
-		asset_repository.ResultQueueName, // name
-		false,   // durable
-		false,   // delete when unused
-		false,   // exclusive
-		false,   // no-wait
-		nil,     // arguments
+		ResultQueueName, // name
+		false,           // durable
+		false,           // delete when unused
+		false,           // exclusive
+		false,           // no-wait
+		nil,             // arguments
 	)
 	failOnError(err, "Failed to declare a queue")
 }
