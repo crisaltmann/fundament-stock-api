@@ -6,7 +6,7 @@ database:
   password: Test123%
   hostname: youasholding.database.windows.net
   port: 1433
-  url: postgres://zyjgextzreodlm:d14edbbaee478055a441c94b6c5c13c5b9e0fc4e3a3d5b24a4387796a2b24418@ec2-23-22-191-232.compute-1.amazonaws.com:5432/dafnb12r2vel7t
+  url: postgres://svwxriprmoggel:be49cb98e3865a0da0774d3df72c373152ca4a1561aeda0ca1b9724455a68621@ec2-52-0-114-209.compute-1.amazonaws.com:5432/d4pupkl4mjp541
 #job:
 #  asset-sync:
 #    cron: * 0/1 * * * *
