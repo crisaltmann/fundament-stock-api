@@ -25,7 +25,7 @@ var rxURL = regexp.MustCompile(`^/regexp\d*`)
 
 func configureServer(conf *config.Config) *server.Server {
 	r := gin.New()
-	configureLog(r)
+	configureMiddlewares(r)
 	server := &server.Server{
 		Config: conf,
 		Server: r,
@@ -33,9 +33,10 @@ func configureServer(conf *config.Config) *server.Server {
 	return server
 }
 
-func configureLog(r *gin.Engine) {
+func configureMiddlewares(r *gin.Engine) {
 	r.Use(logger.SetLogger())
 	r.Use(middlewares.ErrorHandler)
+	r.Use(middlewares.CORSMiddleware())
 
 	// Custom logger
 	subLog := zerolog.New(os.Stdout).With().
