@@ -15,7 +15,7 @@ func NewRepository(db *sql.DB) Repository {
 }
 
 func (r Repository) GetPortfolio(usuario string) ([]portfolio_domain.Portfolio, error) {
-	rows, err := r.DB.Query("select a.id, a.codigo, a.logo, a.cotacao, sum(m.quantidade), m.id_usuario from movimentacao m " +
+	rows, err := r.DB.Query("select a.id, a.codigo, a.logo, a.total, a.cotacao, sum(m.quantidade), m.id_usuario from movimentacao m " +
 		"inner join ativo a on m.id_ativo = a.id  " +
 		"where m.id_usuario = $1" +
 		"group by a.id, a.codigo, a.logo, a.cotacao, m.id_usuario ", usuario)
@@ -30,7 +30,7 @@ func (r Repository) GetPortfolio(usuario string) ([]portfolio_domain.Portfolio, 
 	for rows.Next() {
 		item := portfolio_domain.Portfolio{}
 		cotacao := sql.NullFloat64{}
-		err := rows.Scan(&item.Ativo.Id, &item.Ativo.Codigo, &item.Ativo.Logo, &cotacao, &item.Quantidade, &item.Usuario)
+		err := rows.Scan(&item.Ativo.Id, &item.Ativo.Codigo, &item.Ativo.Logo, &item.Ativo.Total, &cotacao, &item.Quantidade, &item.Usuario)
 		if cotacao.Valid {
 			item.Ativo.Cotacao = float32(cotacao.Float64)
 		}

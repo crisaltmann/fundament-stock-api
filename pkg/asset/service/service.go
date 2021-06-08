@@ -4,12 +4,15 @@ import (
 	"github.com/crisaltmann/fundament-stock-api/internal"
 	"github.com/crisaltmann/fundament-stock-api/pkg/asset/domain"
 	"github.com/crisaltmann/fundament-stock-api/pkg/asset/event"
+	"github.com/patrickmn/go-cache"
 	"github.com/rs/zerolog/log"
+	"strconv"
 	"time"
 )
 
 type Service struct {
 	Repository                     Repository
+	Cache 						   *cache.Cache
 	StockPriceRepository           StockPriceRepository
 	AssetQuarterlyResultRepository AssetQuarterlyResultRepository
 	QuarterlyProducer              event.QuarterlyResultProducer
@@ -37,11 +40,15 @@ type AssetQuarterlyResultRepository interface {
 
 func NewService(repository Repository, stockPriceRepository StockPriceRepository, assetQResultRepository AssetQuarterlyResultRepository,
 	quarterlyProducer event.QuarterlyResultProducer) Service {
+
+	cache := cache.New(1*time.Hour, 10*time.Minute)
+
 	return Service{
 		Repository: repository,
 		StockPriceRepository: stockPriceRepository,
 		AssetQuarterlyResultRepository: assetQResultRepository,
 		QuarterlyProducer: quarterlyProducer,
+		Cache: cache,
 	}
 }
 
@@ -54,7 +61,17 @@ func (s Service) ExistById(id int64) (bool, error) {
 }
 
 func (s Service) GetById(id int64) (asset_domain.Asset, error) {
-	return s.Repository.GetById(id)
+	asset, found :=  s.Cache.Get(strconv.FormatInt(id, 10))
+	if found {
+		return asset.(asset_domain.Asset), nil
+	}
+
+	assetDB, err := s.Repository.GetById(id)
+
+	if err != nil {
+		s.Cache.Add(strconv.FormatInt(id, 10), assetDB, cache.DefaultExpiration)
+	}
+	return assetDB, err
 }
 
 func (s Service) InsertAsset(asset asset_domain.Asset) (bool, error) {
