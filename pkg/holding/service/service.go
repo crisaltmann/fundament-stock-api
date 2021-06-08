@@ -68,25 +68,39 @@ func (s Service) GetHolding(usuario string) (holding_domain.Holdings, error) {
 		}
 
 		for _, quarterlyItem := range quarterlyResults {
-			quarter, err := s.QuarterService.GetQuarter(quarterlyItem.Trimestre)
-			if err != nil {
-				log.Print("Erro ao buscar quarter.")
-				return holding_domain.Holdings{}, errors.New("Erro ao buscar quarter.")
+			holdings, err2 := s.buildHoldingQuarterlyResult(quarterlyItem, resultadosHolding, item)
+			if err2 != nil {
+				return holdings, err2
 			}
-
-			holdingQuarterly, exist := resultadosHolding[quarterlyItem.Trimestre]
-			if !exist {
-				holdingQuarterly = &holding_domain.Holding{
-					Trimestre:      quarter,
-				}
-				resultadosHolding[quarterlyItem.Trimestre] = holdingQuarterly
-			}
-			holdingQuarterly.ReceitaLiquida = CalcularFundamentos(item, quarterlyItem)
 		}
 	}
 
+	return s.buildHoldingReturn(resultadosHolding)
+}
+
+func (s Service) buildHoldingQuarterlyResult(quarterlyItem asset_domain.AssetQuarterlyResult, resultadosHolding map[int64]*holding_domain.Holding,
+	portfolioItem portfolio_domain.Portfolio) (holding_domain.Holdings, error) {
+	quarter, err := s.QuarterService.GetQuarter(quarterlyItem.Trimestre)
+	if err != nil {
+		log.Print("Erro ao buscar quarter.")
+		return holding_domain.Holdings{}, errors.New("Erro ao buscar quarter.")
+	}
+
+	holdingQuarterly, exist := resultadosHolding[quarterlyItem.Trimestre]
+	if !exist {
+		holdingQuarterly = holding_domain.Holding{
+			Trimestre: quarter,
+		}
+		resultadosHolding[quarterlyItem.Trimestre] = holdingQuarterly
+	}
+	holdingQuarterly.ReceitaLiquida = CalcularFundamentos(portfolioItem, quarterlyItem)
+	return holding_domain.Holdings{}, nil
+}
+
+func (s Service) buildHoldingReturn(resultadosHolding map[int64]*holding_domain.Holding) (holding_domain.Holdings, error) {
 	holdings := make([]holding_domain.Holding, 0)
 	for _, result := range resultadosHolding {
+		//holdings = append(holdings, (result))
 		holdings = append(holdings, holding_domain.Holding{
 			Trimestre:      result.Trimestre,
 			ReceitaLiquida: result.ReceitaLiquida,
