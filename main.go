@@ -34,6 +34,7 @@ func main() {
 		api.Order,
 		api.Portfolio,
 		api.Quarter,
+		api.Holding,
 		job.AssetSync,
 		fx.Invoke(
 			server.InitServer,
