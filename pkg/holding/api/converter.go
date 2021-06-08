@@ -2,17 +2,17 @@ package holding_api
 
 import "github.com/crisaltmann/fundament-stock-api/pkg/holding/domain"
 
-func convertHoldingsDomainToDto(holdings holding_domain.Holdings) Holdings {
+func convertHoldingsDomainToDto(holdings holding_domain.Holdings, expandirAtivos bool) Holdings {
 	holdingsDTO := make([]Holding, 0)
 	if len(holdings.Holdings) > 0 {
 		for _, h := range holdings.Holdings {
-			holdingsDTO = append(holdingsDTO, convertDomainToDto(h))
+			holdingsDTO = append(holdingsDTO, convertDomainToDto(h, expandirAtivos))
 		}
 	}
 	return Holdings{Holdings: holdingsDTO}
 }
 
-func convertDomainToDto(holding holding_domain.Holding) Holding {
+func convertDomainToDto(holding holding_domain.Holding, expandirAtivos bool) Holding {
 	return Holding{
 		Trimestre:      convertTrimestreToDto(holding),
 		ReceitaLiquida: holding.ReceitaLiquida,
