@@ -106,7 +106,7 @@ func (s Service) buildQuarterly(quarterlyItem asset_domain.AssetQuarterlyResult,
 		}
 		resultadosHolding[quarterlyItem.Trimestre] = holdingQuarterly
 	}
-	holdingQuarterly.ReceitaLiquida = CalcularFundamentos(portfolioItem, quarterlyItem)
+	holdingQuarterly.ReceitaLiquida += CalcularFundamentos(portfolioItem, quarterlyItem)
 }
 
 func (s Service) buildQuarterlyAtivo(quarterlyItem asset_domain.AssetQuarterlyResult, portfolioItem portfolio_domain.Portfolio,
@@ -115,13 +115,13 @@ func (s Service) buildQuarterlyAtivo(quarterlyItem asset_domain.AssetQuarterlyRe
 	holdingQuarterlyAtivo, exist := resultadosHoldingByAtivo[key]
 	if !exist {
 		holdingQuarterlyAtivo = &holding_domain.HoldingAtivo{
-			Trimestre: quarterlyItem.Trimestre,
+			Trimestre: quarter.Id,
 			Ativo: ativo,
 		}
 		resultadosHoldingByAtivo[key] = holdingQuarterlyAtivo
 	}
 
-	holdingQuarterlyAtivo.ReceitaLiquida = CalcularFundamentos(portfolioItem, quarterlyItem)
+	holdingQuarterlyAtivo.ReceitaLiquida += CalcularFundamentos(portfolioItem, quarterlyItem)
 }
 
 func (s Service) buildHoldingReturn(resultadosHolding map[int64]*holding_domain.Holding, resultadosHoldingByAtivo map[string]*holding_domain.HoldingAtivo) (holding_domain.Holdings, error) {
@@ -131,6 +131,9 @@ func (s Service) buildHoldingReturn(resultadosHolding map[int64]*holding_domain.
 		holdingsAtivo := make([]holding_domain.HoldingAtivo, 0)
 
 		for _, holAtivo := range resultadosHoldingByAtivo {
+			if holAtivo.Trimestre != result.Trimestre.Id {
+				continue
+			}
 			h := holding_domain.HoldingAtivo{
 				Ativo:          holAtivo.Ativo,
 				Trimestre:      holAtivo.Trimestre,
