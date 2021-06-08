@@ -18,7 +18,7 @@ type Repository interface {
 }
 
 func NewService(repository Repository) Service {
-	cache := cache.New(1*time.Minute, 1*time.Minute)
+	cache := cache.New(1*time.Hour, 10*time.Minute)
 	return Service{
 		Repository: repository,
 		Cache: cache,
