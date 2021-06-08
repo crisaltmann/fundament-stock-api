@@ -5,12 +5,14 @@ import (
 	asset_domain "github.com/crisaltmann/fundament-stock-api/pkg/asset/domain"
 	holding_domain "github.com/crisaltmann/fundament-stock-api/pkg/holding/domain"
 	portfolio_domain "github.com/crisaltmann/fundament-stock-api/pkg/portfolio/domain"
+	quarter_domain "github.com/crisaltmann/fundament-stock-api/pkg/quarter/domain"
 	"github.com/rs/zerolog/log"
 )
 
 type Service struct {
 	PortfolioService PortfolioService
 	AssetService AssetService
+	QuarterService QuarterService
 }
 
 type PortfolioService interface {
@@ -21,11 +23,15 @@ type AssetService interface {
 	GetAssetQuarterlyResults(assetId int64) ([]asset_domain.AssetQuarterlyResult, error)
 }
 
+type QuarterService interface {
+	GetQuarter(id int64) (quarter_domain.Trimestre, error)
+}
 
-func NewService(portfolioService PortfolioService, assetService AssetService) Service {
+func NewService(portfolioService PortfolioService, assetService AssetService, quarterService QuarterService) Service {
 	return Service{
 		PortfolioService: portfolioService,
 		AssetService:     assetService,
+		QuarterService: quarterService,
 	}
 }
 
@@ -48,8 +54,7 @@ func (s Service) GetHolding(usuario string) (holding_domain.Holdings, error) {
 		if item.Ativo.Codigo != "WEGE3" {
 			continue
 		}
-		//tem o ativo
-		//buscar todos os resultados deste ativo
+
 		quarterlyResults, err := s.AssetService.GetAssetQuarterlyResults(item.Ativo.Id)
 		if err != nil {
 			log.Print("Erro ao buscar resultados trimestrais dos ativos no portfolio no calculo de holding.")
@@ -63,11 +68,16 @@ func (s Service) GetHolding(usuario string) (holding_domain.Holdings, error) {
 		}
 
 		for _, quarterlyItem := range quarterlyResults {
+			quarter, err := s.QuarterService.GetQuarter(quarterlyItem.Trimestre)
+			if err != nil {
+				log.Print("Erro ao buscar quarter.")
+				return holding_domain.Holdings{}, errors.New("Erro ao buscar quarter.")
+			}
+
 			holdingQuarterly, exist := resultadosHolding[quarterlyItem.Trimestre]
 			if !exist {
 				holdingQuarterly = &holding_domain.Holding{
-					Id:             0,
-					Trimestre:      quarterlyItem.Trimestre,
+					Trimestre:      quarter,
 				}
 				resultadosHolding[quarterlyItem.Trimestre] = holdingQuarterly
 			}
@@ -78,7 +88,6 @@ func (s Service) GetHolding(usuario string) (holding_domain.Holdings, error) {
 	holdings := make([]holding_domain.Holding, 0)
 	for _, result := range resultadosHolding {
 		holdings = append(holdings, holding_domain.Holding{
-			Id:             result.Id,
 			Trimestre:      result.Trimestre,
 			ReceitaLiquida: result.ReceitaLiquida,
 			Ebitda:         0,
