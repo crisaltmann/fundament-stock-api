@@ -4,7 +4,7 @@ import (
 	"github.com/crisaltmann/fundament-stock-api/internal"
 	"github.com/crisaltmann/fundament-stock-api/pkg/asset/domain"
 	"github.com/crisaltmann/fundament-stock-api/pkg/asset/event"
-	"log"
+	"github.com/rs/zerolog/log"
 	"time"
 )
 
@@ -74,16 +74,17 @@ func (s Service) UpdateAssetPrice(id int64, price float32, data time.Time) (bool
 	return ok, nil
 }
 
-func (s Service) InsertAssetPrice(id int64, price float32, data time.Time) (bool, error) {
-	assetPrice, err := s.StockPriceRepository.GetByAtivoEData(id, data)
+func (s Service) InsertAssetPrice(idAtivo int64, price float32, data time.Time) (bool, error) {
+	assetPrice, err := s.StockPriceRepository.GetByAtivoEData(idAtivo, data)
 	if err != nil {
 		return false, err
 	}
 	if assetPrice.Id != 0 {
+		log.Print("Asset Price já cadastrado %d - %v.", idAtivo, data)
 		return false, nil
 	}
 	updateAssetPrice := asset_domain.AssetPrice{
-		Ativo:   id,
+		Ativo:   idAtivo,
 		Cotacao: price,
 		Data:    data,
 	}
@@ -93,7 +94,7 @@ func (s Service) InsertAssetPrice(id int64, price float32, data time.Time) (bool
 func (s Service) InsertAssetQuarterlyResult(aqResult asset_domain.AssetQuarterlyResult) (bool, error) {
 	exist, err := s.AssetQuarterlyResultRepository.ExistAssetQuarterlyResult(aqResult.Ativo, aqResult.Trimestre)
 	if exist {
-		log.Println("Já existe um resultado cadastro para este trimestre.")
+		log.Print("Já existe um resultado cadastro para este trimestre.")
 		return false, nil
 	}
 	if err != nil {
