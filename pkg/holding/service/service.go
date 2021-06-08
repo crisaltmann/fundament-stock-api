@@ -125,6 +125,24 @@ func (s Service) buildHoldingQuarterlyResult(quarterlyItem asset_domain.AssetQua
 func (s Service) buildHoldingReturn(resultadosHolding map[int64]*holding_domain.Holding, resultadosHoldingByAtivo map[string]*holding_domain.HoldingAtivo) (holding_domain.Holdings, error) {
 	holdings := make([]holding_domain.Holding, 0)
 	for _, result := range resultadosHolding {
+
+		holdingsAtivo := make([]holding_domain.HoldingAtivo, 0)
+
+		for _, holAtivo := range resultadosHoldingByAtivo {
+			h := holding_domain.HoldingAtivo{
+				Ativo:          holAtivo.Ativo,
+				Trimestre:      holAtivo.Trimestre,
+				ReceitaLiquida: holAtivo.ReceitaLiquida,
+				Ebitda:         0,
+				MargemEbitda:   0,
+				LucroLiquido:   0,
+				MargemLiquida:  0,
+				DividaLiquida:  0,
+				DivEbitda:      0,
+			}
+			holdingsAtivo = append(holdingsAtivo, h)
+		}
+
 		holdings = append(holdings, holding_domain.Holding{
 			Trimestre:      result.Trimestre,
 			ReceitaLiquida: result.ReceitaLiquida,
@@ -134,6 +152,7 @@ func (s Service) buildHoldingReturn(resultadosHolding map[int64]*holding_domain.
 			MargemLiquida:  0,
 			DividaLiquida:  0,
 			DivEbitda:      0,
+			HoldingsAtivo: holdingsAtivo,
 		})
 	}
 	return holding_domain.Holdings{Holdings: holdings}, nil

@@ -17,7 +17,7 @@ type Holding struct {
 }
 
 type HoldingAtivo struct {
-	Ativo				Asset 		`json:"ativo"`
+	Ativo				Ativo 		`json:"ativo"`
 	Trimestre    		int64		`json:"id_trimestre"`
 	ReceitaLiquida	    int64 		`json:"receita_liquida"`
 	Ebitda	     		int64		`json:"ebitda"`
@@ -28,7 +28,7 @@ type HoldingAtivo struct {
 	DivEbitda			float32     `json:"div_ebitda"`
 }
 
-type Asset struct {
+type Ativo struct {
 	Id     	int64  `json:"id"`
 	Codigo 	string `json:"codigo"`
 	Nome   	string `json:"nome"`
