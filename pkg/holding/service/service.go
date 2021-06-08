@@ -21,6 +21,7 @@ type PortfolioService interface {
 
 type AssetService interface {
 	GetAssetQuarterlyResults(assetId int64) ([]asset_domain.AssetQuarterlyResult, error)
+	GetById(id int64) (asset_domain.Asset, error)
 }
 
 type QuarterService interface {
@@ -49,13 +50,14 @@ func (s Service) GetHolding(usuario string) (holding_domain.Holdings, error) {
 	}
 
 	resultadosHolding := make(map[int64]*holding_domain.Holding)
+	resultadosHoldingByAtivo := make(map[string]*holding_domain.HoldingAtivo)
 
-	for _, item := range portfolio {
-		if item.Ativo.Codigo != "WEGE3" {
+	for _, portfolioItem := range portfolio {
+		if portfolioItem.Ativo.Codigo != "WEGE3" {
 			continue
 		}
 
-		quarterlyResults, err := s.AssetService.GetAssetQuarterlyResults(item.Ativo.Id)
+		quarterlyResults, err := s.AssetService.GetAssetQuarterlyResults(portfolioItem.Ativo.Id)
 		if err != nil {
 			log.Print("Erro ao buscar resultados trimestrais dos ativos no portfolio no calculo de holding.")
 			return holding_domain.Holdings{}, errors.New("Erro ao buscar resultados trimestrais dos ativos no portfolio no calculo de holding.")
@@ -68,39 +70,61 @@ func (s Service) GetHolding(usuario string) (holding_domain.Holdings, error) {
 		}
 
 		for _, quarterlyItem := range quarterlyResults {
-			holdings, err2 := s.buildHoldingQuarterlyResult(quarterlyItem, resultadosHolding, item)
+			holdings, err2 := s.buildHoldingQuarterlyResult(quarterlyItem, portfolioItem, resultadosHolding, resultadosHoldingByAtivo)
 			if err2 != nil {
 				return holdings, err2
 			}
 		}
 	}
 
-	return s.buildHoldingReturn(resultadosHolding)
+	return s.buildHoldingReturn(resultadosHolding, resultadosHoldingByAtivo)
 }
 
-func (s Service) buildHoldingQuarterlyResult(quarterlyItem asset_domain.AssetQuarterlyResult, resultadosHolding map[int64]*holding_domain.Holding,
-	portfolioItem portfolio_domain.Portfolio) (holding_domain.Holdings, error) {
+func (s Service) buildHoldingQuarterlyResult(quarterlyItem asset_domain.AssetQuarterlyResult, portfolioItem portfolio_domain.Portfolio,
+	resultadosHolding map[int64]*holding_domain.Holding,
+	resultadosHoldingByAtivo map[string]*holding_domain.HoldingAtivo) (holding_domain.Holdings, error) {
+
 	quarter, err := s.QuarterService.GetQuarter(quarterlyItem.Trimestre)
 	if err != nil {
 		log.Print("Erro ao buscar quarter.")
 		return holding_domain.Holdings{}, errors.New("Erro ao buscar quarter.")
 	}
 
+	ativo, err := s.AssetService.GetById(quarterlyItem.Ativo)
+	if err != nil {
+		log.Print("Erro ao buscar ativo.")
+		return holding_domain.Holdings{}, errors.New("Erro ao buscar ativo.")
+	}
+
 	holdingQuarterly, exist := resultadosHolding[quarterlyItem.Trimestre]
 	if !exist {
-		holdingQuarterly = holding_domain.Holding{
+		holdingQuarterly = &holding_domain.Holding{
 			Trimestre: quarter,
 		}
 		resultadosHolding[quarterlyItem.Trimestre] = holdingQuarterly
 	}
 	holdingQuarterly.ReceitaLiquida = CalcularFundamentos(portfolioItem, quarterlyItem)
+
+	key := quarter.Codigo + "-" + ativo.Codigo
+	holdingQuarterlyAtivo, exist := resultadosHoldingByAtivo[key]
+	if !exist {
+		holdingQuarterlyAtivo = &holding_domain.HoldingAtivo{
+			Trimestre: quarterlyItem.Trimestre,
+			Ativo: ativo,
+		}
+		resultadosHoldingByAtivo[key] = holdingQuarterlyAtivo
+	}
+
+	holdingQuarterlyAtivo.ReceitaLiquida = CalcularFundamentos(portfolioItem, quarterlyItem)
+	holdingQuarterly.ReceitaLiquida = CalcularFundamentos(portfolioItem, quarterlyItem)
+
+
 	return holding_domain.Holdings{}, nil
 }
 
-func (s Service) buildHoldingReturn(resultadosHolding map[int64]*holding_domain.Holding) (holding_domain.Holdings, error) {
+func (s Service) buildHoldingReturn(resultadosHolding map[int64]*holding_domain.Holding, resultadosHoldingByAtivo map[string]*holding_domain.HoldingAtivo) (holding_domain.Holdings, error) {
 	holdings := make([]holding_domain.Holding, 0)
 	for _, result := range resultadosHolding {
-		//holdings = append(holdings, (result))
 		holdings = append(holdings, holding_domain.Holding{
 			Trimestre:      result.Trimestre,
 			ReceitaLiquida: result.ReceitaLiquida,

@@ -1,7 +1,7 @@
 package holding_domain
 
 import (
-	portfolio_domain "github.com/crisaltmann/fundament-stock-api/pkg/portfolio/domain"
+	asset_domain "github.com/crisaltmann/fundament-stock-api/pkg/asset/domain"
 	quarter_domain "github.com/crisaltmann/fundament-stock-api/pkg/quarter/domain"
 )
 
@@ -22,7 +22,7 @@ type Holding struct {
 }
 
 type HoldingAtivo struct {
-	Ativo				portfolio_domain.Ativo
+	Ativo				asset_domain.Asset
 	Trimestre    		int64
 	ReceitaLiquida	    int64
 	Ebitda	     		int64
