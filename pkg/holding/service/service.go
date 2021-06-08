@@ -53,10 +53,6 @@ func (s Service) GetHolding(usuario string) (holding_domain.Holdings, error) {
 	resultadosHoldingByAtivo := make(map[string]*holding_domain.HoldingAtivo)
 
 	for _, portfolioItem := range portfolio {
-		if portfolioItem.Ativo.Codigo != "WEGE3" {
-			continue
-		}
-
 		quarterlyResults, err := s.AssetService.GetAssetQuarterlyResults(portfolioItem.Ativo.Id)
 		if err != nil {
 			log.Print("Erro ao buscar resultados trimestrais dos ativos no portfolio no calculo de holding.")
@@ -65,14 +61,13 @@ func (s Service) GetHolding(usuario string) (holding_domain.Holdings, error) {
 
 		if len(quarterlyResults) == 0 {
 			log.Print("Não foram encontrados resultados trimestrais dos ativos no portfolio do usuario " + usuario)
-			holdings := make([]holding_domain.Holding, 0)
-			return holding_domain.Holdings{ Holdings: holdings}, nil
+			continue
 		}
 
 		for _, quarterlyItem := range quarterlyResults {
-			holdings, err2 := s.buildHoldingQuarterlyResult(quarterlyItem, portfolioItem, resultadosHolding, resultadosHoldingByAtivo)
+			err2 := s.buildHoldingQuarterlyResult(quarterlyItem, portfolioItem, resultadosHolding, resultadosHoldingByAtivo)
 			if err2 != nil {
-				return holdings, err2
+				return holding_domain.Holdings{}, err2
 			}
 		}
 	}
@@ -82,20 +77,28 @@ func (s Service) GetHolding(usuario string) (holding_domain.Holdings, error) {
 
 func (s Service) buildHoldingQuarterlyResult(quarterlyItem asset_domain.AssetQuarterlyResult, portfolioItem portfolio_domain.Portfolio,
 	resultadosHolding map[int64]*holding_domain.Holding,
-	resultadosHoldingByAtivo map[string]*holding_domain.HoldingAtivo) (holding_domain.Holdings, error) {
+	resultadosHoldingByAtivo map[string]*holding_domain.HoldingAtivo) (error) {
 
 	quarter, err := s.QuarterService.GetQuarter(quarterlyItem.Trimestre)
 	if err != nil {
 		log.Print("Erro ao buscar quarter.")
-		return holding_domain.Holdings{}, errors.New("Erro ao buscar quarter.")
+		return errors.New("Erro ao buscar quarter.")
 	}
 
 	ativo, err := s.AssetService.GetById(quarterlyItem.Ativo)
 	if err != nil {
 		log.Print("Erro ao buscar ativo.")
-		return holding_domain.Holdings{}, errors.New("Erro ao buscar ativo.")
+		return errors.New("Erro ao buscar ativo.")
 	}
 
+	s.buildQuarterly(quarterlyItem, portfolioItem, quarter, resultadosHolding)
+	s.buildQuarterlyAtivo(quarterlyItem, portfolioItem, quarter, ativo, resultadosHoldingByAtivo)
+
+	return nil
+}
+
+func (s Service) buildQuarterly(quarterlyItem asset_domain.AssetQuarterlyResult, portfolioItem portfolio_domain.Portfolio,
+	quarter quarter_domain.Trimestre, resultadosHolding map[int64]*holding_domain.Holding) {
 	holdingQuarterly, exist := resultadosHolding[quarterlyItem.Trimestre]
 	if !exist {
 		holdingQuarterly = &holding_domain.Holding{
@@ -104,7 +107,10 @@ func (s Service) buildHoldingQuarterlyResult(quarterlyItem asset_domain.AssetQua
 		resultadosHolding[quarterlyItem.Trimestre] = holdingQuarterly
 	}
 	holdingQuarterly.ReceitaLiquida = CalcularFundamentos(portfolioItem, quarterlyItem)
+}
 
+func (s Service) buildQuarterlyAtivo(quarterlyItem asset_domain.AssetQuarterlyResult, portfolioItem portfolio_domain.Portfolio,
+	quarter quarter_domain.Trimestre, ativo asset_domain.Asset, resultadosHoldingByAtivo map[string]*holding_domain.HoldingAtivo) {
 	key := quarter.Codigo + "-" + ativo.Codigo
 	holdingQuarterlyAtivo, exist := resultadosHoldingByAtivo[key]
 	if !exist {
@@ -116,10 +122,6 @@ func (s Service) buildHoldingQuarterlyResult(quarterlyItem asset_domain.AssetQua
 	}
 
 	holdingQuarterlyAtivo.ReceitaLiquida = CalcularFundamentos(portfolioItem, quarterlyItem)
-	holdingQuarterly.ReceitaLiquida = CalcularFundamentos(portfolioItem, quarterlyItem)
-
-
-	return holding_domain.Holdings{}, nil
 }
 
 func (s Service) buildHoldingReturn(resultadosHolding map[int64]*holding_domain.Holding, resultadosHoldingByAtivo map[string]*holding_domain.HoldingAtivo) (holding_domain.Holdings, error) {
