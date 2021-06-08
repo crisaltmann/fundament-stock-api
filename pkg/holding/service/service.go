@@ -37,12 +37,12 @@ func (s Service) GetHolding(usuario string) (holding_domain.Holdings, error) {
 	}
 
 	if len(portfolio) == 0 {
-		log.Print("Não foram encontrados ativos no portfolio do usuario %d.", usuario)
+		log.Print("Não foram encontrados ativos no portfolio do usuario " + usuario)
 		holdings := make([]holding_domain.Holding, 0)
 		return holding_domain.Holdings{ Holdings: holdings}, nil
 	}
 
-	resultadosHolding := make(map[int64]holding_domain.Holding)
+	resultadosHolding := make(map[int64]*holding_domain.Holding)
 
 	for _, item := range portfolio {
 		if item.Ativo.Codigo != "WEGE3" {
@@ -57,7 +57,7 @@ func (s Service) GetHolding(usuario string) (holding_domain.Holdings, error) {
 		}
 
 		if len(quarterlyResults) == 0 {
-			log.Print("Não foram encontrados resultados trimestrais dos ativos no portfolio do usuario %d.", usuario)
+			log.Print("Não foram encontrados resultados trimestrais dos ativos no portfolio do usuario " + usuario)
 			holdings := make([]holding_domain.Holding, 0)
 			return holding_domain.Holdings{ Holdings: holdings}, nil
 		}
@@ -65,55 +65,36 @@ func (s Service) GetHolding(usuario string) (holding_domain.Holdings, error) {
 		for _, quarterlyItem := range quarterlyResults {
 			holdingQuarterly, exist := resultadosHolding[quarterlyItem.Trimestre]
 			if !exist {
-				holdingQuarterly = holding_domain.Holding{
+				holdingQuarterly = &holding_domain.Holding{
 					Id:             0,
 					Trimestre:      quarterlyItem.Trimestre,
 				}
 				resultadosHolding[quarterlyItem.Trimestre] = holdingQuarterly
 			}
-			//calcular o percentual
-			percentualDetido := float32(item.Quantidade) / float32(item.Ativo.Total)
-			//somar os percentuais do trimestre
-			holdingQuarterly.ReceitaLiquida += int64(float32(quarterlyItem.ReceitaLiquida) * percentualDetido)
+			holdingQuarterly.ReceitaLiquida = CalcularFundamentos(item, quarterlyItem)
 		}
 	}
 
-	holdings := make([]holding_domain.Holding, len(resultadosHolding))
+	holdings := make([]holding_domain.Holding, 0)
 	for _, result := range resultadosHolding {
-		holdings = append(holdings, result)
+		holdings = append(holdings, holding_domain.Holding{
+			Id:             result.Id,
+			Trimestre:      result.Trimestre,
+			ReceitaLiquida: result.ReceitaLiquida,
+			Ebitda:         0,
+			MargemEbitda:   0,
+			LucroLiquido:   0,
+			MargemLiquida:  0,
+			DividaLiquida:  0,
+			DivEbitda:      0,
+		})
 	}
 	return holding_domain.Holdings{Holdings: holdings}, nil
 }
 
-func (s Service) GetHoldingMock(usuario string) (holding_domain.Holdings, error) {
-	holdings := make([]holding_domain.Holding, 0)
-
-	h1 := holding_domain.Holding{
-		Id:             1,
-		Trimestre:      2,
-		ReceitaLiquida: 100,
-		Ebitda:         200,
-		MargemEbitda:   0,
-		LucroLiquido:   0,
-		MargemLiquida:  0,
-		DividaLiquida:  0,
-		DivEbitda:      0,
-	}
-
-	h2 := holding_domain.Holding{
-		Id:             2,
-		Trimestre:      2,
-		ReceitaLiquida: 100,
-		Ebitda:         200,
-		MargemEbitda:   2222,
-		LucroLiquido:   0,
-		MargemLiquida:  0,
-		DividaLiquida:  0123111111,
-		DivEbitda:      0,
-	}
-
-	holdings = append(holdings, h1)
-	holdings = append(holdings, h2)
-
-	return holding_domain.Holdings{Holdings: holdings}, nil
+func CalcularFundamentos(item portfolio_domain.Portfolio, quarterlyItem asset_domain.AssetQuarterlyResult) int64{
+	//calcular o percentual
+	percentualDetido := float32(item.Quantidade) / float32(item.Ativo.Total)
+	//somar os percentuais do trimestre
+	return int64(float32(quarterlyItem.ReceitaLiquida) * percentualDetido)
 }

@@ -2,7 +2,7 @@ package holding_api
 
 import (
 	"fmt"
-	holding_domain "github.com/crisaltmann/fundament-stock-api/pkg/holding/domain"
+	"github.com/crisaltmann/fundament-stock-api/pkg/holding/domain"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
@@ -16,7 +16,6 @@ type Handler struct {
 
 type Service interface {
 	GetHolding(usuario string) (holding_domain.Holdings, error)
-	GetHoldingMock(usuario string) (holding_domain.Holdings, error)
 }
 
 func NewHandler(service Service) Handler {
