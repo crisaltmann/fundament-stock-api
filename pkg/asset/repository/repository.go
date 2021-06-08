@@ -15,7 +15,7 @@ func NewRepository(db *sql.DB) Repository {
 }
 
 func (r Repository) UpdateAsset(asset asset_domain.Asset) (asset_domain.Asset, error) {
-	prepare, err := r.DB.Prepare("UPDATE ATIVO SET CODIGO = $2, NOME = $3, LOGO = $4, COTACAO = $5 WHERE ID = $1")
+	prepare, err := r.DB.Prepare("UPDATE ATIVO SET CODIGO = $2, NOME = $3, LOGO = $4, COTACAO = $5, TOTAL = $6 WHERE ID = $1")
 
 	if err != nil {
 		err = fmt.Errorf("Erro ao executar update de ativos", err)
@@ -23,7 +23,7 @@ func (r Repository) UpdateAsset(asset asset_domain.Asset) (asset_domain.Asset, e
 	}
 	defer prepare.Close()
 
-	_, err = prepare.Exec(asset.Id, asset.Codigo, asset.Nome, asset.Logo, asset.Cotacao)
+	_, err = prepare.Exec(asset.Id, asset.Codigo, asset.Nome, asset.Logo, asset.Cotacao, asset.Total)
 	if err != nil {
 		err = fmt.Errorf("Erro ao executar update de ativos", err)
 		return asset_domain.Asset{}, err
@@ -33,14 +33,14 @@ func (r Repository) UpdateAsset(asset asset_domain.Asset) (asset_domain.Asset, e
 
 func (r Repository) InsertAsset(asset asset_domain.Asset) (bool, error) {
 
-	prepare, err := r.DB.Prepare("INSERT INTO ATIVO (CODIGO, NOME, LOGO) VALUES ($1, $2, $3)")
+	prepare, err := r.DB.Prepare("INSERT INTO ATIVO (CODIGO, NOME, LOGO, TOTAL) VALUES ($1, $2, $3, $4)")
 
 	if err != nil {
 		err = fmt.Errorf("Erro ao executar insert de ativos", err)
 		return false, err
 	}
 
-	_, err = prepare.Exec(asset.Codigo, asset.Nome, asset.Logo)
+	_, err = prepare.Exec(asset.Codigo, asset.Nome, asset.Logo, asset.Total)
 	if err != nil {
 		err = fmt.Errorf("Erro ao executar insert de ativos", err)
 		return false, err
@@ -49,7 +49,7 @@ func (r Repository) InsertAsset(asset asset_domain.Asset) (bool, error) {
 }
 
 func (r Repository) GetAllAsset() ([]asset_domain.Asset, error) {
-	rows, err := r.DB.Query("select id, codigo, nome, logo FROM ATIVO")
+	rows, err := r.DB.Query("select id, codigo, nome, logo, total FROM ATIVO")
 	defer rows.Close()
 
 	if err != nil {
@@ -61,7 +61,7 @@ func (r Repository) GetAllAsset() ([]asset_domain.Asset, error) {
 	for rows.Next() {
 		asset := asset_domain.Asset{}
 		err := rows.Scan(&asset.Id,
-			&asset.Codigo, &asset.Nome, &asset.Logo)
+			&asset.Codigo, &asset.Nome, &asset.Logo, &asset.Total)
 		if err != nil {
 			err = fmt.Errorf("Erro ao executar busca de ativos", err)
 			return nil, err
@@ -72,7 +72,7 @@ func (r Repository) GetAllAsset() ([]asset_domain.Asset, error) {
 }
 
 func (r Repository) GetById(id int64) (asset_domain.Asset, error) {
-	rows, err := r.DB.Query("SELECT id, codigo, nome, logo FROM ATIVO WHERE id = $1", id)
+	rows, err := r.DB.Query("SELECT id, codigo, nome, logo, total FROM ATIVO WHERE id = $1", id)
 	defer rows.Close()
 
 	if err != nil {
@@ -83,7 +83,7 @@ func (r Repository) GetById(id int64) (asset_domain.Asset, error) {
 	asset := asset_domain.Asset{}
 	for rows.Next() {
 		err := rows.Scan(&asset.Id,
-			&asset.Nome, &asset.Codigo, &asset.Logo)
+			&asset.Nome, &asset.Codigo, &asset.Logo, &asset.Total)
 		if err != nil {
 			err = fmt.Errorf("Erro ao executar busca de ativos por id", err)
 			return asset_domain.Asset{}, err

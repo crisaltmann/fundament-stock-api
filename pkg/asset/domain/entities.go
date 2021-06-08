@@ -8,6 +8,7 @@ type Asset struct {
 	Nome   	string
 	Logo   	string
 	Cotacao float32
+	Total   int64
 }
 
 type AssetPrice struct {
