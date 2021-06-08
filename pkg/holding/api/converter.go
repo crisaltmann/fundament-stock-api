@@ -16,7 +16,6 @@ func convertDomainToDto(holding holding_domain.Holding) Holding {
 	return Holding{
 		Id:             holding.Id,
 		Trimestre:      holding.Trimestre,
-		Ativo:          holding.Ativo,
 		ReceitaLiquida: holding.ReceitaLiquida,
 		Ebitda:         holding.Ebitda,
 		MargemEbitda:   holding.MargemEbitda,

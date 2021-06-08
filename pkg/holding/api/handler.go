@@ -16,6 +16,7 @@ type Handler struct {
 
 type Service interface {
 	GetHolding(usuario string) (holding_domain.Holdings, error)
+	GetHoldingMock(usuario string) (holding_domain.Holdings, error)
 }
 
 func NewHandler(service Service) Handler {

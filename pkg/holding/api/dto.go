@@ -7,7 +7,6 @@ type Holdings struct {
 type Holding struct {
 	Id              	int64 `json:"id"`
 	Trimestre    		int64 `json:"id_trimestre"`
-	Ativo	     		int64 `json:"id_ativo"`
 	ReceitaLiquida	    int64 `json:"receita_liquida"`
 	Ebitda	     		int64 `json:"ebitda"`
 	MargemEbitda		float32 `json:"margem_ebitda"`

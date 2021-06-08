@@ -11,5 +11,6 @@ type Ativo struct {
 	Id			int64
 	Codigo		string
 	Logo		string
+	Total		int64
 	Cotacao		float32
 }

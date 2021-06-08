@@ -7,7 +7,6 @@ type Holdings struct {
 type Holding struct {
 	Id              	int64
 	Trimestre    		int64
-	Ativo	     		int64
 	ReceitaLiquida	    int64
 	Ebitda	     		int64
 	MargemEbitda		float32
