@@ -51,7 +51,8 @@ CREATE TABLE IF NOT EXISTS COTACAO_ATIVO (
     id              serial          PRIMARY KEY,
     id_ativo        bigint          UNIQUE NOT NULL,
     data            date            NOT NULL,
-    cotacao         decimal(10,2)   NOT NULL
+    cotacao         decimal(10,2)   NOT NULL,
+    total           bigint          NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS RESULTADO_TRIMESTRE (

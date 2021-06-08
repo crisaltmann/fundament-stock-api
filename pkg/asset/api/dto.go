@@ -6,12 +6,14 @@ type AssetResponse struct {
 	Nome   	string `json:"nome"`
 	Logo   	string `json:"logo"`
 	Cotacao float32 `json:"cotacao"`
+	Total	int64   `json:"total"`
 }
 
 type AssetPostRequest struct {
 	Codigo string `json:"codigo"`
 	Nome   string `json:"nome"`
 	Logo   string `json:"logo""`
+	Total  int64  `json:"total"`
 }
 
 type AssetPutRequest struct {
@@ -19,6 +21,7 @@ type AssetPutRequest struct {
 	Nome    string `json:"nome"`
 	Logo    string `json:"logo"`
 	Cotacao float32 `json:"cotacao"`
+	Total   int64  `json:"total"`
 }
 
 type QuarterlyResultPostRequest struct {
