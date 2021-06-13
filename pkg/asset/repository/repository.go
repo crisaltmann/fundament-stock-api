@@ -4,14 +4,19 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/crisaltmann/fundament-stock-api/pkg/asset/domain"
+	"github.com/patrickmn/go-cache"
+	"strconv"
+	"time"
 )
 
 type Repository struct {
-	DB *sql.DB
+	DB       *sql.DB
+	cache 	 *cache.Cache
 }
 
 func NewRepository(db *sql.DB) Repository {
-	return Repository{DB: db}
+	cache := cache.New(1*time.Hour, 10*time.Minute)
+	return Repository{DB: db, cache: cache}
 }
 
 func (r Repository) UpdateAsset(asset asset_domain.Asset) (asset_domain.Asset, error) {
@@ -72,6 +77,11 @@ func (r Repository) GetAllAsset() ([]asset_domain.Asset, error) {
 }
 
 func (r Repository) GetById(id int64) (asset_domain.Asset, error) {
+	assetCache, found :=  r.cache.Get(strconv.FormatInt(id, 10))
+	if found {
+		return assetCache.(asset_domain.Asset), nil
+	}
+
 	rows, err := r.DB.Query("SELECT id, codigo, nome, logo, total FROM ATIVO WHERE id = $1", id)
 	defer rows.Close()
 
@@ -89,6 +99,11 @@ func (r Repository) GetById(id int64) (asset_domain.Asset, error) {
 			return asset_domain.Asset{}, err
 		}
 	}
+
+	if err != nil {
+		r.cache.Add(strconv.FormatInt(id, 10), asset, cache.DefaultExpiration)
+	}
+
 	return asset, nil
 }
 
