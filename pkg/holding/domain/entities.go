@@ -22,6 +22,8 @@ type Holding struct {
 }
 
 type HoldingAtivo struct {
+	Id					int64
+	Usuario				int64
 	Ativo				asset_domain.Asset
 	Trimestre    		int64
 	ReceitaLiquida	    int64
