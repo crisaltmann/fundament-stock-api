@@ -70,9 +70,9 @@ CREATE TABLE IF NOT EXISTS PORTFOLIO_TRIMESTRE (
     id_trimestre        bigint          NOT NULL,
     id_usuario          bigint          NOT NULL,
     id_ativo            bigint          NOT NULL,
-    quantidade          int             NOT NULL,
     receita_liquida     bigint          NOT NULL,
     ebitda              bigint          NOT NULL,
     lucro_liquido       bigint          NOT NULL,
     divida_liquida      bigint          NOT NULL
 );
+
