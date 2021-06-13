@@ -19,6 +19,13 @@ func NewRepository(db *sql.DB) Repository {
 	return Repository{DB: db, cache: cache}
 }
 
+func InitCache(r Repository) {
+	assets, _ := r.GetAllAsset()
+	for _, asset := range assets {
+		r.cache.Add(strconv.FormatInt(asset.Id, 10), asset, cache.DefaultExpiration)
+	}
+}
+
 func (r Repository) UpdateAsset(asset asset_domain.Asset) (asset_domain.Asset, error) {
 	prepare, err := r.DB.Prepare("UPDATE ATIVO SET CODIGO = $2, NOME = $3, LOGO = $4, COTACAO = $5, TOTAL = $6 WHERE ID = $1")
 

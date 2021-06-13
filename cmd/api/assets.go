@@ -13,6 +13,7 @@ var Asset = fx.Options(
 	assetfactories,
 	fx.Invoke(asset_api.MapRouter),
 	fx.Invoke(event.InitializeConsume),
+	fx.Invoke(asset_repository.InitCache),
 )
 
 var assetfactories = fx.Provide(
