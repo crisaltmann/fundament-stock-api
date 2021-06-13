@@ -8,6 +8,8 @@ definitions:
         type: string
       nome:
         type: string
+      total:
+        type: integer
     type: object
   asset_api.AssetPutRequest:
     properties:
@@ -19,6 +21,8 @@ definitions:
         type: string
       nome:
         type: string
+      total:
+        type: integer
     type: object
   asset_api.AssetResponse:
     properties:
@@ -32,6 +36,8 @@ definitions:
         type: string
       nome:
         type: string
+      total:
+        type: integer
     type: object
   asset_api.QuarterlyResultPostRequest:
     properties:
@@ -50,6 +56,8 @@ definitions:
     type: object
   asset_api.QuarterlyResultResponse:
     properties:
+      divida_ebitda:
+        type: number
       divida_liquida:
         type: integer
       ebitda:
@@ -62,7 +70,80 @@ definitions:
         type: integer
       lucro_liquido:
         type: integer
+      margem_ebitda:
+        type: number
+      margem_liquida:
+        type: number
       receita_liquida:
+        type: integer
+    type: object
+  holding_api.Ativo:
+    properties:
+      codigo:
+        type: string
+      id:
+        type: integer
+      nome:
+        type: string
+    type: object
+  holding_api.Holding:
+    properties:
+      ativos:
+        items:
+          $ref: '#/definitions/holding_api.HoldingAtivo'
+        type: array
+      div_ebitda:
+        type: number
+      divida_liquida:
+        type: integer
+      ebitda:
+        type: integer
+      lucro_liquido:
+        type: integer
+      margem_ebitda:
+        type: number
+      margem_liquida:
+        type: number
+      receita_liquida:
+        type: integer
+      trimestre:
+        $ref: '#/definitions/holding_api.Trimestre'
+    type: object
+  holding_api.HoldingAtivo:
+    properties:
+      ativo:
+        $ref: '#/definitions/holding_api.Ativo'
+      div_ebitda:
+        type: number
+      divida_liquida:
+        type: integer
+      ebitda:
+        type: integer
+      id_trimestre:
+        type: integer
+      lucro_liquido:
+        type: integer
+      margem_ebitda:
+        type: number
+      margem_liquida:
+        type: number
+      receita_liquida:
+        type: integer
+    type: object
+  holding_api.Holdings:
+    properties:
+      holdings:
+        items:
+          $ref: '#/definitions/holding_api.Holding'
+        type: array
+    type: object
+  holding_api.Trimestre:
+    properties:
+      ano:
+        type: integer
+      id:
+        type: integer
+      trimestre:
         type: integer
     type: object
   order_api.OrderGetResponse:
@@ -99,6 +180,8 @@ definitions:
     type: object
   portfolio_api.Ativo:
     properties:
+      Total:
+        type: integer
       codigo:
         type: string
       cotacao:
@@ -236,6 +319,26 @@ paths:
         "200":
           description: ""
       summary: Atualiza Ativo
+  /holding:
+    get:
+      parameters:
+      - description: user id
+        in: query
+        name: usuario
+        required: true
+        type: string
+      - description: expandir ativos
+        in: query
+        name: expandir
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/holding_api.Holdings'
+      summary: Retorna Resultados holding do usuario
   /orders:
     get:
       produces:

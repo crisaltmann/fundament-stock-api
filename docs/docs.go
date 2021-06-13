@@ -172,6 +172,37 @@ var doc = `{
                 }
             }
         },
+        "/holding": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Retorna Resultados holding do usuario",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user id",
+                        "name": "usuario",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "expandir ativos",
+                        "name": "expandir",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/holding_api.Holdings"
+                        }
+                    }
+                }
+            }
+        },
         "/orders": {
             "get": {
                 "produces": [
@@ -292,6 +323,9 @@ var doc = `{
                 },
                 "nome": {
                     "type": "string"
+                },
+                "total": {
+                    "type": "integer"
                 }
             }
         },
@@ -309,6 +343,9 @@ var doc = `{
                 },
                 "nome": {
                     "type": "string"
+                },
+                "total": {
+                    "type": "integer"
                 }
             }
         },
@@ -329,6 +366,9 @@ var doc = `{
                 },
                 "nome": {
                     "type": "string"
+                },
+                "total": {
+                    "type": "integer"
                 }
             }
         },
@@ -358,6 +398,9 @@ var doc = `{
         "asset_api.QuarterlyResultResponse": {
             "type": "object",
             "properties": {
+                "divida_ebitda": {
+                    "type": "number"
+                },
                 "divida_liquida": {
                     "type": "integer"
                 },
@@ -376,7 +419,119 @@ var doc = `{
                 "lucro_liquido": {
                     "type": "integer"
                 },
+                "margem_ebitda": {
+                    "type": "number"
+                },
+                "margem_liquida": {
+                    "type": "number"
+                },
                 "receita_liquida": {
+                    "type": "integer"
+                }
+            }
+        },
+        "holding_api.Ativo": {
+            "type": "object",
+            "properties": {
+                "codigo": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "nome": {
+                    "type": "string"
+                }
+            }
+        },
+        "holding_api.Holding": {
+            "type": "object",
+            "properties": {
+                "ativos": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/holding_api.HoldingAtivo"
+                    }
+                },
+                "div_ebitda": {
+                    "type": "number"
+                },
+                "divida_liquida": {
+                    "type": "integer"
+                },
+                "ebitda": {
+                    "type": "integer"
+                },
+                "lucro_liquido": {
+                    "type": "integer"
+                },
+                "margem_ebitda": {
+                    "type": "number"
+                },
+                "margem_liquida": {
+                    "type": "number"
+                },
+                "receita_liquida": {
+                    "type": "integer"
+                },
+                "trimestre": {
+                    "$ref": "#/definitions/holding_api.Trimestre"
+                }
+            }
+        },
+        "holding_api.HoldingAtivo": {
+            "type": "object",
+            "properties": {
+                "ativo": {
+                    "$ref": "#/definitions/holding_api.Ativo"
+                },
+                "div_ebitda": {
+                    "type": "number"
+                },
+                "divida_liquida": {
+                    "type": "integer"
+                },
+                "ebitda": {
+                    "type": "integer"
+                },
+                "id_trimestre": {
+                    "type": "integer"
+                },
+                "lucro_liquido": {
+                    "type": "integer"
+                },
+                "margem_ebitda": {
+                    "type": "number"
+                },
+                "margem_liquida": {
+                    "type": "number"
+                },
+                "receita_liquida": {
+                    "type": "integer"
+                }
+            }
+        },
+        "holding_api.Holdings": {
+            "type": "object",
+            "properties": {
+                "holdings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/holding_api.Holding"
+                    }
+                }
+            }
+        },
+        "holding_api.Trimestre": {
+            "type": "object",
+            "properties": {
+                "ano": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "trimestre": {
                     "type": "integer"
                 }
             }
@@ -433,6 +588,9 @@ var doc = `{
         "portfolio_api.Ativo": {
             "type": "object",
             "properties": {
+                "Total": {
+                    "type": "integer"
+                },
                 "codigo": {
                     "type": "string"
                 },
