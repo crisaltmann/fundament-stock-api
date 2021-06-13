@@ -37,6 +37,7 @@ func NewService(portfolioService PortfolioService, assetService AssetService, qu
 }
 
 func (s Service) GetHolding(usuario string) (holding_domain.Holdings, error) {
+	//TODO adicionar filtro por data de trimestre quando for persistido.
 	portfolio, err := s.PortfolioService.GetPortfolio(usuario)
 	if err != nil {
 		log.Print("Erro ao buscar portfolio no calculo de holding.")
@@ -77,7 +78,7 @@ func (s Service) GetHolding(usuario string) (holding_domain.Holdings, error) {
 
 func (s Service) buildHoldingQuarterlyResult(quarterlyItem asset_domain.AssetQuarterlyResult, portfolioItem portfolio_domain.Portfolio,
 	resultadosHolding map[int64]*holding_domain.Holding,
-	resultadosHoldingByAtivo map[string]*holding_domain.HoldingAtivo) (error) {
+	resultadosHoldingByAtivo map[string]*holding_domain.HoldingAtivo) error {
 
 	quarter, err := s.QuarterService.GetQuarter(quarterlyItem.Trimestre)
 	if err != nil {
