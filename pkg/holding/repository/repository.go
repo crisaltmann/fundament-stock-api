@@ -39,7 +39,7 @@ func (r Repository) GetResultadoPortfolio(usuario string) ([]holding_domain.Hold
 	for rows.Next() {
 		item := holding_domain.HoldingAtivo{}
 		var idAtivo int64
-		err := rows.Scan(&item.Id, &item.Trimestre, &idAtivo, &item.ReceitaLiquida, &item.Ebitda, &item.LucroLiquido,
+		err := rows.Scan(&item.Id, &item.Trimestre, &item.Usuario, &idAtivo, &item.ReceitaLiquida, &item.Ebitda, &item.LucroLiquido,
 			&item.DividaLiquida)
 		if err != nil {
 			err = fmt.Errorf("Erro ao executar busca do resultado de portfolio", err)

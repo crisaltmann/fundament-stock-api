@@ -7,12 +7,14 @@ import (
 	portfolio_domain "github.com/crisaltmann/fundament-stock-api/pkg/portfolio/domain"
 	quarter_domain "github.com/crisaltmann/fundament-stock-api/pkg/quarter/domain"
 	"github.com/rs/zerolog/log"
+	"strconv"
 )
 
 type Service struct {
 	PortfolioService PortfolioService
 	AssetService AssetService
 	QuarterService QuarterService
+	repository Repository
 }
 
 type PortfolioService interface {
@@ -28,15 +30,58 @@ type QuarterService interface {
 	GetQuarter(id int64) (quarter_domain.Trimestre, error)
 }
 
-func NewService(portfolioService PortfolioService, assetService AssetService, quarterService QuarterService) Service {
+type Repository interface {
+	GetResultadoPortfolio(usuario string) ([]holding_domain.HoldingAtivo, error)
+}
+
+func NewService(portfolioService PortfolioService, assetService AssetService, quarterService QuarterService, repository Repository) Service {
 	return Service{
 		PortfolioService: portfolioService,
 		AssetService:     assetService,
 		QuarterService: quarterService,
+		repository: repository,
 	}
 }
 
 func (s Service) GetHolding(usuario string) (holding_domain.Holdings, error) {
+	resultados, err := s.repository.GetResultadoPortfolio(usuario)
+	if err != nil {
+		log.Print("Erro ao buscar holding.")
+		return holding_domain.Holdings{}, err
+	}
+	holdingMap := make(map[string]*holding_domain.Holding)
+
+	for _, resultado := range resultados {
+		key := strconv.FormatInt(resultado.Trimestre, 10)
+		holding, found := holdingMap[key]
+		if !found {
+			holding = &holding_domain.Holding{}
+			holdingMap[key] = holding
+		}
+		trimestre, err := s.QuarterService.GetQuarter(resultado.Trimestre)
+		if err != nil {
+			log.Print("Erro ao buscar trimestre na busca de holdings.")
+			return holding_domain.Holdings{}, err
+		}
+
+		holding.HoldingsAtivo = append(holding.HoldingsAtivo, resultado)
+		holding.DividaLiquida += resultado.DividaLiquida
+		holding.ReceitaLiquida += resultado.ReceitaLiquida
+		holding.Ebitda += resultado.Ebitda
+		holding.LucroLiquido += resultado.LucroLiquido
+		holding.Trimestre = trimestre
+	}
+
+	holdings := holding_domain.Holdings{}
+
+	for _, holdingMap := range holdingMap {
+		holdings.Holdings = append(holdings.Holdings, holdingMap.ToStruct())
+	}
+
+	return holdings, nil
+}
+
+func (s Service) CalculateHolding(usuario string) (holding_domain.Holdings, error) {
 	//TODO adicionar filtro por data de trimestre quando for persistido.
 	portfolio, err := s.PortfolioService.GetPortfolio(usuario)
 	if err != nil {
@@ -135,31 +180,11 @@ func (s Service) buildHoldingReturn(resultadosHolding map[int64]*holding_domain.
 			if holAtivo.Trimestre != result.Trimestre.Id {
 				continue
 			}
-			h := holding_domain.HoldingAtivo{
-				Ativo:          holAtivo.Ativo,
-				Trimestre:      holAtivo.Trimestre,
-				ReceitaLiquida: holAtivo.ReceitaLiquida,
-				Ebitda:         0,
-				MargemEbitda:   0,
-				LucroLiquido:   0,
-				MargemLiquida:  0,
-				DividaLiquida:  0,
-				DivEbitda:      0,
-			}
-			holdingsAtivo = append(holdingsAtivo, h)
+			holdingsAtivo = append(holdingsAtivo, holAtivo.ToStruct())
 		}
 
-		holdings = append(holdings, holding_domain.Holding{
-			Trimestre:      result.Trimestre,
-			ReceitaLiquida: result.ReceitaLiquida,
-			Ebitda:         0,
-			MargemEbitda:   0,
-			LucroLiquido:   0,
-			MargemLiquida:  0,
-			DividaLiquida:  0,
-			DivEbitda:      0,
-			HoldingsAtivo: holdingsAtivo,
-		})
+		result.HoldingsAtivo = holdingsAtivo
+		holdings = append(holdings, result.ToStruct())
 	}
 	return holding_domain.Holdings{Holdings: holdings}, nil
 }

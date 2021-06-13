@@ -18,6 +18,7 @@ var Holding = fx.Options(
 
 var holdingfactories = fx.Provide(
 	func(repository asset_repository.Repository) holding_repository.AssetRepository {return repository},
+	func(repository holding_repository.Repository) holding_service.Repository { return repository },
 	holding_repository.NewRepository,
 
 	func(assetService asset_service.Service) holding_service.AssetService { return assetService },
