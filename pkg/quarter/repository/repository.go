@@ -4,17 +4,34 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/crisaltmann/fundament-stock-api/pkg/quarter/domain"
+	"github.com/patrickmn/go-cache"
+	"strconv"
+	"time"
 )
 
 type Repository struct {
 	DB *sql.DB
+	cache 	 *cache.Cache
 }
 
 func NewRepository(db *sql.DB) Repository {
-	return Repository{DB: db}
+	cache := cache.New(1*time.Hour, 10*time.Minute)
+	return Repository{DB: db, cache: cache}
+}
+
+func InitCache(r Repository) {
+	quarters, _ := r.GetQuarters()
+	for _, quarter := range quarters {
+		r.cache.Add(strconv.FormatInt(quarter.Id, 10), quarter, cache.DefaultExpiration)
+	}
 }
 
 func (r Repository) GetQuarter(id int64) (quarter_domain.Trimestre, error) {
+	trimestreCache, found :=  r.cache.Get(strconv.FormatInt(id, 10))
+	if found {
+		return trimestreCache.(quarter_domain.Trimestre), nil
+	}
+
 	rows, err := r.DB.Query("SELECT id, codigo, ano, trimestre, data_inicio, data_fim FROM trimestre WHERE id = $1", id)
 	defer rows.Close()
 
@@ -31,6 +48,11 @@ func (r Repository) GetQuarter(id int64) (quarter_domain.Trimestre, error) {
 			return quarter_domain.Trimestre{}, err
 		}
 	}
+
+	if err != nil {
+		r.cache.Add(strconv.FormatInt(id, 10), trimestre, cache.DefaultExpiration)
+	}
+
 	return trimestre, nil
 }
 
