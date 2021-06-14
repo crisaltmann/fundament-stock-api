@@ -11,7 +11,6 @@ type Service struct {
 
 type Repository interface {
 	GetPortfolio(usuario string) ([]portfolio_domain.Portfolio, error)
-	DeletePortfolioByAtivoAndTrimestre(idAtivo int64, idTrimestre int64) error
 }
 
 func NewService(repository Repository) Service {
