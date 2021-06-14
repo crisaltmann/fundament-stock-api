@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/crisaltmann/fundament-stock-api/pkg/order/domain"
+	"github.com/rs/zerolog/log"
 )
 
 type Repository struct {
@@ -14,8 +15,29 @@ func NewRepository(db *sql.DB) Repository {
 	return Repository{DB: db}
 }
 
-func (r Repository) InsertOrder(order order_domain.Order) (bool, error) {
+func (r Repository) GetUsersWithOrders(idAtivo int64) ([]string, error) {
+	rows, err := r.DB.Query("select id_usuario FROM MOVIMENTACAO WHERE id_ativo = $1 GROUP BY id_usuario", idAtivo)
 
+	if err != nil {
+		log.Print("Erro ao executar busca de usuarios de orders.")
+		return nil, err
+	}
+
+	defer rows.Close()
+	users := make([]string, 0)
+	for rows.Next() {
+		user := ""
+		err := rows.Scan(&user)
+		if err != nil {
+			log.Print("Erro ao executar busca de usuarios de orders.")
+			return nil, err
+		}
+		users = append(users, user)
+	}
+	return users, nil
+}
+
+func (r Repository) InsertOrder(order order_domain.Order) (bool, error) {
 	prepare, err := r.DB.Prepare("INSERT INTO MOVIMENTACAO (ID_ATIVO, QUANTIDADE, VALOR, DATA, ID_USUARIO) VALUES ($1, $2, $3, $4, $5)")
 
 	if err != nil {

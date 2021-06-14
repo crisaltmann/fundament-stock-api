@@ -14,7 +14,12 @@ type Service struct {
 	portfolioService PortfolioService
 	assetService AssetService
 	quarterService QuarterService
+	orderService OrderService
 	repository Repository
+}
+
+type OrderService interface {
+	GetUsersWithOrders(idAtivo int64) ([]string, error)
 }
 
 type PortfolioService interface {
@@ -32,13 +37,16 @@ type QuarterService interface {
 
 type Repository interface {
 	GetResultadoPortfolio(usuario string) ([]holding_domain.HoldingAtivo, error)
+	DeleteByAtivoAndTrimestre(idAtivo int64, idTrimestre int64) error
 }
 
-func NewService(portfolioService PortfolioService, assetService AssetService, quarterService QuarterService, repository Repository) Service {
+func NewService(portfolioService PortfolioService, assetService AssetService, quarterService QuarterService,
+	orderService OrderService, repository Repository) Service {
 	return Service{
 		portfolioService: portfolioService,
 		assetService:     assetService,
 		quarterService: quarterService,
+		orderService: orderService,
 		repository: repository,
 	}
 }
@@ -82,6 +90,15 @@ func (s Service) GetHolding(usuario string) (holding_domain.Holdings, error) {
 }
 
 func (s Service) CalculateHolding(idAtivo int64, idTrimestre int64) error {
+	users, err := s.orderService.GetUsersWithOrders(idAtivo)
+	if err != nil {
+		return err
+	}
+
+	for i := 0; i < len(users); i++ {
+		s.CalculateHoldingGeneral(users[i])
+	}
+
 	return nil
 }
 

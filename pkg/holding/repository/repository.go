@@ -6,6 +6,7 @@ import (
 	"fmt"
 	asset_domain "github.com/crisaltmann/fundament-stock-api/pkg/asset/domain"
 	holding_domain "github.com/crisaltmann/fundament-stock-api/pkg/holding/domain"
+	"github.com/rs/zerolog/log"
 )
 
 type Repository struct {
@@ -22,6 +23,24 @@ func NewRepository(db *sql.DB, assetRepository AssetRepository) Repository {
 		DB: db,
 		assetRepository: assetRepository,
 	}
+}
+
+func (r Repository) DeleteByAtivoAndTrimestre(idAtivo int64, idTrimestre int64) error {
+	prepare, err := r.DB.Prepare("DELETE FROM portfolio_trimestre WHERE id_ativo = $1 AND id_trimestre = $2")
+
+	if err != nil {
+		log.Print("Ocorreu um erro ao preparar query de delete de portfolio trimestre")
+		return err
+	}
+
+	defer prepare.Close()
+
+	_, err = prepare.Exec(idAtivo, idTrimestre)
+	if err != nil {
+		err = fmt.Errorf("Erro ao executar delete portfolio trimestre", err)
+		return err
+	}
+	return nil
 }
 
 func (r Repository) GetResultadoPortfolio(usuario string) ([]holding_domain.HoldingAtivo, error) {

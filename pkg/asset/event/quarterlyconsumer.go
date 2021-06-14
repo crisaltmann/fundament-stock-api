@@ -55,6 +55,7 @@ func (q QuarterlyResultConsumer) consume() {
 			err := q.processMessage(d.Body)
 			if err != nil {
 				log.Printf("Ocorreu um erro ao processar a mensagem.")
+				//Adicionar mecanismo de tratativas
 				d.Reject(true)
 			} else {
 				d.Ack(false)
