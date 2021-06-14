@@ -11,9 +11,9 @@ import (
 )
 
 type Service struct {
-	PortfolioService PortfolioService
-	AssetService AssetService
-	QuarterService QuarterService
+	portfolioService PortfolioService
+	assetService AssetService
+	quarterService QuarterService
 	repository Repository
 }
 
@@ -36,9 +36,9 @@ type Repository interface {
 
 func NewService(portfolioService PortfolioService, assetService AssetService, quarterService QuarterService, repository Repository) Service {
 	return Service{
-		PortfolioService: portfolioService,
-		AssetService:     assetService,
-		QuarterService: quarterService,
+		portfolioService: portfolioService,
+		assetService:     assetService,
+		quarterService: quarterService,
 		repository: repository,
 	}
 }
@@ -58,7 +58,7 @@ func (s Service) GetHolding(usuario string) (holding_domain.Holdings, error) {
 			holding = &holding_domain.Holding{}
 			holdingMap[key] = holding
 		}
-		trimestre, err := s.QuarterService.GetQuarter(resultado.Trimestre)
+		trimestre, err := s.quarterService.GetQuarter(resultado.Trimestre)
 		if err != nil {
 			log.Print("Erro ao buscar trimestre na busca de holdings.")
 			return holding_domain.Holdings{}, err
@@ -81,9 +81,13 @@ func (s Service) GetHolding(usuario string) (holding_domain.Holdings, error) {
 	return holdings, nil
 }
 
-func (s Service) CalculateHolding(usuario string) (holding_domain.Holdings, error) {
+func (s Service) CalculateHolding(idAtivo int64, idTrimestre int64) error {
+	return nil
+}
+
+func (s Service) CalculateHoldingGeneral(usuario string) (holding_domain.Holdings, error) {
 	//TODO adicionar filtro por data de trimestre quando for persistido.
-	portfolio, err := s.PortfolioService.GetPortfolio(usuario)
+	portfolio, err := s.portfolioService.GetPortfolio(usuario)
 	if err != nil {
 		log.Print("Erro ao buscar portfolio no calculo de holding.")
 		return holding_domain.Holdings{}, errors.New("Erro ao buscar portfolio no calculo de holding.")
@@ -99,7 +103,7 @@ func (s Service) CalculateHolding(usuario string) (holding_domain.Holdings, erro
 	resultadosHoldingByAtivo := make(map[string]*holding_domain.HoldingAtivo)
 
 	for _, portfolioItem := range portfolio {
-		quarterlyResults, err := s.AssetService.GetAssetQuarterlyResults(portfolioItem.Ativo.Id)
+		quarterlyResults, err := s.assetService.GetAssetQuarterlyResults(portfolioItem.Ativo.Id)
 		if err != nil {
 			log.Print("Erro ao buscar resultados trimestrais dos ativos no portfolio no calculo de holding.")
 			return holding_domain.Holdings{}, errors.New("Erro ao buscar resultados trimestrais dos ativos no portfolio no calculo de holding.")
@@ -125,13 +129,13 @@ func (s Service) buildHoldingQuarterlyResult(quarterlyItem asset_domain.AssetQua
 	resultadosHolding map[int64]*holding_domain.Holding,
 	resultadosHoldingByAtivo map[string]*holding_domain.HoldingAtivo) error {
 
-	quarter, err := s.QuarterService.GetQuarter(quarterlyItem.Trimestre)
+	quarter, err := s.quarterService.GetQuarter(quarterlyItem.Trimestre)
 	if err != nil {
 		log.Print("Erro ao buscar quarter.")
 		return errors.New("Erro ao buscar quarter.")
 	}
 
-	ativo, err := s.AssetService.GetById(quarterlyItem.Ativo)
+	ativo, err := s.assetService.GetById(quarterlyItem.Ativo)
 	if err != nil {
 		log.Print("Erro ao buscar ativo.")
 		return errors.New("Erro ao buscar ativo.")
