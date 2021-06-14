@@ -9,10 +9,10 @@ import (
 )
 
 type Service struct {
-	Repository                     Repository
-	StockPriceRepository           StockPriceRepository
-	AssetQuarterlyResultRepository AssetQuarterlyResultRepository
-	QuarterlyProducer              event.QuarterlyResultProducer
+	repository                     Repository
+	stockPriceRepository           StockPriceRepository
+	assetQuarterlyResultRepository AssetQuarterlyResultRepository
+	quarterlyProducer              event.QuarterlyResultProducer
 }
 
 type Repository interface {
@@ -38,35 +38,35 @@ type AssetQuarterlyResultRepository interface {
 func NewService(repository Repository, stockPriceRepository StockPriceRepository, assetQResultRepository AssetQuarterlyResultRepository,
 	quarterlyProducer event.QuarterlyResultProducer) Service {
 	return Service{
-		Repository: repository,
-		StockPriceRepository: stockPriceRepository,
-		AssetQuarterlyResultRepository: assetQResultRepository,
-		QuarterlyProducer: quarterlyProducer,
+		repository:                     repository,
+		stockPriceRepository:           stockPriceRepository,
+		assetQuarterlyResultRepository: assetQResultRepository,
+		quarterlyProducer:              quarterlyProducer,
 	}
 }
 
 func (s Service) GetAllAssets() ([]asset_domain.Asset, error) {
-	return s.Repository.GetAllAsset()
+	return s.repository.GetAllAsset()
 }
 
 func (s Service) ExistById(id int64) (bool, error) {
-	return s.Repository.ExistById(id)
+	return s.repository.ExistById(id)
 }
 
 func (s Service) GetById(id int64) (asset_domain.Asset, error) {
-	return s.Repository.GetById(id)
+	return s.repository.GetById(id)
 }
 
 func (s Service) InsertAsset(asset asset_domain.Asset) (bool, error) {
-	return s.Repository.InsertAsset(asset)
+	return s.repository.InsertAsset(asset)
 }
 
 func (s Service) UpdateAsset(asset asset_domain.Asset) (asset_domain.Asset, error) {
-	return s.Repository.UpdateAsset(asset)
+	return s.repository.UpdateAsset(asset)
 }
 
 func (s Service) UpdateAssetPrice(id int64, price float32, data time.Time) (bool, error) {
-	ok, err := s.Repository.UpdateAssetPrice(id, price)
+	ok, err := s.repository.UpdateAssetPrice(id, price)
 	if err != nil {
 		return false, err
 	}
@@ -75,7 +75,7 @@ func (s Service) UpdateAssetPrice(id int64, price float32, data time.Time) (bool
 }
 
 func (s Service) InsertAssetPrice(idAtivo int64, price float32, data time.Time) (bool, error) {
-	assetPrice, err := s.StockPriceRepository.GetByAtivoEData(idAtivo, data)
+	assetPrice, err := s.stockPriceRepository.GetByAtivoEData(idAtivo, data)
 	if err != nil {
 		return false, err
 	}
@@ -88,11 +88,11 @@ func (s Service) InsertAssetPrice(idAtivo int64, price float32, data time.Time) 
 		Cotacao: price,
 		Data:    data,
 	}
-	return s.StockPriceRepository.InsertAssetPrice(updateAssetPrice)
+	return s.stockPriceRepository.InsertAssetPrice(updateAssetPrice)
 }
 
 func (s Service) InsertAssetQuarterlyResult(aqResult asset_domain.AssetQuarterlyResult) (bool, error) {
-	exist, err := s.AssetQuarterlyResultRepository.ExistAssetQuarterlyResult(aqResult.Ativo, aqResult.Trimestre)
+	exist, err := s.assetQuarterlyResultRepository.ExistAssetQuarterlyResult(aqResult.Ativo, aqResult.Trimestre)
 	if exist {
 		log.Print("Já existe um resultado cadastro para este trimestre.")
 		return false, nil
@@ -100,12 +100,12 @@ func (s Service) InsertAssetQuarterlyResult(aqResult asset_domain.AssetQuarterly
 	if err != nil {
 		return false, err
 	}
-	s.QuarterlyProducer.PublishQuarterlyResultEvent(aqResult)
-	return s.AssetQuarterlyResultRepository.InsertAssetQuarterlyResult(aqResult)
+	s.quarterlyProducer.PublishQuarterlyResultEvent(aqResult)
+	return s.assetQuarterlyResultRepository.InsertAssetQuarterlyResult(aqResult)
 }
 
 func (s Service) GetAssetQuarterlyResults(assetId int64) ([]asset_domain.AssetQuarterlyResult, error) {
-	quarterlyResults, err := s.AssetQuarterlyResultRepository.GetAssetQuarterlyResults(assetId)
+	quarterlyResults, err := s.assetQuarterlyResultRepository.GetAssetQuarterlyResults(assetId)
 	if err != nil {
 		return nil, err
 	}
