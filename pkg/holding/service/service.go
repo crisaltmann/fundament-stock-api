@@ -24,6 +24,7 @@ type OrderService interface {
 
 type PortfolioService interface {
 	GetPortfolio(usuario int64) ([]portfolio_domain.Portfolio, error)
+	GetPortfolioByTrimestre(usuario int64, trimestre int64) ([]portfolio_domain.Portfolio, error)
 }
 
 type AssetService interface {

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/crisaltmann/fundament-stock-api/pkg/portfolio/domain"
+	"time"
 )
 
 type Repository struct {
@@ -14,11 +15,17 @@ func NewRepository(db *sql.DB) Repository {
 	return Repository{DB: db}
 }
 
-func (r Repository) GetPortfolio(usuario int64) ([]portfolio_domain.Portfolio, error) {
-	rows, err := r.DB.Query("select a.id, a.codigo, a.logo, a.total, a.cotacao, sum(m.quantidade), m.id_usuario from movimentacao m " +
-		"inner join ativo a on m.id_ativo = a.id  " +
-		"where m.id_usuario = $1" +
-		"group by a.id, a.codigo, a.logo, a.cotacao, m.id_usuario ", usuario)
+func (r Repository) GetPortfolio(usuario int64, dateFinal time.Time) ([]portfolio_domain.Portfolio, error) {
+	query := "select a.id, a.codigo, a.logo, a.total, a.cotacao, sum(m.quantidade), m.id_usuario from movimentacao m " +
+		" inner join ativo a on m.id_ativo = a.id  " +
+		" where m.id_usuario = $1"
+
+	if !dateFinal.Equal(time.Time{}) {
+		query = query + " and m.data <= $2 "
+	}
+
+	query = query + " group by a.id, a.codigo, a.logo, a.cotacao, m.id_usuario "
+	rows, err := r.DB.Query(query, usuario, dateFinal)
 	defer rows.Close()
 
 	if err != nil {
