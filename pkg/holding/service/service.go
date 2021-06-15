@@ -94,7 +94,7 @@ func (s Service) GetHolding(usuario string) (holding_domain.Holdings, error) {
 	return holdings, nil
 }
 
-func (s Service) CalculateHolding(idAtivo int64, idTrimestre int64) error {
+func (s Service) CalculateHolding(idAtivo int64) error {
 	users, err := s.orderService.GetUsersWithOrders(idAtivo)
 	if err != nil {
 		return err

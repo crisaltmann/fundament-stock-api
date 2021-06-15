@@ -5,26 +5,30 @@ import (
 	"fmt"
 	"github.com/crisaltmann/fundament-stock-api/infrastructure"
 	"github.com/crisaltmann/fundament-stock-api/pkg/asset/domain"
+	"github.com/rs/zerolog/log"
 	"github.com/streadway/amqp"
-	"log"
 )
 
 type QuarterlyResultProducer struct {
-	ch		*amqp.Channel
+	conn		*amqp.Connection
 }
 
-func NewQuarterlyResultProducer(ch *amqp.Channel) QuarterlyResultProducer {
+func NewQuarterlyResultProducer(conn *amqp.Connection) QuarterlyResultProducer {
 	return QuarterlyResultProducer{
-		ch: ch,
+		conn: conn,
 	}
 }
 
 func (q QuarterlyResultProducer) PublishQuarterlyResultEvent(result asset_domain.AssetQuarterlyResult) error {
+	ch, err := q.conn.Channel()
+	infrastructure.FailOnError(err, "Failed to open a channel")
+	defer ch.Close()
+
 	body, err := json.Marshal(result)
 	if err != nil {
 		return fmt.Errorf("Erro ao publicar mensagem na fila.", err)
 	}
-	err = q.ch.Publish(
+	err = ch.Publish(
 		"",                             // exchange
 		infrastructure.ResultQueueName, // routing key
 		false,                          // mandatory

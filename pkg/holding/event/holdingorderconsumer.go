@@ -1,30 +1,30 @@
-package event
+package holding_event
 
 import (
 	"encoding/json"
 	"github.com/crisaltmann/fundament-stock-api/infrastructure"
-	"github.com/crisaltmann/fundament-stock-api/pkg/asset/domain"
+	order_domain "github.com/crisaltmann/fundament-stock-api/pkg/order/domain"
 	"github.com/rs/zerolog/log"
 	"github.com/streadway/amqp"
 )
 
-type QuarterlyResultConsumer struct {
-	ch		   *amqp.Channel
-	service    Service
+type HoldingOrderConsumer struct {
+	conn		*amqp.Connection
+	service    HoldingOrderService
 }
 
-type Service interface {
-	CalculateHolding(idAtivo int64, idTrimestre int64) error
+type HoldingOrderService interface {
+	CalculateHolding(idAtivo int64) error
 }
 
-func NewQuarterlyResultConsumer(ch *amqp.Channel, service Service) QuarterlyResultConsumer {
-	return QuarterlyResultConsumer{
-		ch: ch,
+func NewHoldingOrderConsumer(conn *amqp.Connection, service HoldingOrderService) HoldingOrderConsumer {
+	return HoldingOrderConsumer{
+		conn: conn,
 		service: service,
 	}
 }
 
-func InitializeConsume(q QuarterlyResultConsumer, c *infrastructure.Cron) {
+func InitializeOrderConsume(q HoldingOrderConsumer, c *infrastructure.Cron) {
 	log.Printf("Iniciando configuração de cron")
 	err := c.Cron.AddFunc("0 0/1 * * * *", q.consume)
 	if err != nil {
@@ -32,12 +32,17 @@ func InitializeConsume(q QuarterlyResultConsumer, c *infrastructure.Cron) {
 	}
  }
 
-func (q QuarterlyResultConsumer) consume() {
+func (q HoldingOrderConsumer) consume() {
 	log.Printf("Iniciando consumo de mensagens.")
-	msgs, err := q.ch.Consume(
-		infrastructure.ResultQueueName, 	    // queue
+
+	ch, err := q.conn.Channel()
+	infrastructure.FailOnError(err, "Failed to open a channel")
+	defer ch.Close()
+
+	msgs, err := ch.Consume(
+		infrastructure.OrderQueueName, 	       // queue
 		"",                           // consumer
-		false,                          // auto-ack
+		false,                         // auto-ack
 		false,                        // exclusive
 		false,                         // no-local
 		false,                          // no-wait
@@ -67,14 +72,14 @@ func (q QuarterlyResultConsumer) consume() {
 	log.Printf("Encerrando ciclo de consumo de mensagens.")
 }
 
-func (q QuarterlyResultConsumer) processMessage(body []byte) error {
+func (q HoldingOrderConsumer) processMessage(body []byte) error {
 	log.Printf("Mensage recebida: %s", body)
-	result := &asset_domain.AssetQuarterlyResult{}
+	result := &order_domain.Order{}
 	err := json.Unmarshal(body, result)
 	if err != nil {
 		log.Printf("Erro ao converter evento")
 		return err
 	}
-	err = q.service.CalculateHolding(result.Ativo, result.Trimestre)
+	err = q.service.CalculateHolding(result.Ativo)
 	return err
 }
