@@ -13,7 +13,7 @@ type Service struct {
 type Repository interface {
 	InsertOrder(order order_domain.Order) (bool, error)
 	GetAllOrders() ([]order_domain.Order, error)
-	GetUsersWithOrders(idAtivo int64) ([]string, error)
+	GetUsersWithOrders(idAtivo int64) ([]int64, error)
 }
 
 type AssetFinder interface {
@@ -24,7 +24,7 @@ func NewService(repository Repository, assetFinder AssetFinder) Service {
 	return Service{Repository: repository, AssetFinder: assetFinder}
 }
 
-func (s Service) GetUsersWithOrders(idAtivo int64) ([]string, error) {
+func (s Service) GetUsersWithOrders(idAtivo int64) ([]int64, error) {
 	return s.Repository.GetUsersWithOrders(idAtivo)
 }
 

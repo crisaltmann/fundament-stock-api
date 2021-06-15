@@ -10,14 +10,14 @@ type Service struct {
 }
 
 type Repository interface {
-	GetPortfolio(usuario string) ([]portfolio_domain.Portfolio, error)
+	GetPortfolio(usuario int64) ([]portfolio_domain.Portfolio, error)
 }
 
 func NewService(repository Repository) Service {
 	return Service{repository: repository}
 }
 
-func (s Service) GetPortfolio(usuario string) ([]portfolio_domain.Portfolio, error) {
+func (s Service) GetPortfolio(usuario int64) ([]portfolio_domain.Portfolio, error) {
 	portfolio, err := s.repository.GetPortfolio(usuario)
 	if err != nil {
 		return portfolio, err

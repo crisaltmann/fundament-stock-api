@@ -19,11 +19,11 @@ type Service struct {
 }
 
 type OrderService interface {
-	GetUsersWithOrders(idAtivo int64) ([]string, error)
+	GetUsersWithOrders(idAtivo int64) ([]int64, error)
 }
 
 type PortfolioService interface {
-	GetPortfolio(usuario string) ([]portfolio_domain.Portfolio, error)
+	GetPortfolio(usuario int64) ([]portfolio_domain.Portfolio, error)
 }
 
 type AssetService interface {
@@ -38,6 +38,8 @@ type QuarterService interface {
 type Repository interface {
 	GetResultadoPortfolio(usuario string) ([]holding_domain.HoldingAtivo, error)
 	DeleteByAtivoAndTrimestre(idAtivo int64, idTrimestre int64) error
+	DeleteByUser(idUser int64) error
+	SaveResultadoPortfolio(ativo holding_domain.HoldingAtivo) error
 }
 
 func NewService(portfolioService PortfolioService, assetService AssetService, quarterService QuarterService,
@@ -96,13 +98,30 @@ func (s Service) CalculateHolding(idAtivo int64, idTrimestre int64) error {
 	}
 
 	for i := 0; i < len(users); i++ {
-		s.CalculateHoldingGeneral(users[i])
+		s.repository.DeleteByUser(users[i])
+		holdigns, err := s.CalculateHoldingGeneral(users[i])
+		if err == nil {
+			s.saveHoldings(holdigns)
+		}
 	}
 
 	return nil
 }
 
-func (s Service) CalculateHoldingGeneral(usuario string) (holding_domain.Holdings, error) {
+func (s Service) saveHoldings(holdings holding_domain.Holdings) error {
+	for i := 0; i < len(holdings.Holdings); i++ {
+		holding := holdings.Holdings[i]
+		for j := 0; j < len(holding.HoldingsAtivo); j++ {
+			err := s.repository.SaveResultadoPortfolio(holding.HoldingsAtivo[j])
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func (s Service) CalculateHoldingGeneral(usuario int64) (holding_domain.Holdings, error) {
 	//TODO adicionar filtro por data de trimestre quando for persistido.
 	portfolio, err := s.portfolioService.GetPortfolio(usuario)
 	if err != nil {
@@ -111,7 +130,7 @@ func (s Service) CalculateHoldingGeneral(usuario string) (holding_domain.Holding
 	}
 
 	if len(portfolio) == 0 {
-		log.Print("Não foram encontrados ativos no portfolio do usuario " + usuario)
+		log.Printf("Não foram encontrados ativos no portfolio do usuario %d", usuario)
 		holdings := make([]holding_domain.Holding, 0)
 		return holding_domain.Holdings{ Holdings: holdings}, nil
 	}
@@ -127,12 +146,12 @@ func (s Service) CalculateHoldingGeneral(usuario string) (holding_domain.Holding
 		}
 
 		if len(quarterlyResults) == 0 {
-			log.Print("Não foram encontrados resultados trimestrais dos ativos no portfolio do usuario " + usuario)
+			log.Printf("Não foram encontrados resultados trimestrais dos ativos no portfolio do usuario %d", usuario)
 			continue
 		}
 
 		for _, quarterlyItem := range quarterlyResults {
-			err2 := s.buildHoldingQuarterlyResult(quarterlyItem, portfolioItem, resultadosHolding, resultadosHoldingByAtivo)
+			err2 := s.buildHoldingQuarterlyResult(usuario, quarterlyItem, portfolioItem, resultadosHolding, resultadosHoldingByAtivo)
 			if err2 != nil {
 				return holding_domain.Holdings{}, err2
 			}
@@ -142,7 +161,7 @@ func (s Service) CalculateHoldingGeneral(usuario string) (holding_domain.Holding
 	return s.buildHoldingReturn(resultadosHolding, resultadosHoldingByAtivo)
 }
 
-func (s Service) buildHoldingQuarterlyResult(quarterlyItem asset_domain.AssetQuarterlyResult, portfolioItem portfolio_domain.Portfolio,
+func (s Service) buildHoldingQuarterlyResult(idUsuario int64, quarterlyItem asset_domain.AssetQuarterlyResult, portfolioItem portfolio_domain.Portfolio,
 	resultadosHolding map[int64]*holding_domain.Holding,
 	resultadosHoldingByAtivo map[string]*holding_domain.HoldingAtivo) error {
 
@@ -159,7 +178,7 @@ func (s Service) buildHoldingQuarterlyResult(quarterlyItem asset_domain.AssetQua
 	}
 
 	s.buildQuarterly(quarterlyItem, portfolioItem, quarter, resultadosHolding)
-	s.buildQuarterlyAtivo(quarterlyItem, portfolioItem, quarter, ativo, resultadosHoldingByAtivo)
+	s.buildQuarterlyAtivo(idUsuario, quarterlyItem, portfolioItem, quarter, ativo, resultadosHoldingByAtivo)
 
 	return nil
 }
@@ -176,7 +195,7 @@ func (s Service) buildQuarterly(quarterlyItem asset_domain.AssetQuarterlyResult,
 	holdingQuarterly.ReceitaLiquida += CalcularFundamentos(portfolioItem, quarterlyItem)
 }
 
-func (s Service) buildQuarterlyAtivo(quarterlyItem asset_domain.AssetQuarterlyResult, portfolioItem portfolio_domain.Portfolio,
+func (s Service) buildQuarterlyAtivo(usuario int64, quarterlyItem asset_domain.AssetQuarterlyResult, portfolioItem portfolio_domain.Portfolio,
 	quarter quarter_domain.Trimestre, ativo asset_domain.Asset, resultadosHoldingByAtivo map[string]*holding_domain.HoldingAtivo) {
 	key := quarter.Codigo + "-" + ativo.Codigo
 	holdingQuarterlyAtivo, exist := resultadosHoldingByAtivo[key]
@@ -184,6 +203,7 @@ func (s Service) buildQuarterlyAtivo(quarterlyItem asset_domain.AssetQuarterlyRe
 		holdingQuarterlyAtivo = &holding_domain.HoldingAtivo{
 			Trimestre: quarter.Id,
 			Ativo: ativo,
+			Usuario: usuario,
 		}
 		resultadosHoldingByAtivo[key] = holdingQuarterlyAtivo
 	}

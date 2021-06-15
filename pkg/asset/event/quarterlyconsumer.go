@@ -38,7 +38,7 @@ func (q QuarterlyResultConsumer) consume() {
 		infrastructure.ResultQueueName, 	    // queue
 		"",                           // consumer
 		false,                          // auto-ack
-		true,                        // exclusive
+		false,                        // exclusive
 		false,                         // no-local
 		false,                          // no-wait
 		nil,                              // args

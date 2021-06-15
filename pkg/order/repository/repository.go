@@ -15,7 +15,7 @@ func NewRepository(db *sql.DB) Repository {
 	return Repository{DB: db}
 }
 
-func (r Repository) GetUsersWithOrders(idAtivo int64) ([]string, error) {
+func (r Repository) GetUsersWithOrders(idAtivo int64) ([]int64, error) {
 	rows, err := r.DB.Query("select id_usuario FROM MOVIMENTACAO WHERE id_ativo = $1 GROUP BY id_usuario", idAtivo)
 
 	if err != nil {
@@ -24,9 +24,9 @@ func (r Repository) GetUsersWithOrders(idAtivo int64) ([]string, error) {
 	}
 
 	defer rows.Close()
-	users := make([]string, 0)
+	users := make([]int64, 0)
 	for rows.Next() {
-		user := ""
+		user := int64(0)
 		err := rows.Scan(&user)
 		if err != nil {
 			log.Print("Erro ao executar busca de usuarios de orders.")

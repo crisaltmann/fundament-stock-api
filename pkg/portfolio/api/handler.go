@@ -5,6 +5,7 @@ import (
 	"github.com/crisaltmann/fundament-stock-api/pkg/portfolio/domain"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -15,7 +16,7 @@ type Handler struct {
 }
 
 type Service interface {
-	GetPortfolio(usuario string) ([]portfolio_domain.Portfolio, error)
+	GetPortfolio(usuario int64) ([]portfolio_domain.Portfolio, error)
 }
 
 func NewHandler(service Service) Handler {
@@ -29,12 +30,19 @@ func NewHandler(service Service) Handler {
 // @Param usuario query string true "user id"
 // @Router /portfolio [get]
 func (h Handler) GetPortfolio(c *gin.Context) {
-	usuario := c.Query("usuario")
-	if strings.EqualFold(usuario, "") {
+	usuarioParam := c.Query("usuarioParam")
+	if strings.EqualFold(usuarioParam, "") {
 		err := fmt.Errorf("id do usuário é informação obrigatória.")
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
+
+	usuario, err := strconv.ParseInt(usuarioParam, 10, 64)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
 	portfolio, err := h.Service.GetPortfolio(usuario)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)

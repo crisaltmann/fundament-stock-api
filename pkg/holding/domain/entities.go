@@ -38,6 +38,7 @@ type HoldingAtivo struct {
 func (h *HoldingAtivo) ToStruct() HoldingAtivo {
 	return HoldingAtivo{
 		Ativo:          h.Ativo,
+		Usuario: 		h.Usuario,
 		Trimestre:      h.Trimestre,
 		ReceitaLiquida: h.ReceitaLiquida,
 		Ebitda:         0,
