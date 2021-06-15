@@ -32,7 +32,7 @@ type StockPriceRepository interface {
 type AssetQuarterlyResultRepository interface {
 	InsertAssetQuarterlyResult(aqResult asset_domain.AssetQuarterlyResult) (bool, error)
 	ExistAssetQuarterlyResult(idAtivo int64, idTrimestre int64) (bool, error)
-	GetAssetQuarterlyResults(idAtivo int64) ([]asset_domain.AssetQuarterlyResult, error)
+	GetAssetQuarterlyResults(idAtivo int64, idTrimestre int64) ([]asset_domain.AssetQuarterlyResult, error)
 }
 
 func NewService(repository Repository, stockPriceRepository StockPriceRepository, assetQResultRepository AssetQuarterlyResultRepository,
@@ -105,7 +105,18 @@ func (s Service) InsertAssetQuarterlyResult(aqResult asset_domain.AssetQuarterly
 }
 
 func (s Service) GetAssetQuarterlyResults(assetId int64) ([]asset_domain.AssetQuarterlyResult, error) {
-	quarterlyResults, err := s.assetQuarterlyResultRepository.GetAssetQuarterlyResults(assetId)
+	quarterlyResults, err := s.assetQuarterlyResultRepository.GetAssetQuarterlyResults(assetId, 0)
+	if err != nil {
+		return nil, err
+	}
+	for i := 0; i < len(quarterlyResults); i++ {
+		calcularMargens(&quarterlyResults[i])
+	}
+	return quarterlyResults, nil
+}
+
+func (s Service) GetAssetQuarterlyResultsByTrimestre(assetId int64, trimestre int64) ([]asset_domain.AssetQuarterlyResult, error) {
+	quarterlyResults, err := s.assetQuarterlyResultRepository.GetAssetQuarterlyResults(assetId, trimestre)
 	if err != nil {
 		return nil, err
 	}
