@@ -3,6 +3,7 @@ package api
 import (
 	"github.com/crisaltmann/fundament-stock-api/pkg/asset/service"
 	"github.com/crisaltmann/fundament-stock-api/pkg/order/api"
+	order_event "github.com/crisaltmann/fundament-stock-api/pkg/order/event"
 	"github.com/crisaltmann/fundament-stock-api/pkg/order/repository"
 	"github.com/crisaltmann/fundament-stock-api/pkg/order/service"
 
@@ -21,6 +22,8 @@ var orderfactories = fx.Provide(
 	order_service.NewService,
 	func(service order_service.Service) order_api.Service { return service },
 	func(assetService asset_service.Service) order_service.AssetFinder { return assetService },
+
+	order_event.NewOrderProducer,
 
 	order_api.NewHandler,
 )
