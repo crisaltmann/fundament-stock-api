@@ -10,6 +10,7 @@ import (
 var Quarter = fx.Options(
 	quarterfactories,
 	fx.Invoke(quarter_api.MapRouter),
+	fx.Invoke(quarter_repository.InitCache),
 )
 
 var quarterfactories = fx.Provide(

@@ -14,7 +14,7 @@ func NewRepository(db *sql.DB) Repository {
 	return Repository{DB: db}
 }
 
-func (r Repository) GetPortfolio(usuario string) ([]portfolio_domain.Portfolio, error) {
+func (r Repository) GetPortfolio(usuario int64) ([]portfolio_domain.Portfolio, error) {
 	rows, err := r.DB.Query("select a.id, a.codigo, a.logo, a.total, a.cotacao, sum(m.quantidade), m.id_usuario from movimentacao m " +
 		"inner join ativo a on m.id_ativo = a.id  " +
 		"where m.id_usuario = $1" +

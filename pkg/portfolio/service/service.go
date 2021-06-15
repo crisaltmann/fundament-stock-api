@@ -6,19 +6,19 @@ import (
 )
 
 type Service struct {
-	Repository Repository
+	repository Repository
 }
 
 type Repository interface {
-	GetPortfolio(usuario string) ([]portfolio_domain.Portfolio, error)
+	GetPortfolio(usuario int64) ([]portfolio_domain.Portfolio, error)
 }
 
 func NewService(repository Repository) Service {
-	return Service{Repository: repository}
+	return Service{repository: repository}
 }
 
-func (s Service) GetPortfolio(usuario string) ([]portfolio_domain.Portfolio, error) {
-	portfolio, err := s.Repository.GetPortfolio(usuario)
+func (s Service) GetPortfolio(usuario int64) ([]portfolio_domain.Portfolio, error) {
+	portfolio, err := s.repository.GetPortfolio(usuario)
 	if err != nil {
 		return portfolio, err
 	}

@@ -10,7 +10,7 @@ import (
 const Path = "/assets"
 
 type Handler struct {
-	Service Service
+	service Service
 }
 
 type Service interface {
@@ -24,7 +24,7 @@ type Service interface {
 }
 
 func NewHandler(service Service) Handler {
-	return Handler{Service: service}
+	return Handler{service: service}
 }
 
 // GetAssets godoc
@@ -33,7 +33,7 @@ func NewHandler(service Service) Handler {
 // @Success 200 {object} asset_api.AssetResponse
 // @Router /assets [get]
 func (h Handler) GetAllAssets(c *gin.Context) {
-	assets, err := h.Service.GetAllAssets()
+	assets, err := h.service.GetAllAssets()
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -50,7 +50,7 @@ func (h Handler) GetAllAssets(c *gin.Context) {
 func (h Handler) InsertAsset(c *gin.Context) {
 	asset := AssetPostRequest{}
 	c.BindJSON(&asset)
-	_, err := h.Service.InsertAsset(convertPostRequestToDomain(asset))
+	_, err := h.service.InsertAsset(convertPostRequestToDomain(asset))
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -73,7 +73,7 @@ func (h Handler) UpdateAsset(c *gin.Context) {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	rasset, err := h.Service.UpdateAsset(domainAsset)
+	rasset, err := h.service.UpdateAsset(domainAsset)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -94,7 +94,7 @@ func (h Handler) GetById(c *gin.Context) {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	asset, err := h.Service.GetById(id)
+	asset, err := h.service.GetById(id)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -113,7 +113,7 @@ func (h Handler) GetById(c *gin.Context) {
 func (h Handler) InsertQuarterlyResultAsset(c *gin.Context) {
 	qrAsset := QuarterlyResultPostRequest{}
 	c.BindJSON(&qrAsset)
-	_, err := h.Service.InsertAssetQuarterlyResult(convertPostQuarterlyRequestToDomain(qrAsset))
+	_, err := h.service.InsertAssetQuarterlyResult(convertPostQuarterlyRequestToDomain(qrAsset))
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -133,7 +133,7 @@ func (h Handler) GetQuarterlyResultAsset(c *gin.Context) {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	quarterlyResults, err := h.Service.GetAssetQuarterlyResults(id)
+	quarterlyResults, err := h.service.GetAssetQuarterlyResults(id)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return

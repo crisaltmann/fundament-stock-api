@@ -22,6 +22,8 @@ type Holding struct {
 }
 
 type HoldingAtivo struct {
+	Id					int64
+	Usuario				int64
 	Ativo				asset_domain.Asset
 	Trimestre    		int64
 	ReceitaLiquida	    int64
@@ -31,4 +33,33 @@ type HoldingAtivo struct {
 	MargemLiquida		float32
 	DividaLiquida	    int64
 	DivEbitda			float32
+}
+
+func (h *HoldingAtivo) ToStruct() HoldingAtivo {
+	return HoldingAtivo{
+		Ativo:          h.Ativo,
+		Usuario: 		h.Usuario,
+		Trimestre:      h.Trimestre,
+		ReceitaLiquida: h.ReceitaLiquida,
+		Ebitda:         0,
+		MargemEbitda:   0,
+		LucroLiquido:   0,
+		MargemLiquida:  0,
+		DividaLiquida:  0,
+		DivEbitda:      0,
+	}
+}
+
+func (h *Holding) ToStruct() Holding {
+	return Holding{
+		Trimestre:      h.Trimestre,
+		ReceitaLiquida: h.ReceitaLiquida,
+		Ebitda:         0,
+		MargemEbitda:   0,
+		LucroLiquido:   0,
+		MargemLiquida:  0,
+		DividaLiquida:  0,
+		DivEbitda:      0,
+		HoldingsAtivo: h.HoldingsAtivo,
+	}
 }

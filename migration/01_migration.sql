@@ -30,6 +30,8 @@ CREATE TABLE IF NOT EXISTS MOVIMENTACAO (
     id_usuario  bigint          NOT NULL
 )
 
+ALTER TABLE movimentacao ADD CONSTRAINT movimentacao_ativo_fk FOREIGN KEY (id_ativo) REFERENCES ativo(id);
+
 CREATE TABLE IF NOT EXISTS TRIMESTRE (
     id              serial          PRIMARY KEY,
     codigo          varchar(20)     UNIQUE NOT NULL,
@@ -55,6 +57,8 @@ CREATE TABLE IF NOT EXISTS COTACAO_ATIVO (
     total           bigint          NOT NULL
 );
 
+ALTER TABLE cotacao_ativo ADD CONSTRAINT cotacao_ativo_ativo_fk FOREIGN KEY (id_ativo) REFERENCES ativo(id);
+
 CREATE TABLE IF NOT EXISTS RESULTADO_TRIMESTRE (
        id                  serial          PRIMARY KEY,
        id_trimestre        bigint          NOT NULL,
@@ -65,14 +69,20 @@ CREATE TABLE IF NOT EXISTS RESULTADO_TRIMESTRE (
        divida_liquida      bigint          NOT NULL
 );
 
+ALTER TABLE resultado_trimestre ADD CONSTRAINT resultado_trimestre_ativo_fk FOREIGN KEY (id_ativo) REFERENCES ativo(id);
+ALTER TABLE resuktado_trimestre ADD CONSTRAINT resultado_trimestre_trimestre_fk FOREIGN KEY (id_trimestre) REFERENCES trimestre(id);
+
 CREATE TABLE IF NOT EXISTS PORTFOLIO_TRIMESTRE (
     id                  serial          PRIMARY KEY,
     id_trimestre        bigint          NOT NULL,
     id_usuario          bigint          NOT NULL,
     id_ativo            bigint          NOT NULL,
-    quantidade          int             NOT NULL,
     receita_liquida     bigint          NOT NULL,
     ebitda              bigint          NOT NULL,
     lucro_liquido       bigint          NOT NULL,
     divida_liquida      bigint          NOT NULL
 );
+
+ALTER TABLE portfolio_trimestre ADD CONSTRAINT portfolio_trimestre_ativo_fk FOREIGN KEY (id_ativo) REFERENCES ativo(id);
+ALTER TABLE portfolio_trimestre ADD CONSTRAINT portfolio_trimestre_trimestre_fk FOREIGN KEY (id_trimestre) REFERENCES trimestre(id);
+
