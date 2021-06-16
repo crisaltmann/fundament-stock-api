@@ -2,6 +2,7 @@ package holding_service
 
 import (
 	"errors"
+	"github.com/crisaltmann/fundament-stock-api/internal"
 	asset_domain "github.com/crisaltmann/fundament-stock-api/pkg/asset/domain"
 	holding_domain "github.com/crisaltmann/fundament-stock-api/pkg/holding/domain"
 	portfolio_domain "github.com/crisaltmann/fundament-stock-api/pkg/portfolio/domain"
@@ -23,12 +24,10 @@ type OrderService interface {
 }
 
 type PortfolioService interface {
-	GetPortfolio(usuario int64) ([]portfolio_domain.Portfolio, error)
 	GetPortfolioByTrimestre(usuario int64, trimestre int64) ([]portfolio_domain.Portfolio, error)
 }
 
 type AssetService interface {
-	GetAssetQuarterlyResults(assetId int64) ([]asset_domain.AssetQuarterlyResult, error)
 	GetAssetQuarterlyResultsByTrimestre(assetId int64, trimestre int64) ([]asset_domain.AssetQuarterlyResult, error)
 	GetById(id int64) (asset_domain.Asset, error)
 }
@@ -40,7 +39,6 @@ type QuarterService interface {
 
 type Repository interface {
 	GetResultadoPortfolio(usuario string) ([]holding_domain.HoldingAtivo, error)
-	DeleteByAtivoAndTrimestre(idAtivo int64, idTrimestre int64) error
 	DeleteByUser(idUser int64) error
 	SaveResultadoPortfolio(ativo holding_domain.HoldingAtivo) error
 }
@@ -77,12 +75,25 @@ func (s Service) GetHolding(usuario string) (holding_domain.Holdings, error) {
 			return holding_domain.Holdings{}, err
 		}
 
+		resultado.MargemEbitda = internal.RoundFloat(float32(resultado.Ebitda) / float32(resultado.ReceitaLiquida))
+		resultado.MargemLiquida = internal.RoundFloat(float32(resultado.LucroLiquido) / float32(resultado.ReceitaLiquida))
+
+		if resultado.DividaLiquida > 0 && resultado.Ebitda > 0 {
+			resultado.DivEbitda = internal.RoundFloat(float32(resultado.DividaLiquida) / float32(resultado.Ebitda))
+		}
+
 		holding.HoldingsAtivo = append(holding.HoldingsAtivo, resultado)
 		holding.DividaLiquida += resultado.DividaLiquida
 		holding.ReceitaLiquida += resultado.ReceitaLiquida
 		holding.Ebitda += resultado.Ebitda
 		holding.LucroLiquido += resultado.LucroLiquido
 		holding.Trimestre = trimestre
+		holding.MargemEbitda = internal.RoundFloat(float32(holding.Ebitda) / float32(holding.ReceitaLiquida))
+		holding.MargemLiquida = internal.RoundFloat(float32(holding.LucroLiquido) / float32(holding.ReceitaLiquida))
+
+		if holding.DividaLiquida > 0 && holding.Ebitda > 0 {
+			holding.DivEbitda = internal.RoundFloat(float32(holding.DividaLiquida) / float32(holding.Ebitda))
+		}
 	}
 
 	holdings := holding_domain.Holdings{}
@@ -125,7 +136,6 @@ func (s Service) saveHoldings(holdings holding_domain.Holdings) error {
 }
 
 func (s Service) calculateHoldingGeneral(usuario int64) (holding_domain.Holdings, error) {
-	//TODO adicionar filtro por data de trimestre quando for persistido.
 	quarters, err := s.quarterService.GetQuarters()
 	if err != nil {
 		log.Printf("Erro ao buscar trimestres.")
@@ -202,7 +212,12 @@ func (s Service) buildQuarterly(quarterlyItem asset_domain.AssetQuarterlyResult,
 		}
 		resultadosHolding[quarterlyItem.Trimestre] = holdingQuarterly
 	}
-	holdingQuarterly.ReceitaLiquida += CalcularFundamentos(portfolioItem, quarterlyItem)
+
+	receitaLiquida, ebitda, lucroLiquido, divida := CalcularFundamentos(portfolioItem, quarterlyItem)
+	holdingQuarterly.ReceitaLiquida += receitaLiquida
+	holdingQuarterly.Ebitda += ebitda
+	holdingQuarterly.LucroLiquido += lucroLiquido
+	holdingQuarterly.DividaLiquida += divida
 }
 
 func (s Service) buildQuarterlyAtivo(usuario int64, quarterlyItem asset_domain.AssetQuarterlyResult, portfolioItem portfolio_domain.Portfolio,
@@ -218,7 +233,11 @@ func (s Service) buildQuarterlyAtivo(usuario int64, quarterlyItem asset_domain.A
 		resultadosHoldingByAtivo[key] = holdingQuarterlyAtivo
 	}
 
-	holdingQuarterlyAtivo.ReceitaLiquida += CalcularFundamentos(portfolioItem, quarterlyItem)
+	receitaLiquida, ebitda, lucroLiquido, divida := CalcularFundamentos(portfolioItem, quarterlyItem)
+	holdingQuarterlyAtivo.ReceitaLiquida += receitaLiquida
+	holdingQuarterlyAtivo.Ebitda += ebitda
+	holdingQuarterlyAtivo.LucroLiquido += lucroLiquido
+	holdingQuarterlyAtivo.DividaLiquida += divida
 }
 
 func (s Service) buildHoldingReturn(resultadosHolding map[int64]*holding_domain.Holding, resultadosHoldingByAtivo map[string]*holding_domain.HoldingAtivo) (holding_domain.Holdings, error) {
@@ -240,9 +259,15 @@ func (s Service) buildHoldingReturn(resultadosHolding map[int64]*holding_domain.
 	return holding_domain.Holdings{Holdings: holdings}, nil
 }
 
-func CalcularFundamentos(item portfolio_domain.Portfolio, quarterlyItem asset_domain.AssetQuarterlyResult) int64{
+/**
+retorno receitaLiquida, ebitda, lucroLiquido, divida
+ */
+func CalcularFundamentos(item portfolio_domain.Portfolio, quarterlyItem asset_domain.AssetQuarterlyResult) (int64, int64, int64, int64){
 	//calcular o percentual
 	percentualDetido := float32(item.Quantidade) / float32(item.Ativo.Total)
 	//somar os percentuais do trimestre
-	return int64(float32(quarterlyItem.ReceitaLiquida) * percentualDetido)
+	return int64(float32(quarterlyItem.ReceitaLiquida) * percentualDetido),
+		int64(float32(quarterlyItem.Ebitda) * percentualDetido),
+		int64(float32(quarterlyItem.LucroLiquido) * percentualDetido),
+		int64(float32(quarterlyItem.DividaLiquida) * percentualDetido)
 }

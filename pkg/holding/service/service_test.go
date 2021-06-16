@@ -24,20 +24,22 @@ func Test_GetExpeditionContainer_Success(t *testing.T) {
 	}
 	// quantidade / total = 0,000000037404838
 
-	quarterlyItem := asset_domain.AssetQuarterlyResult{
+	quarterlyItem := asset_domain.AssetQuarterlyResult {
 		Id:             0,
 		Trimestre:      1,
 		Ativo:          0,
 		ReceitaLiquida: 3714000000,
-		Ebitda:         0,
+		Ebitda:         619000000,
 		MargemEbitda:   0,
-		LucroLiquido:   0,
+		LucroLiquido:   454000000,
 		MargemLiquida:  0,
-		DividaLiquida:  0,
+		DividaLiquida:  454000000,
 		DivEbitda:      0,
 	}
 
-	receitaPercentual := holding_service.CalcularFundamentos(item, quarterlyItem)
-	expected := 138
-	assert.EqualValues(t, expected, receitaPercentual)
+	receitaLiquida, ebitda, lucroLiquido, divida := holding_service.CalcularFundamentos(item, quarterlyItem)
+	assert.EqualValues(t, 138, receitaLiquida)
+	assert.EqualValues(t, 23, ebitda)
+	assert.EqualValues(t, 16, lucroLiquido)
+	assert.EqualValues(t, 16, divida)
 }
