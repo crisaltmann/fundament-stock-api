@@ -51,9 +51,15 @@ func (r AssetQuarterlyResultRepository) InsertAssetQuarterlyResult(aqResult asse
 	return true, nil
 }
 
-func (r AssetQuarterlyResultRepository) GetAssetQuarterlyResults(idAtivo int64) ([]asset_domain.AssetQuarterlyResult, error) {
-	rows, err := r.DB.Query("SELECT id, id_trimestre, id_ativo, receita_liquida, ebitda, lucro_liquido, divida_liquida" +
-		" FROM resultado_trimestre WHERE id_ativo = $1", idAtivo)
+func (r AssetQuarterlyResultRepository) GetAssetQuarterlyResults(idAtivo int64, idTrimestre int64) ([]asset_domain.AssetQuarterlyResult, error) {
+	query := "SELECT id, id_trimestre, id_ativo, receita_liquida, ebitda, lucro_liquido, divida_liquida " +
+		" FROM resultado_trimestre WHERE id_ativo = $1 "
+
+	if idTrimestre > 0 {
+		query = query + " AND id_trimestre = $2 "
+	}
+
+	rows, err := r.DB.Query(query, idAtivo, idTrimestre)
 	defer rows.Close()
 
 	if err != nil {

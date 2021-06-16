@@ -5,15 +5,12 @@ import (
 	"github.com/crisaltmann/fundament-stock-api/pkg/asset/event"
 	"github.com/crisaltmann/fundament-stock-api/pkg/asset/repository"
 	"github.com/crisaltmann/fundament-stock-api/pkg/asset/service"
-	"github.com/crisaltmann/fundament-stock-api/pkg/holding/service"
-
 	"go.uber.org/fx"
 )
 
 var Asset = fx.Options(
 	assetfactories,
 	fx.Invoke(asset_api.MapRouter),
-	fx.Invoke(event.InitializeConsume),
 	fx.Invoke(asset_repository.InitCache),
 )
 
@@ -28,9 +25,6 @@ var assetfactories = fx.Provide(
 	func(quarterlyResultRepository asset_repository.AssetQuarterlyResultRepository) asset_service.AssetQuarterlyResultRepository { return quarterlyResultRepository },
 
 	event.NewQuarterlyResultProducer,
-
-	func(holdingService holding_service.Service) event.Service { return holdingService },
-	event.NewQuarterlyResultConsumer,
 
 	asset_service.NewService,
 	func(service asset_service.Service) asset_api.Service { return service },

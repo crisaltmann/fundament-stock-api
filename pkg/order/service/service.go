@@ -3,11 +3,13 @@ package order_service
 import (
 	"fmt"
 	"github.com/crisaltmann/fundament-stock-api/pkg/order/domain"
+	order_event "github.com/crisaltmann/fundament-stock-api/pkg/order/event"
 )
 
 type Service struct {
-	Repository Repository
-	AssetFinder AssetFinder
+	repository    Repository
+	assetFinder   AssetFinder
+	producer      order_event.OrderProducer
 }
 
 type Repository interface {
@@ -20,16 +22,20 @@ type AssetFinder interface {
 	ExistById(id int64) (bool, error)
 }
 
-func NewService(repository Repository, assetFinder AssetFinder) Service {
-	return Service{Repository: repository, AssetFinder: assetFinder}
+func NewService(repository Repository, assetFinder AssetFinder, producer order_event.OrderProducer) Service {
+	return Service{
+		repository: repository,
+		assetFinder: assetFinder,
+		producer: producer,
+	}
 }
 
 func (s Service) GetUsersWithOrders(idAtivo int64) ([]int64, error) {
-	return s.Repository.GetUsersWithOrders(idAtivo)
+	return s.repository.GetUsersWithOrders(idAtivo)
 }
 
 func (s Service) GetAllOrders() ([]order_domain.Order, error) {
-	orders, err := s.Repository.GetAllOrders()
+	orders, err := s.repository.GetAllOrders()
 	if err != nil {
 		return orders, err
 	}
@@ -44,12 +50,19 @@ func (s Service) GetAllOrders() ([]order_domain.Order, error) {
 }
 
 func (s Service) InsertOrder(order order_domain.Order) (bool, error) {
-	ativoExist, err := s.AssetFinder.ExistById(order.Ativo)
+	ativoExist, err := s.assetFinder.ExistById(order.Ativo)
 	if err != nil && !ativoExist {
 		err = fmt.Errorf("Ativo informado invalido ou não cadastrado")
 	}
 	order.Quantidade = adjustQtde(order)
-	return s.Repository.InsertOrder(order)
+	inserted, err := s.repository.InsertOrder(order)
+	if inserted && err == nil {
+		err := s.producer.PublishOrderEvent(order)
+		if err != nil {
+			return false, err
+		}
+	}
+	return inserted, err
 }
 
 func adjustQtde(order order_domain.Order) int {

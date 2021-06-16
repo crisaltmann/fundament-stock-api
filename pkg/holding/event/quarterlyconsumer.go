@@ -1,4 +1,4 @@
-package event
+package holding_event
 
 import (
 	"encoding/json"
@@ -9,22 +9,22 @@ import (
 )
 
 type QuarterlyResultConsumer struct {
-	ch		   *amqp.Channel
-	service    Service
+	ch      *amqp.Channel
+	service QuarterlyResultService
 }
 
-type Service interface {
-	CalculateHolding(idAtivo int64, idTrimestre int64) error
+type QuarterlyResultService interface {
+	CalculateHolding(idAtivo int64) error
 }
 
-func NewQuarterlyResultConsumer(ch *amqp.Channel, service Service) QuarterlyResultConsumer {
+func NewQuarterlyResultConsumer(ch *amqp.Channel, service QuarterlyResultService) QuarterlyResultConsumer {
 	return QuarterlyResultConsumer{
 		ch: ch,
 		service: service,
 	}
 }
 
-func InitializeConsume(q QuarterlyResultConsumer, c *infrastructure.Cron) {
+func InitializeQuarterlyResultConsume(q QuarterlyResultConsumer, c *infrastructure.Cron) {
 	log.Printf("Iniciando configuração de cron")
 	err := c.Cron.AddFunc("0 0/1 * * * *", q.consume)
 	if err != nil {
@@ -75,6 +75,6 @@ func (q QuarterlyResultConsumer) processMessage(body []byte) error {
 		log.Printf("Erro ao converter evento")
 		return err
 	}
-	err = q.service.CalculateHolding(result.Ativo, result.Trimestre)
+	err = q.service.CalculateHolding(result.Ativo)
 	return err
 }

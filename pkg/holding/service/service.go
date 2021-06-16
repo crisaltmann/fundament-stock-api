@@ -24,15 +24,18 @@ type OrderService interface {
 
 type PortfolioService interface {
 	GetPortfolio(usuario int64) ([]portfolio_domain.Portfolio, error)
+	GetPortfolioByTrimestre(usuario int64, trimestre int64) ([]portfolio_domain.Portfolio, error)
 }
 
 type AssetService interface {
 	GetAssetQuarterlyResults(assetId int64) ([]asset_domain.AssetQuarterlyResult, error)
+	GetAssetQuarterlyResultsByTrimestre(assetId int64, trimestre int64) ([]asset_domain.AssetQuarterlyResult, error)
 	GetById(id int64) (asset_domain.Asset, error)
 }
 
 type QuarterService interface {
 	GetQuarter(id int64) (quarter_domain.Trimestre, error)
+	GetQuarters() ([]quarter_domain.Trimestre, error)
 }
 
 type Repository interface {
@@ -91,7 +94,7 @@ func (s Service) GetHolding(usuario string) (holding_domain.Holdings, error) {
 	return holdings, nil
 }
 
-func (s Service) CalculateHolding(idAtivo int64, idTrimestre int64) error {
+func (s Service) CalculateHolding(idAtivo int64) error {
 	users, err := s.orderService.GetUsersWithOrders(idAtivo)
 	if err != nil {
 		return err
@@ -99,7 +102,7 @@ func (s Service) CalculateHolding(idAtivo int64, idTrimestre int64) error {
 
 	for i := 0; i < len(users); i++ {
 		s.repository.DeleteByUser(users[i])
-		holdigns, err := s.CalculateHoldingGeneral(users[i])
+		holdigns, err := s.calculateHoldingGeneral(users[i])
 		if err == nil {
 			s.saveHoldings(holdigns)
 		}
@@ -121,43 +124,50 @@ func (s Service) saveHoldings(holdings holding_domain.Holdings) error {
 	return nil
 }
 
-func (s Service) CalculateHoldingGeneral(usuario int64) (holding_domain.Holdings, error) {
+func (s Service) calculateHoldingGeneral(usuario int64) (holding_domain.Holdings, error) {
 	//TODO adicionar filtro por data de trimestre quando for persistido.
-	portfolio, err := s.portfolioService.GetPortfolio(usuario)
+	quarters, err := s.quarterService.GetQuarters()
 	if err != nil {
-		log.Print("Erro ao buscar portfolio no calculo de holding.")
-		return holding_domain.Holdings{}, errors.New("Erro ao buscar portfolio no calculo de holding.")
-	}
-
-	if len(portfolio) == 0 {
-		log.Printf("Não foram encontrados ativos no portfolio do usuario %d", usuario)
-		holdings := make([]holding_domain.Holding, 0)
-		return holding_domain.Holdings{ Holdings: holdings}, nil
+		log.Printf("Erro ao buscar trimestres.")
+		return holding_domain.Holdings{}, err
 	}
 
 	resultadosHolding := make(map[int64]*holding_domain.Holding)
 	resultadosHoldingByAtivo := make(map[string]*holding_domain.HoldingAtivo)
 
-	for _, portfolioItem := range portfolio {
-		quarterlyResults, err := s.assetService.GetAssetQuarterlyResults(portfolioItem.Ativo.Id)
+	for i := 0; i < len(quarters); i++ {
+		currentQuarter := quarters[i]
+		portfolio, err := s.portfolioService.GetPortfolioByTrimestre(usuario, currentQuarter.Id)
 		if err != nil {
-			log.Print("Erro ao buscar resultados trimestrais dos ativos no portfolio no calculo de holding.")
-			return holding_domain.Holdings{}, errors.New("Erro ao buscar resultados trimestrais dos ativos no portfolio no calculo de holding.")
+			log.Printf("Erro ao buscar portfolio no calculo de holding %d.", currentQuarter.Id)
+			return holding_domain.Holdings{}, errors.New("Erro ao buscar portfolio no calculo de holding.")
 		}
 
-		if len(quarterlyResults) == 0 {
-			log.Printf("Não foram encontrados resultados trimestrais dos ativos no portfolio do usuario %d", usuario)
+		if len(portfolio) == 0 {
+			log.Printf("Não foram encontrados ativos no portfolio do usuario %d no trimestre %d", usuario, currentQuarter.Id)
 			continue
 		}
 
-		for _, quarterlyItem := range quarterlyResults {
-			err2 := s.buildHoldingQuarterlyResult(usuario, quarterlyItem, portfolioItem, resultadosHolding, resultadosHoldingByAtivo)
-			if err2 != nil {
-				return holding_domain.Holdings{}, err2
+		for _, portfolioItem := range portfolio {
+			quarterlyResults, err := s.assetService.GetAssetQuarterlyResultsByTrimestre(portfolioItem.Ativo.Id, currentQuarter.Id)
+			if err != nil {
+				log.Print("Erro ao buscar resultados trimestrais dos ativos no portfolio no calculo de holding.")
+				return holding_domain.Holdings{}, errors.New("Erro ao buscar resultados trimestrais dos ativos no portfolio no calculo de holding.")
+			}
+
+			if len(quarterlyResults) == 0 {
+				log.Printf("Não foram encontrados resultados trimestrais dos ativos no portfolio do usuario %d", usuario)
+				continue
+			}
+
+			for _, quarterlyItem := range quarterlyResults {
+				err2 := s.buildHoldingQuarterlyResult(usuario, quarterlyItem, portfolioItem, resultadosHolding, resultadosHoldingByAtivo)
+				if err2 != nil {
+					return holding_domain.Holdings{}, err2
+				}
 			}
 		}
 	}
-
 	return s.buildHoldingReturn(resultadosHolding, resultadosHoldingByAtivo)
 }
 

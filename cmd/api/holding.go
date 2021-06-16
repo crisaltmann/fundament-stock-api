@@ -4,6 +4,7 @@ import (
 	asset_repository "github.com/crisaltmann/fundament-stock-api/pkg/asset/repository"
 	asset_service "github.com/crisaltmann/fundament-stock-api/pkg/asset/service"
 	"github.com/crisaltmann/fundament-stock-api/pkg/holding/api"
+	holding_event "github.com/crisaltmann/fundament-stock-api/pkg/holding/event"
 	holding_repository "github.com/crisaltmann/fundament-stock-api/pkg/holding/repository"
 	"github.com/crisaltmann/fundament-stock-api/pkg/holding/service"
 	order_service "github.com/crisaltmann/fundament-stock-api/pkg/order/service"
@@ -14,6 +15,8 @@ import (
 
 var Holding = fx.Options(
 	holdingfactories,
+	fx.Invoke(holding_event.InitializeOrderConsume),
+	fx.Invoke(holding_event.InitializeQuarterlyResultConsume),
 	fx.Invoke(holding_api.MapRouter),
 )
 
@@ -29,6 +32,11 @@ var holdingfactories = fx.Provide(
 
 	holding_service.NewService,
 	func(service holding_service.Service) holding_api.Service {return service},
+
+	func(holdingService holding_service.Service) holding_event.HoldingOrderService { return holdingService },
+	func(holdingService holding_service.Service) holding_event.QuarterlyResultService { return holdingService },
+	holding_event.NewHoldingOrderConsumer,
+    holding_event.NewQuarterlyResultConsumer,
 
 	holding_api.NewHandler,
 )
