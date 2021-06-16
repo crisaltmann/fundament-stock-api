@@ -29,8 +29,8 @@ func (q QuarterlyResultProducer) PublishQuarterlyResultEvent(result asset_domain
 		return fmt.Errorf("Erro ao publicar mensagem na fila.", err)
 	}
 	err = ch.Publish(
-		"",                             // exchange
-		infrastructure.ResultQueueName, // routing key
+		"",                              // exchange
+		infrastructure.ResultQueueName,           // routing key
 		false,                          // mandatory
 		false,                          // immediate
 		amqp.Publishing{

@@ -144,9 +144,8 @@ func (s Service) calculateHoldingGeneral(usuario int64) (holding_domain.Holdings
 		}
 
 		if len(portfolio) == 0 {
-			log.Printf("Não foram encontrados ativos no portfolio do usuario %d", usuario)
-			holdings := make([]holding_domain.Holding, 0)
-			return holding_domain.Holdings{ Holdings: holdings}, nil
+			log.Printf("Não foram encontrados ativos no portfolio do usuario %d no trimestre %d", usuario, currentQuarter.Id)
+			continue
 		}
 
 		for _, portfolioItem := range portfolio {

@@ -48,7 +48,11 @@ func (h Handler) GetAllOrders(c *gin.Context) {
 // @Router /orders [post]
 func (h Handler) InsertOrder(c *gin.Context) {
 	order := OrderPostRequest{}
-	c.BindJSON(&order)
+	err := c.BindJSON(&order)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
 	orderDomain, err := convertPostRequestToDomain(order)
 	if err == nil {
 		_, err = h.Service.InsertOrder(orderDomain)
