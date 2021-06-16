@@ -41,12 +41,12 @@ func (h *HoldingAtivo) ToStruct() HoldingAtivo {
 		Usuario: 		h.Usuario,
 		Trimestre:      h.Trimestre,
 		ReceitaLiquida: h.ReceitaLiquida,
-		Ebitda:         0,
-		MargemEbitda:   0,
-		LucroLiquido:   0,
-		MargemLiquida:  0,
-		DividaLiquida:  0,
-		DivEbitda:      0,
+		Ebitda:         h.Ebitda,
+		MargemEbitda:   h.MargemEbitda,
+		LucroLiquido:   h.LucroLiquido,
+		MargemLiquida:  h.MargemLiquida,
+		DividaLiquida:  h.DividaLiquida,
+		DivEbitda:      h.DivEbitda,
 	}
 }
 
@@ -54,12 +54,12 @@ func (h *Holding) ToStruct() Holding {
 	return Holding{
 		Trimestre:      h.Trimestre,
 		ReceitaLiquida: h.ReceitaLiquida,
-		Ebitda:         0,
-		MargemEbitda:   0,
-		LucroLiquido:   0,
-		MargemLiquida:  0,
-		DividaLiquida:  0,
-		DivEbitda:      0,
+		Ebitda:         h.Ebitda,
+		MargemEbitda:   h.MargemEbitda,
+		LucroLiquido:   h.LucroLiquido,
+		MargemLiquida:  h.MargemLiquida,
+		DividaLiquida:  h.DividaLiquida,
+		DivEbitda:      h.DivEbitda,
 		HoldingsAtivo: h.HoldingsAtivo,
 	}
 }
