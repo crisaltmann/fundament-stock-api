@@ -60,6 +60,6 @@ func (h *Holding) ToStruct() Holding {
 		MargemLiquida:  h.MargemLiquida,
 		DividaLiquida:  h.DividaLiquida,
 		DivEbitda:      h.DivEbitda,
-		HoldingsAtivo: h.HoldingsAtivo,
+		HoldingsAtivo:  h.HoldingsAtivo,
 	}
 }

@@ -2,6 +2,7 @@ package holding_service
 
 import (
 	"errors"
+	"github.com/crisaltmann/fundament-stock-api/internal"
 	asset_domain "github.com/crisaltmann/fundament-stock-api/pkg/asset/domain"
 	holding_domain "github.com/crisaltmann/fundament-stock-api/pkg/holding/domain"
 	portfolio_domain "github.com/crisaltmann/fundament-stock-api/pkg/portfolio/domain"
@@ -27,7 +28,6 @@ type PortfolioService interface {
 }
 
 type AssetService interface {
-	GetAssetQuarterlyResults(assetId int64) ([]asset_domain.AssetQuarterlyResult, error)
 	GetAssetQuarterlyResultsByTrimestre(assetId int64, trimestre int64) ([]asset_domain.AssetQuarterlyResult, error)
 	GetById(id int64) (asset_domain.Asset, error)
 }
@@ -39,7 +39,6 @@ type QuarterService interface {
 
 type Repository interface {
 	GetResultadoPortfolio(usuario string) ([]holding_domain.HoldingAtivo, error)
-	DeleteByAtivoAndTrimestre(idAtivo int64, idTrimestre int64) error
 	DeleteByUser(idUser int64) error
 	SaveResultadoPortfolio(ativo holding_domain.HoldingAtivo) error
 }
@@ -76,12 +75,25 @@ func (s Service) GetHolding(usuario string) (holding_domain.Holdings, error) {
 			return holding_domain.Holdings{}, err
 		}
 
+		resultado.MargemEbitda = internal.RoundFloat(float32(resultado.Ebitda) / float32(resultado.ReceitaLiquida))
+		resultado.MargemLiquida = internal.RoundFloat(float32(resultado.LucroLiquido) / float32(resultado.ReceitaLiquida))
+
+		if resultado.DividaLiquida > 0 && resultado.Ebitda > 0 {
+			resultado.DivEbitda = internal.RoundFloat(float32(resultado.DividaLiquida) / float32(resultado.Ebitda))
+		}
+
 		holding.HoldingsAtivo = append(holding.HoldingsAtivo, resultado)
 		holding.DividaLiquida += resultado.DividaLiquida
 		holding.ReceitaLiquida += resultado.ReceitaLiquida
 		holding.Ebitda += resultado.Ebitda
 		holding.LucroLiquido += resultado.LucroLiquido
 		holding.Trimestre = trimestre
+		holding.MargemEbitda = internal.RoundFloat(float32(holding.Ebitda) / float32(holding.ReceitaLiquida))
+		holding.MargemLiquida = internal.RoundFloat(float32(holding.LucroLiquido) / float32(holding.ReceitaLiquida))
+
+		if holding.DividaLiquida > 0 && holding.Ebitda > 0 {
+			holding.DivEbitda = internal.RoundFloat(float32(holding.DividaLiquida) / float32(holding.Ebitda))
+		}
 	}
 
 	holdings := holding_domain.Holdings{}
