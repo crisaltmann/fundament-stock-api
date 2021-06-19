@@ -1,8 +1,11 @@
 package insight_repository
 
 import (
+	"context"
 	"database/sql"
+	"fmt"
 	"github.com/patrickmn/go-cache"
+	"github.com/rs/zerolog/log"
 	"time"
 )
 
@@ -21,6 +24,24 @@ func InitCache(r Repository) {
 	//for _, quarter := range quarters {
 	//	r.cache.Add(strconv.FormatInt(quarter.Id, 10), quarter, cache.DefaultExpiration)
 	//}
+}
+
+func (r Repository) DeleteByUser(ctx context.Context, tx *sql.Tx, idUser int64) error {
+	prepare, err := tx.Prepare("DELETE FROM insight WHERE id_usuario = $1")
+
+	if err != nil {
+		log.Print("Ocorreu um erro ao preparar query de delete de insights por user")
+		return err
+	}
+
+	defer prepare.Close()
+
+	_, err = prepare.ExecContext(ctx, idUser)
+	if err != nil {
+		err = fmt.Errorf("Erro ao executar delete insights por user", err)
+		return err
+	}
+	return nil
 }
 
 //func (r Repository) GetQuarter(id int64) (quarter_domain.Trimestre, error) {

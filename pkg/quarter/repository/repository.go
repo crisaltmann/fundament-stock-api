@@ -57,6 +57,14 @@ func (r Repository) GetQuarter(id int64) (quarter_domain.Trimestre, error) {
 }
 
 func (r Repository) GetQuarters() ([]quarter_domain.Trimestre, error) {
+	if r.cache.ItemCount() > 0 {
+		trimestres := make([]quarter_domain.Trimestre, 0)
+		for _, trim := range r.cache.Items() {
+			trimestres = append(trimestres, trim.Object.(quarter_domain.Trimestre))
+		}
+		return trimestres, nil
+	}
+
 	rows, err := r.DB.Query("SELECT id, codigo, ano, trimestre, data_inicio, data_fim FROM trimestre")
 	defer rows.Close()
 
