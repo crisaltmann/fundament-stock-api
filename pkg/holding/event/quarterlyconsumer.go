@@ -1,6 +1,7 @@
 package holding_event
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/crisaltmann/fundament-stock-api/infrastructure"
 	"github.com/crisaltmann/fundament-stock-api/pkg/asset/domain"
@@ -14,7 +15,7 @@ type QuarterlyResultConsumer struct {
 }
 
 type QuarterlyResultService interface {
-	CalculateHolding(idAtivo int64) error
+	CalculateHolding(ctx context.Context, idAtivo int64) error
 }
 
 func NewQuarterlyResultConsumer(ch *amqp.Channel, service QuarterlyResultService) QuarterlyResultConsumer {
@@ -52,7 +53,8 @@ func (q QuarterlyResultConsumer) consume() {
 
 	go func() {
 		for d := range msgs {
-			err := q.processMessage(d.Body)
+			ctx := context.TODO()
+			err := q.processMessage(ctx, d.Body)
 			if err != nil {
 				log.Printf("Ocorreu um erro ao processar a mensagem.")
 				//Adicionar mecanismo de tratativas
@@ -67,7 +69,7 @@ func (q QuarterlyResultConsumer) consume() {
 	log.Printf("Encerrando ciclo de consumo de mensagens.")
 }
 
-func (q QuarterlyResultConsumer) processMessage(body []byte) error {
+func (q QuarterlyResultConsumer) processMessage(ctx context.Context, body []byte) error {
 	log.Printf("Mensage recebida: %s", body)
 	result := &asset_domain.AssetQuarterlyResult{}
 	err := json.Unmarshal(body, result)
@@ -75,6 +77,6 @@ func (q QuarterlyResultConsumer) processMessage(body []byte) error {
 		log.Printf("Erro ao converter evento")
 		return err
 	}
-	err = q.service.CalculateHolding(result.Ativo)
+	err = q.service.CalculateHolding(ctx, result.Ativo)
 	return err
 }

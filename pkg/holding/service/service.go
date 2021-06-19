@@ -1,7 +1,10 @@
 package holding_service
 
 import (
+	"context"
+	"database/sql"
 	"errors"
+	"fmt"
 	"github.com/crisaltmann/fundament-stock-api/internal"
 	asset_domain "github.com/crisaltmann/fundament-stock-api/pkg/asset/domain"
 	holding_domain "github.com/crisaltmann/fundament-stock-api/pkg/holding/domain"
@@ -17,6 +20,7 @@ type Service struct {
 	quarterService QuarterService
 	orderService OrderService
 	repository Repository
+	db *sql.DB
 }
 
 type OrderService interface {
@@ -39,18 +43,19 @@ type QuarterService interface {
 
 type Repository interface {
 	GetResultadoPortfolio(usuario string) ([]holding_domain.HoldingAtivo, error)
-	DeleteByUser(idUser int64) error
-	SaveResultadoPortfolio(ativo holding_domain.HoldingAtivo) error
+	DeleteByUser(ctx context.Context, tx *sql.Tx, idUser int64) error
+	SaveResultadoPortfolio(ctx context.Context, tx *sql.Tx, ativo holding_domain.HoldingAtivo) error
 }
 
 func NewService(portfolioService PortfolioService, assetService AssetService, quarterService QuarterService,
-	orderService OrderService, repository Repository) Service {
+	orderService OrderService, repository Repository, db *sql.DB) Service {
 	return Service{
 		portfolioService: portfolioService,
 		assetService:     assetService,
 		quarterService: quarterService,
 		orderService: orderService,
 		repository: repository,
+		db: db,
 	}
 }
 
@@ -105,28 +110,49 @@ func (s Service) GetHolding(usuario string) (holding_domain.Holdings, error) {
 	return holdings, nil
 }
 
-func (s Service) CalculateHolding(idAtivo int64) error {
+func (s Service) CalculateHolding(ctx context.Context, idAtivo int64) error {
 	users, err := s.orderService.GetUsersWithOrders(idAtivo)
 	if err != nil {
 		return err
 	}
 
+	//TODO refactor this, because transaction can't be in service layer
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return fmt.Errorf("Erro ao iniciar transacao")
+	}
+
 	for i := 0; i < len(users); i++ {
-		s.repository.DeleteByUser(users[i])
-		holdigns, err := s.calculateHoldingGeneral(users[i])
-		if err == nil {
-			s.saveHoldings(holdigns)
+		err := s.repository.DeleteByUser(ctx, tx, users[i])
+		if err != nil {
+			log.Print("Erro ao deletar resultados de holging por usuario")
+			tx.Rollback()
+			return err
 		}
+		holdigns, err := s.calculateHoldingGeneral(users[i])
+		if err != nil {
+			log.Printf("Erro ao calcular os resultados de holding.")
+			tx.Rollback()
+			return err
+		}
+
+		err = s.saveHoldings(ctx, tx, holdigns)
+		if err != nil {
+			log.Printf("Ocorreu um erro ao salvar resultados de holding")
+			tx.Rollback()
+			return err
+		}
+		tx.Commit()
 	}
 
 	return nil
 }
 
-func (s Service) saveHoldings(holdings holding_domain.Holdings) error {
+func (s Service) saveHoldings(ctx context.Context, tx *sql.Tx, holdings holding_domain.Holdings) error {
 	for i := 0; i < len(holdings.Holdings); i++ {
 		holding := holdings.Holdings[i]
 		for j := 0; j < len(holding.HoldingsAtivo); j++ {
-			err := s.repository.SaveResultadoPortfolio(holding.HoldingsAtivo[j])
+			err := s.repository.SaveResultadoPortfolio(ctx, tx, holding.HoldingsAtivo[j])
 			if err != nil {
 				return err
 			}
