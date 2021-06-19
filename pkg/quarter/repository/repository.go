@@ -32,7 +32,7 @@ func (r Repository) GetQuarter(id int64) (quarter_domain.Trimestre, error) {
 		return trimestreCache.(quarter_domain.Trimestre), nil
 	}
 
-	rows, err := r.DB.Query("SELECT id, codigo, ano, trimestre, data_inicio, data_fim FROM trimestre WHERE id = $1", id)
+	rows, err := r.DB.Query("SELECT id, codigo, ano, trimestre, data_inicio, data_fim, trimestre_anterior FROM trimestre WHERE id = $1", id)
 	defer rows.Close()
 
 	if err != nil {
@@ -42,7 +42,7 @@ func (r Repository) GetQuarter(id int64) (quarter_domain.Trimestre, error) {
 	defer rows.Close()
 	trimestre := quarter_domain.Trimestre{}
 	for rows.Next() {
-		err := rows.Scan(&trimestre.Id, &trimestre.Codigo, &trimestre.Ano, &trimestre.Trimestre, &trimestre.DataInicio, &trimestre.DataFim)
+		err := rows.Scan(&trimestre.Id, &trimestre.Codigo, &trimestre.Ano, &trimestre.Trimestre, &trimestre.DataInicio, &trimestre.DataFim, &trimestre.TrimestreAnterior)
 		if err != nil {
 			err = fmt.Errorf("Erro ao executar busca do trimestre", err)
 			return quarter_domain.Trimestre{}, err
@@ -57,7 +57,15 @@ func (r Repository) GetQuarter(id int64) (quarter_domain.Trimestre, error) {
 }
 
 func (r Repository) GetQuarters() ([]quarter_domain.Trimestre, error) {
-	rows, err := r.DB.Query("SELECT id, codigo, ano, trimestre, data_inicio, data_fim FROM trimestre")
+	if r.cache.ItemCount() > 0 {
+		trimestres := make([]quarter_domain.Trimestre, 0)
+		for _, trim := range r.cache.Items() {
+			trimestres = append(trimestres, trim.Object.(quarter_domain.Trimestre))
+		}
+		return trimestres, nil
+	}
+
+	rows, err := r.DB.Query("SELECT id, codigo, ano, trimestre, data_inicio, data_fim, trimestre_anterior FROM trimestre")
 	defer rows.Close()
 
 	if err != nil {
@@ -68,7 +76,14 @@ func (r Repository) GetQuarters() ([]quarter_domain.Trimestre, error) {
 	trimestres := []quarter_domain.Trimestre{}
 	for rows.Next() {
 		trimestre := quarter_domain.Trimestre{}
-		err := rows.Scan(&trimestre.Id, &trimestre.Codigo, &trimestre.Ano, &trimestre.Trimestre, &trimestre.DataInicio, &trimestre.DataFim)
+		var trimestreAnterior sql.NullInt64
+		err := rows.Scan(&trimestre.Id, &trimestre.Codigo, &trimestre.Ano, &trimestre.Trimestre, &trimestre.DataInicio,
+			&trimestre.DataFim, &trimestreAnterior)
+		if trimestreAnterior.Valid {
+			trimestre.TrimestreAnterior = trimestreAnterior.Int64
+		} else {
+			trimestre.TrimestreAnterior = 0
+		}
 		if err != nil {
 			err = fmt.Errorf("Erro ao executar busca do trimestres", err)
 			return nil, err

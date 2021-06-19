@@ -86,3 +86,16 @@ CREATE TABLE IF NOT EXISTS PORTFOLIO_TRIMESTRE (
 ALTER TABLE portfolio_trimestre ADD CONSTRAINT portfolio_trimestre_ativo_fk FOREIGN KEY (id_ativo) REFERENCES ativo(id);
 ALTER TABLE portfolio_trimestre ADD CONSTRAINT portfolio_trimestre_trimestre_fk FOREIGN KEY (id_trimestre) REFERENCES trimestre(id);
 
+ALTER TABLE trimestre ADD COLUMN trimestre_anterior bigint
+
+
+CREATE TABLE IF NOT EXISTS INSIGHTS (
+    id                        serial          PRIMARY KEY,
+    id_usuario                bigint          NOT NULL,
+    id_trimestre              bigint          NOT NULL,
+    id_ativo	              bigint          NOT NULL,
+    delta_receita_liquida     decimal(10,2)   NOT NULL,
+    delta_ebitda              decimal(10,2)   NOT NULL,
+    delta_lucro_liquido       decimal(10,2)   NOT NULL,
+    delta_divida_liquida      decimal(10,2)   NOT NULL
+);

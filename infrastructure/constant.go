@@ -1,5 +1,5 @@
 package infrastructure
 
-const ResultQueueName = "fs-quarterly-result"
-const OrderQueueName = "fs-order"
-
+const ResultQueueName = "local-fs-quarterly-result"
+const OrderQueueName = "local-fs-order"
+const HoldingResultQueueName = "local-fs-holding-result"

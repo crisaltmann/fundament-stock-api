@@ -8,6 +8,7 @@ import (
 	"github.com/crisaltmann/fundament-stock-api/internal"
 	asset_domain "github.com/crisaltmann/fundament-stock-api/pkg/asset/domain"
 	holding_domain "github.com/crisaltmann/fundament-stock-api/pkg/holding/domain"
+	holding_event "github.com/crisaltmann/fundament-stock-api/pkg/holding/event"
 	portfolio_domain "github.com/crisaltmann/fundament-stock-api/pkg/portfolio/domain"
 	quarter_domain "github.com/crisaltmann/fundament-stock-api/pkg/quarter/domain"
 	"github.com/rs/zerolog/log"
@@ -20,6 +21,7 @@ type Service struct {
 	quarterService QuarterService
 	orderService OrderService
 	repository Repository
+	producer holding_event.HoldingResultProducer
 	db *sql.DB
 }
 
@@ -48,13 +50,14 @@ type Repository interface {
 }
 
 func NewService(portfolioService PortfolioService, assetService AssetService, quarterService QuarterService,
-	orderService OrderService, repository Repository, db *sql.DB) Service {
+	orderService OrderService, repository Repository, producer holding_event.HoldingResultProducer, db *sql.DB) Service {
 	return Service{
 		portfolioService: portfolioService,
 		assetService:     assetService,
 		quarterService: quarterService,
 		orderService: orderService,
 		repository: repository,
+		producer: producer,
 		db: db,
 	}
 }
@@ -129,20 +132,21 @@ func (s Service) CalculateHolding(ctx context.Context, idAtivo int64) error {
 			tx.Rollback()
 			return err
 		}
-		holdigns, err := s.calculateHoldingGeneral(users[i])
+		holdings, err := s.calculateHoldingGeneral(users[i])
 		if err != nil {
 			log.Printf("Erro ao calcular os resultados de holding.")
 			tx.Rollback()
 			return err
 		}
 
-		err = s.saveHoldings(ctx, tx, holdigns)
+		err = s.saveHoldings(ctx, tx, holdings)
 		if err != nil {
 			log.Printf("Ocorreu um erro ao salvar resultados de holding")
 			tx.Rollback()
 			return err
 		}
 		tx.Commit()
+		s.producer.PublishHoldingResultEvent(holdings)
 	}
 
 	return nil

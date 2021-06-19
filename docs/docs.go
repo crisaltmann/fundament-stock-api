@@ -642,6 +642,9 @@ var doc = `{
                 },
                 "trimestre": {
                     "type": "integer"
+                },
+                "trimestre_anterior": {
+                    "type": "integer"
                 }
             }
         }

@@ -9,4 +9,5 @@ type TrimestreGetResponse struct {
 	Trimestre   int				`json:"trimestre"`
 	DataInicio	time.Time		`json:"data_inicio"`
 	DataFim		time.Time		`json:"data_fim"`
+	TrimestreAnterior int64	    `json:"trimestre_anterior"`
 }
