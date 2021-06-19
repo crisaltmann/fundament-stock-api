@@ -22,6 +22,7 @@ type Service struct {
 type Repository interface {
 	DeleteByUser(ctx context.Context, tx *sql.Tx, idUser int64) error
 	SaveInsights(ctx context.Context, tx *sql.Tx, insight insight_domain.Insight) error
+	GetInsights(usuario int64) ([]insight_domain.Insight, error)
 }
 
 type QuarterService interface {
@@ -35,6 +36,58 @@ func NewService(repository Repository, quarterService QuarterService, db *sql.DB
 		quarterService: quarterService,
 		db: db,
 	}
+}
+
+func (s Service) GetInsights(usuario int64) ([]insight_domain.Insight, error) {
+	return s.repository.GetInsights(usuario)
+}
+
+func (s Service) GetSummaryInsights(usuario int64) (insight_domain.InsightsSummary, error) {
+	insights, err := s.repository.GetInsights(usuario)
+	insightsSummary := insight_domain.InsightsSummary{}
+	if err != nil {
+		log.Print("Erro ao buscar insights")
+		return insightsSummary, err
+	}
+
+	//monta map do trimestre, armazenando o ativo com maior delta em cada
+	insightMap := make(map[int64]insight_domain.InsightSummary)
+	for i := 0; i < len(insights); i++ {
+		insight := insights[i]
+		summary, found := insightMap[insight.IdTrimestre]
+		if !found {
+			summary = insight_domain.InsightSummary{
+				Trimestre: insight.IdTrimestre,
+			}
+			insightMap[insight.IdTrimestre] = summary
+		}
+
+		if insight.ReceitaDelta > summary.ReceitaMaiorDelta {
+			summary.ReceitaMaiorDelta = insight.ReceitaDelta
+			summary.AtivoMaiorReceita = insight.IdAtivo
+		}
+
+		if insight.EbitdaDelta > summary.EbitdaMaiorDelta {
+			summary.EbitdaMaiorDelta = insight.EbitdaDelta
+			summary.AtivoMaiorEbitda = insight.IdAtivo
+		}
+
+		if insight.LucroDelta > summary.LucroMaiorDelta {
+			summary.LucroMaiorDelta = insight.LucroDelta
+			summary.AtivoMaiorLucro = insight.IdAtivo
+		}
+
+		if insight.DividaDelta > summary.DividaDelta {
+			summary.DividaDelta = insight.DividaDelta
+			summary.AtivoMaiorDivida = insight.IdAtivo
+		}
+	}
+
+	for _, summary := range insightMap {
+		insightsSummary.Insights = append(insightsSummary.Insights, summary)
+	}
+
+	return insightsSummary, nil
 }
 
 func (s Service) CalculateInsights(ctx context.Context, holdings holding_domain.Holdings) error {

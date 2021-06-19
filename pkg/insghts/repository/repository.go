@@ -20,13 +20,6 @@ func NewRepository(db *sql.DB) Repository {
 	return Repository{DB: db, cache: cache}
 }
 
-func InitCache(r Repository) {
-	//quarters, _ := r.GetQuarters()
-	//for _, quarter := range quarters {
-	//	r.cache.Add(strconv.FormatInt(quarter.Id, 10), quarter, cache.DefaultExpiration)
-	//}
-}
-
 func (r Repository) DeleteByUser(ctx context.Context, tx *sql.Tx, idUser int64) error {
 	prepare, err := tx.Prepare("DELETE FROM insights WHERE id_usuario = $1")
 
@@ -63,4 +56,28 @@ func (r Repository) SaveInsights(ctx context.Context, tx *sql.Tx, insight insigh
 		return err
 	}
 	return nil
+}
+
+func (r Repository) GetInsights(usuario int64) ([]insight_domain.Insight, error) {
+	rows, err := r.DB.Query("SELECT id, id_trimestre, id_usuario, id_ativo, delta_receita_liquida, delta_ebitda, delta_lucro_liquido, delta_divida_liquida " +
+		" FROM insights WHERE id_usuario = $1 ", usuario)
+	defer rows.Close()
+
+	if err != nil {
+		err = fmt.Errorf("Erro ao executar busca de insights", err)
+		return nil, err
+	}
+	defer rows.Close()
+	insights := []insight_domain.Insight{}
+	for rows.Next() {
+		item := insight_domain.Insight{}
+		err := rows.Scan(&item.Id, &item.IdTrimestre, &item.Usuario, &item.IdAtivo, &item.ReceitaDelta, &item.EbitdaDelta,
+			&item.LucroDelta, &item.DividaDelta)
+		if err != nil {
+			err = fmt.Errorf("Erro ao executar busca de insights", err)
+			return nil, err
+		}
+		insights = append(insights, item)
+	}
+	return insights, nil
 }
