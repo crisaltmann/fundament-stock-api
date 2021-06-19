@@ -27,4 +27,29 @@ func convertDomainToDto(insight insight_domain.Insight) Insight {
 	}
 }
 
+func convertInsightsSummaryDomainToDto(insights insight_domain.InsightsSummary) InsightsSummary {
+	insightsDTO := make([]InsightSummary, 0)
+	if len(insights.Insights) > 0 {
+		for _, h := range insights.Insights {
+			insightsDTO = append(insightsDTO, convertSummaryDomainToDto(h))
+		}
+	}
+	return InsightsSummary{
+		Insights: insightsDTO,
+	}
+}
+
+func convertSummaryDomainToDto(summary insight_domain.InsightSummary) InsightSummary {
+	return InsightSummary{
+		Trimestre:         summary.Trimestre,
+		AtivoMaiorReceita: summary.AtivoMaiorReceita,
+		ReceitaMaiorDelta: summary.ReceitaMaiorDelta,
+		AtivoMaiorEbitda:  summary.AtivoMaiorEbitda,
+		EbitdaMaiorDelta:  summary.EbitdaMaiorDelta,
+		AtivoMaiorLucro:   summary.AtivoMaiorLucro,
+		LucroMaiorDelta:   summary.LucroMaiorDelta,
+		AtivoMaiorDivida:  summary.AtivoMaiorDivida,
+		DividaDelta:       summary.DividaDelta,
+	}
+}
 

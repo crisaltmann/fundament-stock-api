@@ -30,3 +30,18 @@ type InsightSummary struct {
 	AtivoMaiorDivida		int64
 	DividaDelta				float32
 }
+
+func (s *InsightSummary) ToStruct() InsightSummary {
+	return InsightSummary{
+		Trimestre:         s.Trimestre,
+		AtivoMaiorReceita: s.AtivoMaiorReceita,
+		ReceitaMaiorDelta: s.ReceitaMaiorDelta,
+		AtivoMaiorEbitda:  s.AtivoMaiorEbitda,
+		EbitdaMaiorDelta:  s.EbitdaMaiorDelta,
+		AtivoMaiorLucro:   s.AtivoMaiorLucro,
+		LucroMaiorDelta:   s.LucroMaiorDelta,
+		AtivoMaiorDivida:  s.AtivoMaiorDivida,
+		DividaDelta:       s.DividaDelta,
+	}
+
+}

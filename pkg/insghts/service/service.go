@@ -51,12 +51,12 @@ func (s Service) GetSummaryInsights(usuario int64) (insight_domain.InsightsSumma
 	}
 
 	//monta map do trimestre, armazenando o ativo com maior delta em cada
-	insightMap := make(map[int64]insight_domain.InsightSummary)
+	insightMap := make(map[int64]*insight_domain.InsightSummary)
 	for i := 0; i < len(insights); i++ {
 		insight := insights[i]
 		summary, found := insightMap[insight.IdTrimestre]
 		if !found {
-			summary = insight_domain.InsightSummary{
+			summary = &insight_domain.InsightSummary{
 				Trimestre: insight.IdTrimestre,
 			}
 			insightMap[insight.IdTrimestre] = summary
@@ -84,7 +84,7 @@ func (s Service) GetSummaryInsights(usuario int64) (insight_domain.InsightsSumma
 	}
 
 	for _, summary := range insightMap {
-		insightsSummary.Insights = append(insightsSummary.Insights, summary)
+		insightsSummary.Insights = append(insightsSummary.Insights, summary.ToStruct())
 	}
 
 	return insightsSummary, nil
