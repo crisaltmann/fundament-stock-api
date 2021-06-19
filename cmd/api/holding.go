@@ -37,6 +37,7 @@ var holdingfactories = fx.Provide(
 	func(holdingService holding_service.Service) holding_event.QuarterlyResultService { return holdingService },
 	holding_event.NewHoldingOrderConsumer,
     holding_event.NewQuarterlyResultConsumer,
+	holding_event.NewHoldingResultProducer,
 
 	holding_api.NewHandler,
 )

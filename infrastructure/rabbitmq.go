@@ -29,6 +29,19 @@ func CreateRabbitMQChannel(conn *amqp.Connection) *amqp.Channel {
 func ConfigureQueue(ch *amqp.Channel) {
 	configureQuarterlyResultQueue(ch)
 	configureOrderQueue(ch)
+	configureHoldingResultQueue(ch)
+}
+
+func configureHoldingResultQueue(ch *amqp.Channel) {
+	_, err := ch.QueueDeclare(
+		HoldingResultQueueName, // name
+		false,           // durable
+		false,           // delete when unused
+		false,           // exclusive
+		false,           // no-wait
+		nil,             // arguments
+	)
+	FailOnError(err, "Failed to declare a queue")
 }
 
 func configureQuarterlyResultQueue(ch *amqp.Channel) {
