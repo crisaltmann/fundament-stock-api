@@ -71,7 +71,10 @@ func (s Service) CalculateInsights(ctx context.Context, holdings holding_domain.
 
 	for _, holdingAtivo := range trimestreMap {
 		currentQuarter := holdingAtivo.Trimestre
-		lastQuarter := getLastQuarter(currentQuarter, quarters)
+		lastQuarter, err := s.getLastQuarter(currentQuarter, quarters)
+		if err != nil {
+			return err
+		}
 		lastQuarterHolding := trimestreMap[buildKey(holdingAtivo.Ativo, lastQuarter.Id)]
 
 		var delta float32
@@ -84,7 +87,7 @@ func (s Service) CalculateInsights(ctx context.Context, holdings holding_domain.
 		insights = append(insights, insight_domain.Insight{
 			Id:           0,
 			IdTrimestre:  currentQuarter,
-			Usuario:    holdingAtivo.Usuario,
+			Usuario:      holdingAtivo.Usuario,
 			IdAtivo:      holdingAtivo.Ativo.Id,
 			ReceitaDelta: delta,
 		})
@@ -107,8 +110,18 @@ func (s Service) CalculateInsights(ctx context.Context, holdings holding_domain.
 	return fmt.Errorf("tmp")
 }
 
-func getLastQuarter(quarter int64, quarters []quarter_domain.Trimestre) quarter_domain.Trimestre {
-	return quarter_domain.Trimestre{}
+func (s Service) getLastQuarter(quarter int64, quarters []quarter_domain.Trimestre) (quarter_domain.Trimestre, error) {
+	currentQuarter, err := s.quarterService.GetQuarter(quarter)
+	if err != nil {
+		log.Print("Ocorreu um erro ao buscar o quarter")
+		return quarter_domain.Trimestre{}, err
+	}
+	for i := 0; i < len(quarters); i++ {
+		if currentQuarter.TrimestreAnterior == quarters[i].Id {
+			return quarters[i], nil
+		}
+	}
+	return quarter_domain.Trimestre{}, nil
 }
 
 func buildKey(ativo asset_domain.Asset, trimestre int64) string {
