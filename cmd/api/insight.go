@@ -12,7 +12,6 @@ import (
 var Insight = fx.Options(
 	insightfactories,
 	fx.Invoke(insight_api.MapRouter),
-	fx.Invoke(insight_repository.InitCache),
 	fx.Invoke(insight_event.InitializeInsightConsume),
 )
 

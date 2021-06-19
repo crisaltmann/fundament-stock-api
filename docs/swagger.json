@@ -187,6 +187,62 @@
                 }
             }
         },
+        "/insights": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Retorna insights",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "user id",
+                        "name": "usuario",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/insight_api.Insight"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/insights-summary": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Retorna sumario insights",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "user id",
+                        "name": "usuario",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/insight_api.InsightsSummary"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/orders": {
             "get": {
                 "produces": [
@@ -517,6 +573,78 @@
                 },
                 "trimestre": {
                     "type": "integer"
+                }
+            }
+        },
+        "insight_api.Insight": {
+            "type": "object",
+            "properties": {
+                "divida_delta": {
+                    "type": "number"
+                },
+                "ebitda_delta": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "id_ativo": {
+                    "type": "integer"
+                },
+                "id_usuario": {
+                    "type": "integer"
+                },
+                "lucro_delta": {
+                    "type": "number"
+                },
+                "receita_delta": {
+                    "type": "number"
+                },
+                "trimestre": {
+                    "type": "integer"
+                }
+            }
+        },
+        "insight_api.InsightSummary": {
+            "type": "object",
+            "properties": {
+                "ativo_maior_divida": {
+                    "type": "integer"
+                },
+                "ativo_maior_ebitda": {
+                    "type": "integer"
+                },
+                "ativo_maior_lucro": {
+                    "type": "integer"
+                },
+                "ativo_maior_receita": {
+                    "type": "integer"
+                },
+                "divida_delta": {
+                    "type": "number"
+                },
+                "ebitda_maior_delta": {
+                    "type": "number"
+                },
+                "lucro_maior_delta": {
+                    "type": "number"
+                },
+                "receita_maior_delta": {
+                    "type": "number"
+                },
+                "trimestre": {
+                    "type": "integer"
+                }
+            }
+        },
+        "insight_api.InsightsSummary": {
+            "type": "object",
+            "properties": {
+                "insights": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/insight_api.InsightSummary"
+                    }
                 }
             }
         },
