@@ -48,7 +48,7 @@ func (q HoldingResultProducer) PublishHoldingResultEvent(event holding_domain.Ho
 func removeAssetLogo(event *holding_domain.Holdings) {
 	for i := 0; i < len(event.Holdings); i++ {
 		for j := 0; j < len(event.Holdings[i].HoldingsAtivo); j++ {
-			holdingAtivo := event.Holdings[i].HoldingsAtivo[j]
+			holdingAtivo := &event.Holdings[i].HoldingsAtivo[j]
 			holdingAtivo.Ativo.Logo = ""
 		}
 	}

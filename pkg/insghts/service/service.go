@@ -62,37 +62,70 @@ func (s Service) CalculateInsights(ctx context.Context, holdings holding_domain.
 
 	 */
 
+	insights, err := s.buildInsights(trimestreMap, insights)
+	if err != nil {
+		return err
+	}
+
+	err = s.salvarInsights(ctx, err, user, insights)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s Service) buildInsights(trimestreMap map[string]holding_domain.HoldingAtivo, insights []insight_domain.Insight) ([]insight_domain.Insight, error) {
+	log.Print("Iniciando o processamento de insights")
 	quarters, err := s.quarterService.GetQuarters()
 	if err != nil {
 		log.Print("Ocorreu um erro ao buscar os trimestres")
-		return err
+		return nil, err
 	}
 
 	for _, holdingAtivo := range trimestreMap {
 		currentQuarter := holdingAtivo.Trimestre
 		lastQuarter, err := s.getLastQuarter(currentQuarter, quarters)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		lastQuarterHolding := trimestreMap[buildKey(holdingAtivo.Ativo, lastQuarter.Id)]
 
-		var delta float32
-
-		if lastQuarter.Id > 0 {
-			delta = internal.RoundFloat((float32(holdingAtivo.ReceitaLiquida) - float32(lastQuarterHolding.ReceitaLiquida)) / float32(lastQuarterHolding.ReceitaLiquida))
-		} else {
-			delta = 0
-		}
 		insight := insight_domain.Insight{
 			Id:           0,
 			IdTrimestre:  currentQuarter,
 			Usuario:      holdingAtivo.Usuario,
 			IdAtivo:      holdingAtivo.Ativo.Id,
-			ReceitaDelta: delta,
 		}
+
+		if lastQuarter.Id > 0 {
+			s.calculateDelta(&insight, holdingAtivo, lastQuarterHolding)
+		}
+
 		insights = append(insights, insight)
 	}
+	return insights, nil
+}
 
+func (s Service) calculateDelta(insight *insight_domain.Insight, holdingAtivo holding_domain.HoldingAtivo, lastQuarterHolding holding_domain.HoldingAtivo) {
+	if lastQuarterHolding.ReceitaLiquida > 0 {
+		insight.ReceitaDelta = internal.RoundFloat((float32(holdingAtivo.ReceitaLiquida) - float32(lastQuarterHolding.ReceitaLiquida)) / float32(lastQuarterHolding.ReceitaLiquida))
+	}
+
+	if lastQuarterHolding.Ebitda > 0 {
+		insight.EbitdaDelta = internal.RoundFloat((float32(holdingAtivo.Ebitda) - float32(lastQuarterHolding.Ebitda)) / float32(lastQuarterHolding.Ebitda))
+	}
+
+	if lastQuarterHolding.LucroLiquido > 0 {
+		insight.LucroDelta = internal.RoundFloat((float32(holdingAtivo.LucroLiquido) - float32(lastQuarterHolding.LucroLiquido)) / float32(lastQuarterHolding.LucroLiquido))
+	}
+
+	if lastQuarterHolding.DividaLiquida > 0 {
+		insight.DividaDelta = internal.RoundFloat((float32(holdingAtivo.DividaLiquida) - float32(lastQuarterHolding.DividaLiquida)) / float32(lastQuarterHolding.DividaLiquida))
+	}
+}
+
+func (s Service) salvarInsights(ctx context.Context, err error, user int64, insights []insight_domain.Insight) error {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return fmt.Errorf("Erro ao iniciar transacao")
@@ -115,7 +148,6 @@ func (s Service) CalculateInsights(ctx context.Context, holdings holding_domain.
 	}
 
 	tx.Commit()
-
 	return nil
 }
 
