@@ -86,3 +86,4 @@ CREATE TABLE IF NOT EXISTS PORTFOLIO_TRIMESTRE (
 ALTER TABLE portfolio_trimestre ADD CONSTRAINT portfolio_trimestre_ativo_fk FOREIGN KEY (id_ativo) REFERENCES ativo(id);
 ALTER TABLE portfolio_trimestre ADD CONSTRAINT portfolio_trimestre_trimestre_fk FOREIGN KEY (id_trimestre) REFERENCES trimestre(id);
 
+ALTER TABLE trimestre ADD COLUMN trimestre_anterior bigint

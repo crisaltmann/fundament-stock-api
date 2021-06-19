@@ -20,5 +20,6 @@ func convertDomainToDto(quarter quarter_domain.Trimestre) TrimestreGetResponse {
 		Trimestre:  quarter.Trimestre,
 		DataInicio: quarter.DataInicio,
 		DataFim:    quarter.DataFim,
+		TrimestreAnterior: quarter.TrimestreAnterior,
 	}
 }

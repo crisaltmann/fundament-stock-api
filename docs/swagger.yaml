@@ -216,6 +216,8 @@ definitions:
         type: integer
       trimestre:
         type: integer
+      trimestre_anterior:
+        type: integer
     type: object
 info:
   contact:
