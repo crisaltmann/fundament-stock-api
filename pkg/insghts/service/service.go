@@ -21,8 +21,7 @@ type Service struct {
 
 type Repository interface {
 	DeleteByUser(ctx context.Context, tx *sql.Tx, idUser int64) error
-	//GetQuarter(id int64) (quarter_domain.Trimestre, error)
-	//GetQuarters() ([]quarter_domain.Trimestre, error)
+	SaveInsights(ctx context.Context, tx *sql.Tx, insight insight_domain.Insight) error
 }
 
 type QuarterService interface {
@@ -80,17 +79,18 @@ func (s Service) CalculateInsights(ctx context.Context, holdings holding_domain.
 		var delta float32
 
 		if lastQuarter.Id > 0 {
-			delta = internal.RoundFloat(float32(holdingAtivo.ReceitaLiquida) - float32(lastQuarterHolding.ReceitaLiquida)/float32(lastQuarterHolding.ReceitaLiquida))
+			delta = internal.RoundFloat((float32(holdingAtivo.ReceitaLiquida) - float32(lastQuarterHolding.ReceitaLiquida)) / float32(lastQuarterHolding.ReceitaLiquida))
 		} else {
 			delta = 0
 		}
-		insights = append(insights, insight_domain.Insight{
+		insight := insight_domain.Insight{
 			Id:           0,
 			IdTrimestre:  currentQuarter,
 			Usuario:      holdingAtivo.Usuario,
 			IdAtivo:      holdingAtivo.Ativo.Id,
 			ReceitaDelta: delta,
-		})
+		}
+		insights = append(insights, insight)
 	}
 
 	tx, err := s.db.BeginTx(ctx, nil)
@@ -105,9 +105,18 @@ func (s Service) CalculateInsights(ctx context.Context, holdings holding_domain.
 		return err
 	}
 	//insere novos insights
+	for i := 0; i < len(insights); i++ {
+		err := s.repository.SaveInsights(ctx, tx, insights[i])
+		if err != nil {
+			log.Print("Erro ao persistir insights")
+			tx.Rollback()
+			return err
+		}
+	}
 
+	tx.Commit()
 
-	return fmt.Errorf("tmp")
+	return nil
 }
 
 func (s Service) getLastQuarter(quarter int64, quarters []quarter_domain.Trimestre) (quarter_domain.Trimestre, error) {
@@ -125,5 +134,5 @@ func (s Service) getLastQuarter(quarter int64, quarters []quarter_domain.Trimest
 }
 
 func buildKey(ativo asset_domain.Asset, trimestre int64) string {
-	return ativo.Codigo + strconv.FormatInt(trimestre, 10)
+	return ativo.Codigo + "-" +strconv.FormatInt(trimestre, 10)
 }

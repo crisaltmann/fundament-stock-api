@@ -76,8 +76,14 @@ func (r Repository) GetQuarters() ([]quarter_domain.Trimestre, error) {
 	trimestres := []quarter_domain.Trimestre{}
 	for rows.Next() {
 		trimestre := quarter_domain.Trimestre{}
+		var trimestreAnterior sql.NullInt64
 		err := rows.Scan(&trimestre.Id, &trimestre.Codigo, &trimestre.Ano, &trimestre.Trimestre, &trimestre.DataInicio,
-			&trimestre.DataFim, &trimestre.TrimestreAnterior)
+			&trimestre.DataFim, &trimestreAnterior)
+		if trimestreAnterior.Valid {
+			trimestre.TrimestreAnterior = trimestreAnterior.Int64
+		} else {
+			trimestre.TrimestreAnterior = 0
+		}
 		if err != nil {
 			err = fmt.Errorf("Erro ao executar busca do trimestres", err)
 			return nil, err

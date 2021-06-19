@@ -20,6 +20,7 @@ func NewHoldingResultProducer(conn *amqp.Connection) HoldingResultProducer {
 }
 
 func (q HoldingResultProducer) PublishHoldingResultEvent(event holding_domain.Holdings) error {
+	removeAssetLogo(&event)
 	ch, err := q.conn.Channel()
 	infrastructure.FailOnError(err, "Failed to open a channel")
 	defer ch.Close()
@@ -42,4 +43,13 @@ func (q HoldingResultProducer) PublishHoldingResultEvent(event holding_domain.Ho
 	}
 	log.Print("Evento resultado de holding enviado com sucesso.")
 	return nil
+}
+
+func removeAssetLogo(event *holding_domain.Holdings) {
+	for i := 0; i < len(event.Holdings); i++ {
+		for j := 0; j < len(event.Holdings[i].HoldingsAtivo); j++ {
+			holdingAtivo := event.Holdings[i].HoldingsAtivo[j]
+			holdingAtivo.Ativo.Logo = ""
+		}
+	}
 }

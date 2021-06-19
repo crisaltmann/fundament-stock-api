@@ -61,7 +61,7 @@ func (q InsightConsumer) consume() {
 			ctx := context.TODO()
 			err := q.processMessage(ctx, d.Body)
 			if err != nil {
-				log.Printf("Ocorreu um erro ao processar a mensagem.")
+				log.Printf("Ocorreu um erro ao processar a mensagem. %v", err)
 				//Adicionar mecanismo de tratativas
 				d.Reject(true)
 			} else {
@@ -75,7 +75,7 @@ func (q InsightConsumer) consume() {
 }
 
 func (q InsightConsumer) processMessage(ctx context.Context, body []byte) error {
-	log.Printf("Mensage recebida: %s", body)
+	log.Printf("Mensagem recebida: %s", body)
 	holdings := holding_domain.Holdings{}
 	err := json.Unmarshal(body, &holdings)
 	if err != nil {

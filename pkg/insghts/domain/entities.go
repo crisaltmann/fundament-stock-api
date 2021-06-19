@@ -6,4 +6,7 @@ type Insight struct {
 	IdTrimestre     int64
 	IdAtivo			int64
 	ReceitaDelta	float32
+	EbitdaDelta		float32
+	LucroDelta		float32
+	DividaDelta		float32
 }
