@@ -36,7 +36,7 @@ func InitializeQuarterlyResultConsume(q QuarterlyResultConsumer, c *infrastructu
 func (q QuarterlyResultConsumer) consume() {
 	log.Printf("Iniciando consumo de mensagens.")
 	msgs, err := q.ch.Consume(
-		infrastructure.ResultQueueName, 	    // queue
+		infrastructure.GetResultQueueName(), 	    // queue
 		"",                           // consumer
 		false,                          // auto-ack
 		false,                        // exclusive

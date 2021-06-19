@@ -31,7 +31,7 @@ func (q HoldingResultProducer) PublishHoldingResultEvent(event holding_domain.Ho
 	}
 	err = ch.Publish(
 		"",                             // exchange
-		infrastructure.HoldingResultQueueName,           // routing key
+		infrastructure.GetHoldingResultQueueName(),           // routing key
 		false,                         // mandatory
 		false,                         // immediate
 		amqp.Publishing{

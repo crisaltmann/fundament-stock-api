@@ -41,7 +41,7 @@ func (q HoldingOrderConsumer) consume() {
 	defer ch.Close()
 
 	msgs, err := ch.Consume(
-		infrastructure.OrderQueueName, 	       // queue
+		infrastructure.GetOrderQueueName(), 	       // queue
 		"",                           // consumer
 		false,                         // auto-ack
 		false,                        // exclusive
