@@ -1,6 +1,7 @@
 package holding_repository
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -43,8 +44,8 @@ func (r Repository) DeleteByAtivoAndTrimestre(idAtivo int64, idTrimestre int64) 
 	return nil
 }
 
-func (r Repository) DeleteByUser(idUser int64) error {
-	prepare, err := r.DB.Prepare("DELETE FROM portfolio_trimestre WHERE id_usuario = $1")
+func (r Repository) DeleteByUser(ctx context.Context, tx *sql.Tx, idUser int64) error {
+	prepare, err := tx.Prepare("DELETE FROM portfolio_trimestre WHERE id_usuario = $1")
 
 	if err != nil {
 		log.Print("Ocorreu um erro ao preparar query de delete de portfolio trimestre por user")
@@ -53,7 +54,7 @@ func (r Repository) DeleteByUser(idUser int64) error {
 
 	defer prepare.Close()
 
-	_, err = prepare.Exec(idUser)
+	_, err = prepare.ExecContext(ctx, idUser)
 	if err != nil {
 		err = fmt.Errorf("Erro ao executar delete portfolio trimestre por user", err)
 		return err
@@ -61,8 +62,8 @@ func (r Repository) DeleteByUser(idUser int64) error {
 	return nil
 }
 
-func (r Repository) SaveResultadoPortfolio(ativo holding_domain.HoldingAtivo) error {
-	prepare, err := r.DB.Prepare("INSERT INTO portfolio_trimestre (id_trimestre, id_usuario, id_ativo, " +
+func (r Repository) SaveResultadoPortfolio(ctx context.Context, tx *sql.Tx, ativo holding_domain.HoldingAtivo) error {
+	prepare, err := tx.Prepare("INSERT INTO portfolio_trimestre (id_trimestre, id_usuario, id_ativo, " +
 		" receita_liquida, ebitda, lucro_liquido, divida_liquida) VALUES($1, $2, $3, $4, $5, $6, $7);")
 
 	if err != nil {
@@ -72,7 +73,7 @@ func (r Repository) SaveResultadoPortfolio(ativo holding_domain.HoldingAtivo) er
 
 	defer prepare.Close()
 
-	_, err = prepare.Exec(ativo.Trimestre, ativo.Usuario, ativo.Ativo.Id, ativo.ReceitaLiquida, ativo.Ebitda,
+	_, err = prepare.ExecContext(ctx, ativo.Trimestre, ativo.Usuario, ativo.Ativo.Id, ativo.ReceitaLiquida, ativo.Ebitda,
 		ativo.LucroLiquido, ativo.DividaLiquida)
 	if err != nil {
 		err = fmt.Errorf("Erro ao executar insert de portfolio trimestre", err)

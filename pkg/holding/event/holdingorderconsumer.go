@@ -1,6 +1,7 @@
 package holding_event
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/crisaltmann/fundament-stock-api/infrastructure"
 	order_domain "github.com/crisaltmann/fundament-stock-api/pkg/order/domain"
@@ -14,7 +15,7 @@ type HoldingOrderConsumer struct {
 }
 
 type HoldingOrderService interface {
-	CalculateHolding(idAtivo int64) error
+	CalculateHolding(ctx context.Context, idAtivo int64) error
 }
 
 func NewHoldingOrderConsumer(conn *amqp.Connection, service HoldingOrderService) HoldingOrderConsumer {
@@ -57,7 +58,8 @@ func (q HoldingOrderConsumer) consume() {
 
 	go func() {
 		for d := range msgs {
-			err := q.processMessage(d.Body)
+			ctx := context.TODO()
+			err := q.processMessage(ctx, d.Body)
 			if err != nil {
 				log.Printf("Ocorreu um erro ao processar a mensagem.")
 				//Adicionar mecanismo de tratativas
@@ -72,7 +74,7 @@ func (q HoldingOrderConsumer) consume() {
 	log.Printf("Encerrando ciclo de consumo de mensagens.")
 }
 
-func (q HoldingOrderConsumer) processMessage(body []byte) error {
+func (q HoldingOrderConsumer) processMessage(ctx context.Context, body []byte) error {
 	log.Printf("Mensage recebida: %s", body)
 	result := &order_domain.Order{}
 	err := json.Unmarshal(body, result)
@@ -80,6 +82,6 @@ func (q HoldingOrderConsumer) processMessage(body []byte) error {
 		log.Printf("Erro ao converter evento")
 		return err
 	}
-	err = q.service.CalculateHolding(result.Ativo)
+	err = q.service.CalculateHolding(ctx, result.Ativo)
 	return err
 }
