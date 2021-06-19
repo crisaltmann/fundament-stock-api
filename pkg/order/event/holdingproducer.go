@@ -30,7 +30,7 @@ func (q OrderProducer) PublishOrderEvent(result order_domain.Order) error {
 	}
 	err = ch.Publish(
 		"",                             // exchange
-		infrastructure.OrderQueueName,           // routing key
+		infrastructure.GetOrderQueueName(),           // routing key
 		false,                         // mandatory
 		false,                         // immediate
 		amqp.Publishing{

@@ -34,7 +34,7 @@ func ConfigureQueue(ch *amqp.Channel) {
 
 func configureHoldingResultQueue(ch *amqp.Channel) {
 	_, err := ch.QueueDeclare(
-		HoldingResultQueueName, // name
+		GetHoldingResultQueueName(), // name
 		false,           // durable
 		false,           // delete when unused
 		false,           // exclusive
@@ -46,7 +46,7 @@ func configureHoldingResultQueue(ch *amqp.Channel) {
 
 func configureQuarterlyResultQueue(ch *amqp.Channel) {
 	_, err := ch.QueueDeclare(
-		ResultQueueName, // name
+		GetResultQueueName(), // name
 		false,           // durable
 		false,           // delete when unused
 		false,           // exclusive
@@ -58,7 +58,7 @@ func configureQuarterlyResultQueue(ch *amqp.Channel) {
 
 func configureOrderQueue(ch *amqp.Channel) {
 	_, err := ch.QueueDeclare(
-		OrderQueueName, // name
+		GetOrderQueueName(), // name
 		false,           // durable
 		false,           // delete when unused
 		false,           // exclusive

@@ -30,7 +30,7 @@ func (q QuarterlyResultProducer) PublishQuarterlyResultEvent(result asset_domain
 	}
 	err = ch.Publish(
 		"",                              // exchange
-		infrastructure.ResultQueueName,           // routing key
+		infrastructure.GetResultQueueName(),           // routing key
 		false,                          // mandatory
 		false,                          // immediate
 		amqp.Publishing{

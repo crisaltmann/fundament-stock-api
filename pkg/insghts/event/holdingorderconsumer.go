@@ -41,7 +41,7 @@ func (q InsightConsumer) consume() {
 	defer ch.Close()
 
 	msgs, err := ch.Consume(
-		infrastructure.HoldingResultQueueName, 	       // queue
+		infrastructure.GetHoldingResultQueueName(), 	       // queue
 		"",                           // consumer
 		false,                         // auto-ack
 		false,                        // exclusive
