@@ -30,7 +30,7 @@ func NewHandler(service Service) Handler {
 // @Param usuario query string true "user id"
 // @Router /portfolio [get]
 func (h Handler) GetPortfolio(c *gin.Context) {
-	usuarioParam := c.Query("usuarioParam")
+	usuarioParam := c.Query("usuario")
 	if strings.EqualFold(usuarioParam, "") {
 		err := fmt.Errorf("id do usuário é informação obrigatória.")
 		c.AbortWithError(http.StatusBadRequest, err)

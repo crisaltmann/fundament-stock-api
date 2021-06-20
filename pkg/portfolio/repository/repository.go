@@ -25,8 +25,17 @@ func (r Repository) GetPortfolio(usuario int64, dateFinal time.Time) ([]portfoli
 	}
 
 	query = query + " group by a.id, a.codigo, a.logo, a.cotacao, m.id_usuario "
-	rows, err := r.DB.Query(query, usuario, dateFinal)
+
+	var rows *sql.Rows
+	var err error
+
+	if !dateFinal.Equal(time.Time{}) {
+		rows, err = r.DB.Query(query, usuario, dateFinal)
+	} else {
+		rows, err = r.DB.Query(query, usuario)
+	}
 	defer rows.Close()
+
 
 	if err != nil {
 		err = fmt.Errorf("Erro ao executar busca do portfolio", err)
