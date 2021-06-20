@@ -23,6 +23,7 @@ func InitCache(r Repository) {
 	assets, _ := r.GetAllAsset()
 	for _, asset := range assets {
 		r.cache.Add(strconv.FormatInt(asset.Id, 10), asset, cache.DefaultExpiration)
+		r.cache.Add(asset.Codigo, asset, cache.DefaultExpiration)
 	}
 }
 
@@ -132,6 +133,38 @@ func (r Repository) ExistById(id int64) (bool, error) {
 		}
 	}
 	return count > 0, nil
+}
+
+func (r Repository) GetByCode(code string) (asset_domain.Asset, error) {
+	assetCache, found :=  r.cache.Get(code)
+	if found {
+		return assetCache.(asset_domain.Asset), nil
+	}
+
+	rows, err := r.DB.Query("SELECT id, codigo, nome, logo, total FROM ATIVO WHERE codigo = $1", code)
+	defer rows.Close()
+
+	if err != nil {
+		err = fmt.Errorf("Erro ao executar busca de ativos por codigo", err)
+		return asset_domain.Asset{}, err
+	}
+	defer rows.Close()
+	asset := asset_domain.Asset{}
+	for rows.Next() {
+		err := rows.Scan(&asset.Id,
+			&asset.Nome, &asset.Codigo, &asset.Logo, &asset.Total)
+		if err != nil {
+			err = fmt.Errorf("Erro ao executar busca de ativos por codigo", err)
+			return asset_domain.Asset{}, err
+		}
+	}
+
+	if err != nil {
+		r.cache.Add(strconv.FormatInt(asset.Id, 10), asset, cache.DefaultExpiration)
+		r.cache.Add(asset.Codigo, asset, cache.DefaultExpiration)
+	}
+
+	return asset, nil
 }
 
 func (r Repository) UpdateAssetPrice(id int64, price float32) (bool, error) {

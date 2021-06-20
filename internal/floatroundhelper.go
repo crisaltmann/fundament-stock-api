@@ -8,3 +8,9 @@ func RoundFloat(x float32) float32 {
 	f, _ := strconv.ParseFloat(i, 2)
 	return float32(f)
 }
+
+func RoundFloatWith3(x float32) float32 {
+	i := fmt.Sprintf("%.3f", x)
+	f, _ := strconv.ParseFloat(i, 2)
+	return float32(f)
+}

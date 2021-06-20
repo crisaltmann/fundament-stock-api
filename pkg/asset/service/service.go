@@ -20,6 +20,7 @@ type Repository interface {
 	InsertAsset(asset asset_domain.Asset) (bool, error)
 	GetAllAsset() ([]asset_domain.Asset, error)
 	GetById(id int64) (asset_domain.Asset, error)
+	GetByCode(code string) (asset_domain.Asset, error)
 	ExistById(id int64) (bool, error)
 	UpdateAssetPrice(id int64, price float32) (bool, error)
 }
@@ -57,6 +58,10 @@ func (s Service) GetById(id int64) (asset_domain.Asset, error) {
 	return s.repository.GetById(id)
 }
 
+func (s Service) GetByCode(code string) (asset_domain.Asset, error) {
+	return s.repository.GetByCode(code)
+}
+
 func (s Service) InsertAsset(asset asset_domain.Asset) (bool, error) {
 	return s.repository.InsertAsset(asset)
 }
@@ -89,6 +94,10 @@ func (s Service) InsertAssetPrice(idAtivo int64, price float32, data time.Time) 
 		Data:    data,
 	}
 	return s.stockPriceRepository.InsertAssetPrice(updateAssetPrice)
+}
+
+func (s Service) ExistAssetQuarterlyResult(idAtivo int64, idTrimestre int64) (bool, error) {
+	return s.assetQuarterlyResultRepository.ExistAssetQuarterlyResult(idAtivo, idTrimestre)
 }
 
 func (s Service) InsertAssetQuarterlyResult(aqResult asset_domain.AssetQuarterlyResult) (bool, error) {
