@@ -3,6 +3,7 @@ module github.com/crisaltmann/fundament-stock-api
 go 1.15
 
 require (
+	github.com/360EntSecGroup-Skylar/excelize/v2 v2.4.0
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
 	github.com/gin-contrib/logger v0.0.3

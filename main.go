@@ -36,6 +36,7 @@ func main() {
 		api.Quarter,
 		api.Holding,
 		api.Insight,
+		api.ResultImporter,
 		job.AssetSync,
 		fx.Invoke(
 			server.InitServer,
