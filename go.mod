@@ -1,5 +1,7 @@
 module github.com/crisaltmann/fundament-stock-api
 
+// +heroku goVersion go1.11
+
 go 1.15
 
 require (
