@@ -83,8 +83,10 @@ func (s Service) GetHolding(usuario string) (holding_domain.Holdings, error) {
 			return holding_domain.Holdings{}, err
 		}
 
-		resultado.MargemEbitda = internal.RoundFloat(float32(resultado.Ebitda) / float32(resultado.ReceitaLiquida))
-		resultado.MargemLiquida = internal.RoundFloat(float32(resultado.LucroLiquido) / float32(resultado.ReceitaLiquida))
+		if resultado.ReceitaLiquida > 0 {
+			resultado.MargemEbitda = internal.RoundFloat(float32(resultado.Ebitda) / float32(resultado.ReceitaLiquida))
+			resultado.MargemLiquida = internal.RoundFloat(float32(resultado.LucroLiquido) / float32(resultado.ReceitaLiquida))
+		}
 
 		if resultado.DividaLiquida > 0 && resultado.Ebitda > 0 {
 			resultado.DivEbitda = internal.RoundFloat(float32(resultado.DividaLiquida) / float32(resultado.Ebitda))
