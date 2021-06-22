@@ -2,6 +2,7 @@ package result_importer_service
 
 import (
 	"errors"
+	"fmt"
 	asset_domain "github.com/crisaltmann/fundament-stock-api/pkg/asset/domain"
 	"github.com/crisaltmann/fundament-stock-api/pkg/quarter/domain"
 	result_importer_domain "github.com/crisaltmann/fundament-stock-api/pkg/result_importer/domain"
@@ -23,6 +24,7 @@ type QuarterService interface {
 
 type AssetService interface {
 	GetByCode(code string) (asset_domain.Asset, error)
+	GetAllAssets() ([]asset_domain.Asset, error)
 }
 
 type QuarterlyResultService interface {
@@ -38,27 +40,51 @@ func NewImporter(service QuarterService, quarterlyResult QuarterlyResultService,
 	}
 }
 
-func (i Importer) StartImporter(code string) (error) {
-
-	wegeResults, err := ImportWege()
+func (i Importer) StartImporterAll() error {
+	assets, err := i.assetService.GetAllAssets()
 	if err != nil {
-		log.Print("Erro ao importar resultados de WEGE3")
+		log.Printf("Erro ao buscar ativos")
 		return err
 	}
+	for _, asset := range assets {
+		log.Printf("Importando ativo %s", asset.Codigo)
+		err = i.StartImporter(asset.Codigo)
+		if err != nil {
+			log.Printf("ERRO AO IMPORTAR ASSET.")
+		}
+	}
+	return nil
+}
 
-	err = i.saveQuarters(wegeResults)
+func (i Importer) StartImporter(code string) error {
+
+	var results result_importer_domain.ImporterResults
+	var err error
+
+	switch code {
+	case "WEGE3", "HYPE3", "FRAS3", "MGLU3":
+		results, err = Import(code)
+		if err != nil {
+			log.Printf("Erro ao importar resultados de %s", code)
+			return err
+		}
+	default:
+		return fmt.Errorf("Ativo não suportado")
+	}
+
+	err = i.saveQuarters(results)
 	if err != nil {
 		log.Print("Erro ao salvar quarters")
 		return err
 	}
 
-	asset, err := i.assetService.GetByCode(wegeResults.Codigo)
+	asset, err := i.assetService.GetByCode(results.Codigo)
 	if err != nil {
-		log.Print("Erro ao buscar o ativo %s", wegeResults.Codigo)
+		log.Print("Erro ao buscar o ativo %s", results.Codigo)
 		return err
 	}
 
-	for _, result := range wegeResults.Results {
+	for _, result := range results.Results {
 		quarter, err := i.quarterService.GetQuarterByDate(result.Trimestre.Date)
 		if err != nil {
 			log.Print("Erro ao buscar o quarter")
@@ -122,10 +148,10 @@ func (i Importer) inserirResultado(asset asset_domain.Asset, quarter quarter_dom
 	aqResult := asset_domain.AssetQuarterlyResult{
 		Trimestre:      quarter.Id,
 		Ativo:          asset.Id,
-		ReceitaLiquida: int64(result.DRE.ReceitaLiquida) * 1000,
-		Ebitda:         int64(ebitda) * 1000,
-		LucroLiquido:   int64(result.DRE.LucroLiquido) * 1000,
-		DividaLiquida:  int64(divLiquida)  * 1000,
+		ReceitaLiquida: int64(result.DRE.ReceitaLiquida * 1000),
+		Ebitda:         int64(ebitda * 1000),
+		LucroLiquido:   int64(result.DRE.LucroLiquido * 1000),
+		DividaLiquida:  int64(divLiquida * 1000),
 	}
 
 	salvo, err := i.quarterlyResult.InsertAssetQuarterlyResult(aqResult)

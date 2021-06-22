@@ -1,6 +1,7 @@
 package result_importer_service
 
 import (
+	"fmt"
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
 	result_importer_domain "github.com/crisaltmann/fundament-stock-api/pkg/result_importer/domain"
 	"github.com/rs/zerolog/log"
@@ -8,15 +9,20 @@ import (
 	"time"
 )
 
-func ImportWege() (result_importer_domain.ImporterResults, error) {
-	f, err := excelize.OpenFile("balanco-WEGE.xlsx")
+
+func Import(code string) (result_importer_domain.ImporterResults, error) {
+	file := fmt.Sprintf("data/balanco_%s.xlsx", code)
+	f, err := excelize.OpenFile(file)
 	if err != nil {
 		log.Print("Erro ao abrir arquivo")
 		return result_importer_domain.ImporterResults{}, err
 	}
 
 	template := GetWegeTemplate()
+	return importAsset(code, template, f)
+}
 
+func importAsset(code string, template result_importer_domain.Template, f *excelize.File) (result_importer_domain.ImporterResults, error) {
 	rowsBalanco, err := f.GetRows(template.Balanco.Name)
 	if err != nil {
 		log.Print("Erro ao ler rows de balanco")
@@ -36,7 +42,7 @@ func ImportWege() (result_importer_domain.ImporterResults, error) {
 	}
 
 	results := result_importer_domain.ImporterResults{}
-	results.Codigo = "WEGE3"
+	results.Codigo = code
 	for _, trimestre := range trimestres {
 		balanco, err := getBalanco(template, trimestre, rowsBalanco)
 		if err != nil {
@@ -64,6 +70,10 @@ func getTrimestres(rows [][]string) ([]result_importer_domain.Trimestre, error) 
 	trimestresRow := rows[1]
 	for i := 1; i < len(trimestresRow); i++ {
 		value := trimestresRow[i]
+
+		if value == "" {
+			return trimestres, nil
+		}
 
 		date, err := time.Parse("02/01/2006", value)
 		if err != nil {
