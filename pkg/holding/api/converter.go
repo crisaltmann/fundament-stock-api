@@ -10,9 +10,7 @@ func convertHoldingsDomainToDto(holdings holding_domain.Holdings, expandirAtivos
 		}
 	}
 
-	consolidated := convertAnnualHoldingsToDto(holdings.Consolidated)
-
-	return Holdings{Holdings: holdingsDTO, Consolidated: consolidated}
+	return Holdings{Holdings: holdingsDTO, Consolidated: convertAnnualHoldingsToDto(holdings.Consolidated.Consolidated)}
 }
 
 func convertDomainToDto(holding holding_domain.Holding, expandirAtivos bool) Holding {
@@ -75,12 +73,12 @@ func convertAtivoToDto(holding holding_domain.HoldingAtivo) Ativo {
 	}
 }
 
-func convertAnnualHoldingsToDto(consolidated holding_domain.AnnualHoldings) AnnualHoldings {
+func convertAnnualHoldingsToDto(consolidated []holding_domain.AnnualHolding) []AnnualHolding {
 	dto := make([]AnnualHolding, 0)
-	for _, annual := range consolidated.Consolidated {
+	for _, annual := range consolidated {
 		dto = append(dto, convertAnnualHoldingToDto(annual))
 	}
-	return AnnualHoldings{Consolidated: dto}
+	return dto
 }
 
 func convertAnnualHoldingToDto(annual holding_domain.AnnualHolding) AnnualHolding {

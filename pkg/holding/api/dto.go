@@ -1,8 +1,8 @@
 package holding_api
 
 type Holdings struct {
-	Holdings []Holding `json:"holdings"`
-	Consolidated	AnnualHoldings `json:"consolidated"`
+	Holdings 		[]Holding 		`json:"holdings"`
+	Consolidated	[]AnnualHolding `json:"consolidated"`
 }
 
 type Holding struct {
