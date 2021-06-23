@@ -3,8 +3,8 @@ package insight_api
 type Insight struct {
 	Id			    int64		`json:"id"`
 	Usuario			int64		`json:"id_usuario"`
-	IdTrimestre     int64		`json:"trimestre"`
-	IdAtivo			int64		`json:"id_ativo"`
+	Trimestre		Trimestre	`json:"trimestre"`
+	Ativo			Ativo		`json:"ativo"`
 	ReceitaDelta	float32		`json:"receita_delta"`
 	EbitdaDelta		float32		`json:"ebitda_delta"`
 	LucroDelta		float32		`json:"lucro_delta"`
@@ -16,7 +16,7 @@ type InsightsSummary struct {
 }
 
 type InsightSummary struct {
-	Trimestre 				int64		`json:"trimestre"`
+	Trimestre 				Trimestre		`json:"trimestre"`
 
 	AtivoMaiorReceita    	int64		`json:"ativo_maior_receita"`
 	ReceitaMaiorDelta		float32		`json:"receita_maior_delta"`
@@ -29,4 +29,17 @@ type InsightSummary struct {
 
 	AtivoMaiorDivida		int64		`json:"ativo_maior_divida"`
 	DividaDelta				float32		`json:"divida_delta"`
+}
+
+type Ativo struct {
+	Id     	int64  `json:"id"`
+	Codigo 	string `json:"codigo"`
+	Nome   	string `json:"nome"`
+}
+
+type Trimestre struct {
+	Id			int64			`json:"id"`
+	Ano			int				`json:"ano"`
+	Trimestre   int				`json:"trimestre"`
+	Codigo		string			`json:"codigo"`
 }

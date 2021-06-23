@@ -2,7 +2,7 @@ package insight_api
 
 import (
 	"fmt"
-	insight_domain "github.com/crisaltmann/fundament-stock-api/pkg/insghts/domain"
+	insight_domain "github.com/crisaltmann/fundament-stock-api/pkg/insights/domain"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"sort"
@@ -93,7 +93,7 @@ func (h Handler) GetInsightsSummary(c *gin.Context) {
 	}
 
 	sort.SliceStable(insightsResponse.Insights, func(i, j int) bool {
-		return insightsResponse.Insights[i].Trimestre < insightsResponse.Insights[j].Trimestre
+		return insightsResponse.Insights[i].Trimestre.Codigo < insightsResponse.Insights[j].Trimestre.Codigo
 	})
 
 	c.JSON(http.StatusOK, insightsResponse)

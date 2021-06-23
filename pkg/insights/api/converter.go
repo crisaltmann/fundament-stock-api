@@ -1,7 +1,9 @@
 package insight_api
 
 import (
-	insight_domain "github.com/crisaltmann/fundament-stock-api/pkg/insghts/domain"
+	asset_domain "github.com/crisaltmann/fundament-stock-api/pkg/asset/domain"
+	insight_domain "github.com/crisaltmann/fundament-stock-api/pkg/insights/domain"
+	quarter_domain "github.com/crisaltmann/fundament-stock-api/pkg/quarter/domain"
 )
 
 func convertInsightsDomainToDto(insights []insight_domain.Insight) []Insight {
@@ -18,8 +20,8 @@ func convertDomainToDto(insight insight_domain.Insight) Insight {
 	return Insight{
 		Id:           insight.Id,
 		Usuario:      insight.Usuario,
-		IdTrimestre:  insight.IdTrimestre,
-		IdAtivo:      insight.IdAtivo,
+		Trimestre:    convertQuarterToDto(insight.Trimestre),
+		Ativo:        convertAssetToDto(insight.Ativo),
 		ReceitaDelta: insight.ReceitaDelta,
 		EbitdaDelta:  insight.EbitdaDelta,
 		LucroDelta:   insight.LucroDelta,
@@ -41,7 +43,7 @@ func convertInsightsSummaryDomainToDto(insights insight_domain.InsightsSummary) 
 
 func convertSummaryDomainToDto(summary insight_domain.InsightSummary) InsightSummary {
 	return InsightSummary{
-		Trimestre:         summary.Trimestre,
+		Trimestre:         convertQuarterToDto(summary.Trimestre),
 		AtivoMaiorReceita: summary.AtivoMaiorReceita,
 		ReceitaMaiorDelta: summary.ReceitaMaiorDelta,
 		AtivoMaiorEbitda:  summary.AtivoMaiorEbitda,
@@ -50,6 +52,23 @@ func convertSummaryDomainToDto(summary insight_domain.InsightSummary) InsightSum
 		LucroMaiorDelta:   summary.LucroMaiorDelta,
 		AtivoMaiorDivida:  summary.AtivoMaiorDivida,
 		DividaDelta:       summary.DividaDelta,
+	}
+}
+
+func convertAssetToDto(asset asset_domain.Asset) Ativo {
+	return Ativo{
+		Id:     asset.Id,
+		Codigo: asset.Codigo,
+		Nome:   asset.Nome,
+	}
+}
+
+func convertQuarterToDto(quarter quarter_domain.Trimestre) Trimestre {
+	return Trimestre{
+		Id:        quarter.Id,
+		Ano:       quarter.Ano,
+		Trimestre: quarter.Trimestre,
+		Codigo:    quarter.Codigo,
 	}
 }
 
