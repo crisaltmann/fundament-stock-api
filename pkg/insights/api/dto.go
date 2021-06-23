@@ -18,16 +18,16 @@ type InsightsSummary struct {
 type InsightSummary struct {
 	Trimestre 				Trimestre		`json:"trimestre"`
 
-	AtivoMaiorReceita    	int64		`json:"ativo_maior_receita"`
+	AtivoMaiorReceita    	Ativo		`json:"ativo_maior_receita"`
 	ReceitaMaiorDelta		float32		`json:"receita_maior_delta"`
 
-	AtivoMaiorEbitda		int64		`json:"ativo_maior_ebitda"`
+	AtivoMaiorEbitda		Ativo		`json:"ativo_maior_ebitda"`
 	EbitdaMaiorDelta		float32		`json:"ebitda_maior_delta"`
 
-	AtivoMaiorLucro			int64		`json:"ativo_maior_lucro"`
+	AtivoMaiorLucro			Ativo		`json:"ativo_maior_lucro"`
 	LucroMaiorDelta			float32		`json:"lucro_maior_delta"`
 
-	AtivoMaiorDivida		int64		`json:"ativo_maior_divida"`
+	AtivoMaiorDivida		Ativo		`json:"ativo_maior_divida"`
 	DividaDelta				float32		`json:"divida_delta"`
 }
 

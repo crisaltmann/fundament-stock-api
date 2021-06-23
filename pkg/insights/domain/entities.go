@@ -26,22 +26,22 @@ type InsightSummary struct {
 	IdTrimestre				int64
 	Trimestre     			quarter_domain.Trimestre
 
-	AtivoMaiorReceita    	int64
+	AtivoMaiorReceita    	asset_domain.Asset
 	ReceitaMaiorDelta		float32
 
-	AtivoMaiorEbitda		int64
+	AtivoMaiorEbitda		asset_domain.Asset
 	EbitdaMaiorDelta		float32
 
-	AtivoMaiorLucro			int64
+	AtivoMaiorLucro			asset_domain.Asset
 	LucroMaiorDelta			float32
 
-	AtivoMaiorDivida		int64
+	AtivoMaiorDivida		asset_domain.Asset
 	DividaDelta				float32
 }
 
 func (s *InsightSummary) ToStruct() InsightSummary {
 	return InsightSummary{
-		IdTrimestre: 		s.IdTrimestre,
+		IdTrimestre: 	   s.IdTrimestre,
 		Trimestre:         s.Trimestre,
 		AtivoMaiorReceita: s.AtivoMaiorReceita,
 		ReceitaMaiorDelta: s.ReceitaMaiorDelta,

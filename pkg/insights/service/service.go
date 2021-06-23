@@ -99,22 +99,50 @@ func (s Service) GetSummaryInsights(usuario int64) (insight_domain.InsightsSumma
 
 		if insight.ReceitaDelta > summary.ReceitaMaiorDelta {
 			summary.ReceitaMaiorDelta = insight.ReceitaDelta
-			summary.AtivoMaiorReceita = insight.IdAtivo
+
+			ativo, err :=s.assetService.GetById(insight.IdAtivo)
+			if err != nil {
+				log.Printf("Erro ao buscar ativo no calculo de sumario")
+				return  insight_domain.InsightsSummary{}, err
+			}
+
+			summary.AtivoMaiorReceita = ativo
 		}
 
 		if insight.EbitdaDelta > summary.EbitdaMaiorDelta {
 			summary.EbitdaMaiorDelta = insight.EbitdaDelta
-			summary.AtivoMaiorEbitda = insight.IdAtivo
+
+			ativo, err :=s.assetService.GetById(insight.IdAtivo)
+			if err != nil {
+				log.Printf("Erro ao buscar ativo no calculo de sumario")
+				return  insight_domain.InsightsSummary{}, err
+			}
+
+			summary.AtivoMaiorEbitda = ativo
 		}
 
 		if insight.LucroDelta > summary.LucroMaiorDelta {
 			summary.LucroMaiorDelta = insight.LucroDelta
-			summary.AtivoMaiorLucro = insight.IdAtivo
+
+			ativo, err :=s.assetService.GetById(insight.IdAtivo)
+			if err != nil {
+				log.Printf("Erro ao buscar ativo no calculo de sumario")
+				return  insight_domain.InsightsSummary{}, err
+			}
+
+			summary.AtivoMaiorLucro = ativo
 		}
 
 		if insight.DividaDelta > summary.DividaDelta {
 			summary.DividaDelta = insight.DividaDelta
-			summary.AtivoMaiorDivida = insight.IdAtivo
+
+			ativo, err :=s.assetService.GetById(insight.IdAtivo)
+			if err != nil {
+				log.Printf("Erro ao buscar ativo no calculo de sumario")
+				return  insight_domain.InsightsSummary{}, err
+			}
+
+			summary.AtivoMaiorDivida = ativo
 		}
 	}
 
