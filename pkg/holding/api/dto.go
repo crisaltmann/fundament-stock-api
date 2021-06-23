@@ -2,6 +2,7 @@ package holding_api
 
 type Holdings struct {
 	Holdings []Holding `json:"holdings"`
+	Consolidated	AnnualHoldings `json:"consolidated"`
 }
 
 type Holding struct {
@@ -38,4 +39,19 @@ type Trimestre struct {
 	Id			int64			`json:"id"`
 	Ano			int				`json:"ano"`
 	Trimestre   int				`json:"trimestre"`
+}
+
+type AnnualHoldings struct {
+	Consolidated		[]AnnualHolding		`json:"consolidated"`
+}
+
+type AnnualHolding struct {
+	Ano					int64				`json:"ano"`
+	ReceitaLiquida	    int64				`json:"receita_liquida"`
+	Ebitda	     		int64				`json:"ebitda"`
+	MargemEbitda		float32				`json:"margem_ebitda"`
+	LucroLiquido	    int64				`json:"lucro_liquido"`
+	MargemLiquida		float32				`json:"margem_liquida"`
+	DividaLiquida	    int64				`json:"divida_liquida"`
+	DivEbitda			float32				`json:"div_ebitda"`
 }

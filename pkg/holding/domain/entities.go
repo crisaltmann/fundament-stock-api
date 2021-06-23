@@ -7,6 +7,22 @@ import (
 
 type Holdings struct {
 	Holdings []Holding
+	Consolidated AnnualHoldings
+}
+
+type AnnualHoldings struct {
+	Consolidated		[]AnnualHolding
+}
+
+type AnnualHolding struct {
+	Ano					int64
+	ReceitaLiquida	    int64
+	Ebitda	     		int64
+	MargemEbitda		float32
+	LucroLiquido	    int64
+	MargemLiquida		float32
+	DividaLiquida	    int64
+	DivEbitda			float32
 }
 
 type Holding struct {
@@ -61,5 +77,18 @@ func (h *Holding) ToStruct() Holding {
 		DividaLiquida:  h.DividaLiquida,
 		DivEbitda:      h.DivEbitda,
 		HoldingsAtivo:  h.HoldingsAtivo,
+	}
+}
+
+func (h *AnnualHolding) ToStruct() AnnualHolding {
+	return AnnualHolding{
+		Ano:            h.Ano,
+		ReceitaLiquida: h.ReceitaLiquida,
+		Ebitda:         h.Ebitda,
+		MargemEbitda:   h.MargemEbitda,
+		LucroLiquido:   h.LucroLiquido,
+		MargemLiquida:  h.MargemLiquida,
+		DividaLiquida:  h.DividaLiquida,
+		DivEbitda:      h.DivEbitda,
 	}
 }

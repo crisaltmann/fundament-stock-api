@@ -12,6 +12,7 @@ import (
 	portfolio_domain "github.com/crisaltmann/fundament-stock-api/pkg/portfolio/domain"
 	quarter_domain "github.com/crisaltmann/fundament-stock-api/pkg/quarter/domain"
 	"github.com/rs/zerolog/log"
+	"sort"
 	"strconv"
 )
 
@@ -70,6 +71,8 @@ func (s Service) GetHolding(usuario string) (holding_domain.Holdings, error) {
 	}
 	holdingMap := make(map[string]*holding_domain.Holding)
 
+	consolidated := make(map[int]*holding_domain.AnnualHolding)
+
 	for _, resultado := range resultados {
 		key := strconv.FormatInt(resultado.Trimestre, 10)
 		holding, found := holdingMap[key]
@@ -104,6 +107,28 @@ func (s Service) GetHolding(usuario string) (holding_domain.Holdings, error) {
 		if holding.DividaLiquida > 0 && holding.Ebitda > 0 {
 			holding.DivEbitda = internal.RoundFloat(float32(holding.DividaLiquida) / float32(holding.Ebitda))
 		}
+
+		annualHolding, found := consolidated[holding.Trimestre.Ano]
+		if !found {
+			annualHolding = &holding_domain.AnnualHolding{
+				Ano:            int64(holding.Trimestre.Ano),
+			}
+			consolidated[holding.Trimestre.Ano] = annualHolding
+		}
+
+		annualHolding.ReceitaLiquida = annualHolding.ReceitaLiquida + holding.ReceitaLiquida
+		annualHolding.Ebitda = annualHolding.Ebitda + holding.Ebitda
+		annualHolding.LucroLiquido = annualHolding.LucroLiquido + holding.LucroLiquido
+		annualHolding.DividaLiquida = annualHolding.DividaLiquida + holding.DividaLiquida
+
+		if annualHolding.ReceitaLiquida > 0 {
+			annualHolding.MargemEbitda = internal.RoundFloat(float32(annualHolding.Ebitda) / float32(annualHolding.ReceitaLiquida))
+			annualHolding.MargemLiquida = internal.RoundFloat(float32(annualHolding.LucroLiquido) / float32(annualHolding.ReceitaLiquida))
+		}
+
+		if annualHolding.DividaLiquida > 0 && annualHolding.Ebitda > 0 {
+			annualHolding.DivEbitda = internal.RoundFloat(float32(annualHolding.DividaLiquida) / float32(annualHolding.Ebitda))
+		}
 	}
 
 	holdings := holding_domain.Holdings{}
@@ -111,6 +136,19 @@ func (s Service) GetHolding(usuario string) (holding_domain.Holdings, error) {
 	for _, holdingMap := range holdingMap {
 		holdings.Holdings = append(holdings.Holdings, holdingMap.ToStruct())
 	}
+
+	annualHolding := make([]holding_domain.AnnualHolding, 0)
+	for _, annual := range consolidated {
+		annualHolding = append(annualHolding, annual.ToStruct())
+	}
+
+	sort.SliceStable(annualHolding, func(i, j int) bool {
+		return annualHolding[i].Ano < annualHolding[j].Ano
+	})
+
+	annualHoldingConsolidated := holding_domain.AnnualHoldings{Consolidated: annualHolding}
+
+	holdings.Consolidated = annualHoldingConsolidated
 
 	return holdings, nil
 }
@@ -274,7 +312,10 @@ func (s Service) buildQuarterlyAtivo(usuario int64, quarterlyItem asset_domain.A
 
 func (s Service) buildHoldingReturn(resultadosHolding map[int64]*holding_domain.Holding, resultadosHoldingByAtivo map[string]*holding_domain.HoldingAtivo) (holding_domain.Holdings, error) {
 	holdings := make([]holding_domain.Holding, 0)
+
 	for _, result := range resultadosHolding {
+
+
 
 		holdingsAtivo := make([]holding_domain.HoldingAtivo, 0)
 
