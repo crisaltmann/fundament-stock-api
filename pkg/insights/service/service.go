@@ -16,6 +16,7 @@ import (
 type Service struct {
 	repository 	Repository
 	quarterService QuarterService
+	assetService AssetService
 	db *sql.DB
 }
 
@@ -30,16 +31,44 @@ type QuarterService interface {
 	GetQuarters() ([]quarter_domain.Trimestre, error)
 }
 
-func NewService(repository Repository, quarterService QuarterService, db *sql.DB) Service {
+type AssetService interface {
+	GetById(id int64) (asset_domain.Asset, error)
+}
+
+func NewService(repository Repository, quarterService QuarterService, assetService AssetService, db *sql.DB) Service {
 	return Service{
 		repository: repository,
 		quarterService: quarterService,
+		assetService: assetService,
 		db: db,
 	}
 }
 
 func (s Service) GetInsights(usuario int64) ([]insight_domain.Insight, error) {
-	return s.repository.GetInsights(usuario)
+	insights, err := s.repository.GetInsights(usuario)
+	if err != nil {
+		log.Printf("Erro ao buscar insights")
+		return nil, err
+	}
+
+	for i := 0; i < len(insights); i++ {
+		quarter, err := s.quarterService.GetQuarter(insights[i].IdTrimestre)
+		if err != nil {
+			log.Print("Erro ao buscar quarter de insights")
+			return nil, err
+		}
+
+		ativo, err := s.assetService.GetById(insights[i].IdAtivo)
+		if err != nil {
+			log.Print("Erro ao buscar Ativo de insights")
+			return nil, err
+		}
+
+		insights[i].Trimestre = quarter
+		insights[i].Ativo = ativo
+	}
+
+	return insights, err
 }
 
 func (s Service) GetSummaryInsights(usuario int64) (insight_domain.InsightsSummary, error) {
@@ -56,8 +85,14 @@ func (s Service) GetSummaryInsights(usuario int64) (insight_domain.InsightsSumma
 		insight := insights[i]
 		summary, found := insightMap[insight.IdTrimestre]
 		if !found {
+			quarter, err := s.quarterService.GetQuarter(insight.IdTrimestre)
+			if err != nil {
+				log.Print("Erro ao buscar quarter no sumario de insights")
+				return insight_domain.InsightsSummary{}, err
+			}
 			summary = &insight_domain.InsightSummary{
-				Trimestre: insight.IdTrimestre,
+				IdTrimestre: insight.IdTrimestre,
+				Trimestre: quarter,
 			}
 			insightMap[insight.IdTrimestre] = summary
 		}
@@ -144,11 +179,19 @@ func (s Service) buildInsights(trimestreMap map[string]holding_domain.HoldingAti
 		}
 		lastQuarterHolding := trimestreMap[buildKey(holdingAtivo.Ativo, lastQuarter.Id)]
 
+		quarter, err := s.quarterService.GetQuarter(holdingAtivo.Trimestre)
+		if err != nil {
+			log.Print("Erro ao buscar quarter no sumario de insights")
+			return nil, err
+		}
+
 		insight := insight_domain.Insight{
 			Id:           0,
 			IdTrimestre:  currentQuarter,
+			Trimestre: quarter,
 			Usuario:      holdingAtivo.Usuario,
 			IdAtivo:      holdingAtivo.Ativo.Id,
+			Ativo: 		  holdingAtivo.Ativo,
 		}
 
 		if lastQuarter.Id > 0 {
