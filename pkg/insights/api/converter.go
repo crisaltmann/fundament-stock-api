@@ -1,7 +1,7 @@
 package insight_api
 
 import (
-	insight_domain "github.com/crisaltmann/fundament-stock-api/pkg/insghts/domain"
+	insight_domain "github.com/crisaltmann/fundament-stock-api/pkg/insights/domain"
 )
 
 func convertInsightsDomainToDto(insights []insight_domain.Insight) []Insight {

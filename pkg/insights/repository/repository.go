@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/crisaltmann/fundament-stock-api/pkg/insghts/domain"
+	"github.com/crisaltmann/fundament-stock-api/pkg/insights/domain"
 	"github.com/patrickmn/go-cache"
 	"github.com/rs/zerolog/log"
 	"time"

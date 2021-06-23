@@ -7,7 +7,7 @@ import (
 	"github.com/crisaltmann/fundament-stock-api/internal"
 	asset_domain "github.com/crisaltmann/fundament-stock-api/pkg/asset/domain"
 	holding_domain "github.com/crisaltmann/fundament-stock-api/pkg/holding/domain"
-	insight_domain "github.com/crisaltmann/fundament-stock-api/pkg/insghts/domain"
+	insight_domain "github.com/crisaltmann/fundament-stock-api/pkg/insights/domain"
 	quarter_domain "github.com/crisaltmann/fundament-stock-api/pkg/quarter/domain"
 	"log"
 	"strconv"

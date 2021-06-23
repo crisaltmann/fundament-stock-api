@@ -1,10 +1,10 @@
 package api
 
 import (
-	insight_api "github.com/crisaltmann/fundament-stock-api/pkg/insghts/api"
-	insight_event "github.com/crisaltmann/fundament-stock-api/pkg/insghts/event"
-	insight_repository "github.com/crisaltmann/fundament-stock-api/pkg/insghts/repository"
-	insight_service "github.com/crisaltmann/fundament-stock-api/pkg/insghts/service"
+	insight_api "github.com/crisaltmann/fundament-stock-api/pkg/insights/api"
+	insight_event "github.com/crisaltmann/fundament-stock-api/pkg/insights/event"
+	insight_repository "github.com/crisaltmann/fundament-stock-api/pkg/insights/repository"
+	insight_service "github.com/crisaltmann/fundament-stock-api/pkg/insights/service"
 	quarter_service "github.com/crisaltmann/fundament-stock-api/pkg/quarter/service"
 	"go.uber.org/fx"
 )

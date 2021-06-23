@@ -2,7 +2,7 @@ package insight_api
 
 import (
 	"fmt"
-	insight_domain "github.com/crisaltmann/fundament-stock-api/pkg/insghts/domain"
+	insight_domain "github.com/crisaltmann/fundament-stock-api/pkg/insights/domain"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"sort"
