@@ -44,13 +44,13 @@ func convertInsightsSummaryDomainToDto(insights insight_domain.InsightsSummary) 
 func convertSummaryDomainToDto(summary insight_domain.InsightSummary) InsightSummary {
 	return InsightSummary{
 		Trimestre:         convertQuarterToDto(summary.Trimestre),
-		AtivoMaiorReceita: summary.AtivoMaiorReceita,
+		AtivoMaiorReceita: convertAssetToDto(summary.AtivoMaiorReceita),
 		ReceitaMaiorDelta: summary.ReceitaMaiorDelta,
-		AtivoMaiorEbitda:  summary.AtivoMaiorEbitda,
+		AtivoMaiorEbitda:  convertAssetToDto(summary.AtivoMaiorEbitda),
 		EbitdaMaiorDelta:  summary.EbitdaMaiorDelta,
-		AtivoMaiorLucro:   summary.AtivoMaiorLucro,
+		AtivoMaiorLucro:   convertAssetToDto(summary.AtivoMaiorLucro),
 		LucroMaiorDelta:   summary.LucroMaiorDelta,
-		AtivoMaiorDivida:  summary.AtivoMaiorDivida,
+		AtivoMaiorDivida:  convertAssetToDto(summary.AtivoMaiorDivida),
 		DividaDelta:       summary.DividaDelta,
 	}
 }
