@@ -93,7 +93,7 @@ func (h Handler) GetInsightsSummary(c *gin.Context) {
 	}
 
 	sort.SliceStable(insightsResponse.Insights, func(i, j int) bool {
-		return insightsResponse.Insights[i].Trimestre.Codigo < insightsResponse.Insights[j].Trimestre.Codigo
+		return insightsResponse.Insights[i].Trimestre.Codigo > insightsResponse.Insights[j].Trimestre.Codigo
 	})
 
 	c.JSON(http.StatusOK, insightsResponse)
