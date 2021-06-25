@@ -22,6 +22,7 @@ require (
 	github.com/robfig/cron v1.2.0
 	github.com/rs/zerolog v1.18.0
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
+	github.com/satori/go.uuid v1.2.0
 	github.com/streadway/amqp v1.0.0
 	github.com/stretchr/testify v1.6.1
 	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14
