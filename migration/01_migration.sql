@@ -99,3 +99,9 @@ CREATE TABLE IF NOT EXISTS INSIGHTS (
     delta_lucro_liquido       decimal(10,2)   NOT NULL,
     delta_divida_liquida      decimal(10,2)   NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS usuario (
+    id                        serial          PRIMARY KEY,
+    email                     varchar(100)          NOT NULL,
+    password                  varchar(100)          NOT NULL
+);
