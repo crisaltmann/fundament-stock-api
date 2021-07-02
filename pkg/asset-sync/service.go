@@ -33,7 +33,7 @@ func NewService(finder AssetFinder, assetUpdater AssetUpdater, stockFinder Stock
 	}
 }
 
-func (s JobService) updateAssetPrice() {
+func (s JobService) UpdateAssetPrice() {
 	assets, err := s.AssetFinder.GetAllAssets()
 	if err != nil {
 		err = fmt.Errorf("Ocorreu um erro ao executar atualização de preço ativos.", err)

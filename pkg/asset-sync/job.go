@@ -29,7 +29,7 @@ func ConfigureJob(sync AssetSync, c *infrastructure.Cron) {
 
 func (a AssetSync) executeJob() {
 	log.Println("Iniciando job de atualização de preços.")
-	a.Service.updateAssetPrice()
+	a.Service.UpdateAssetPrice()
 	log.Println("Finalizando job de atualização de preços.")
 }
 
