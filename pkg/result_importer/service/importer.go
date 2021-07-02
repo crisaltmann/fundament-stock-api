@@ -62,7 +62,7 @@ func (i Importer) StartImporter(code string) error {
 	var err error
 
 	switch code {
-	case "WEGE3", "HYPE3", "FRAS3", "MGLU3":
+	case "WEGE3", "HYPE3", "FRAS3", "MGLU3", "ABEV3":
 		results, err = Import(code)
 		if err != nil {
 			log.Printf("Erro ao importar resultados de %s", code)
