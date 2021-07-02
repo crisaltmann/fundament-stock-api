@@ -116,10 +116,10 @@ func (s Service) GetHolding(usuario string) (holding_domain.Holdings, error) {
 			consolidated[holding.Trimestre.Ano] = annualHolding
 		}
 
-		annualHolding.ReceitaLiquida = annualHolding.ReceitaLiquida + holding.ReceitaLiquida
-		annualHolding.Ebitda = annualHolding.Ebitda + holding.Ebitda
-		annualHolding.LucroLiquido = annualHolding.LucroLiquido + holding.LucroLiquido
-		annualHolding.DividaLiquida = annualHolding.DividaLiquida + holding.DividaLiquida
+		annualHolding.ReceitaLiquida = annualHolding.ReceitaLiquida + resultado.ReceitaLiquida
+		annualHolding.Ebitda = annualHolding.Ebitda + resultado.Ebitda
+		annualHolding.LucroLiquido = annualHolding.LucroLiquido + resultado.LucroLiquido
+		annualHolding.DividaLiquida = annualHolding.DividaLiquida + resultado.DividaLiquida
 
 		if annualHolding.ReceitaLiquida > 0 {
 			annualHolding.MargemEbitda = internal.RoundFloat(float32(annualHolding.Ebitda) / float32(annualHolding.ReceitaLiquida))
